@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
+import { CustomSelect } from "@/components/custom-select";
 import { MaterialIcon } from "@/components/material-icon";
 import { formatDate } from "@/lib/dates";
 
@@ -20,7 +21,10 @@ const PACKAGE_TYPES = [
   { value: "standard", label: "Standard (4-Star)" },
   { value: "premium", label: "Premium (5-Star)" },
 ];
-const PERSON_COUNTS = Array.from({ length: 10 }, (_, i) => i + 1);
+const PERSON_COUNTS = Array.from({ length: 10 }, (_, i) => ({
+  value: String(i + 1),
+  label: `${i + 1} ${i + 1 === 1 ? "person" : "persons"}`,
+}));
 
 export function SearchWidget() {
   const router = useRouter();
@@ -58,71 +62,57 @@ export function SearchWidget() {
     >
       <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:gap-4">
         <Field label="Departure City" icon="location_on">
-          <select
+          <CustomSelect
             value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className={controlClass}
-          >
-            {CITIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+            onChange={setCity}
+            options={CITIES.map((c) => ({ value: c, label: c }))}
+          />
         </Field>
 
         <Field label="Duration" icon="schedule">
-          <select
+          <CustomSelect
             value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            className={controlClass}
-          >
-            {DURATIONS.map((d) => (
-              <option key={d.value || "any"} value={d.value}>
-                {d.label}
-              </option>
-            ))}
-          </select>
+            onChange={setDuration}
+            options={DURATIONS}
+          />
         </Field>
 
         <Field label="Package Type" icon="category">
-          <select
+          <CustomSelect
             id="package-type"
             value={type}
-            onChange={(e) => setType(e.target.value)}
-            className={controlClass}
-          >
-            {PACKAGE_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </select>
+            onChange={setType}
+            options={PACKAGE_TYPES}
+          />
         </Field>
 
         <Field label="No. of Persons" icon="groups">
-          <select
+          <CustomSelect
             value={persons}
-            onChange={(e) => setPersons(e.target.value)}
-            className={controlClass}
-          >
-            {PERSON_COUNTS.map((n) => (
-              <option key={n} value={String(n)}>
-                {n} {n === 1 ? "person" : "persons"}
-              </option>
-            ))}
-          </select>
+            onChange={setPersons}
+            options={PERSON_COUNTS}
+          />
         </Field>
       </div>
 
       <div ref={dateRef} className="relative">
         <Field label="Travel Date" icon="calendar_month">
-          <button type="button" onClick={() => setCalendarOpen((v) => !v)} className={controlClass}>
-            {date ? (
-              formatDate(date)
-            ) : (
-              <span className="text-on-surface-variant">Select date</span>
-            )}
+          <button
+            type="button"
+            onClick={() => setCalendarOpen((v) => !v)}
+            className="flex w-full min-w-0 items-center justify-between gap-2 py-2 text-left text-sm outline-none sm:py-2.5"
+          >
+            <span className="truncate">
+              {date ? (
+                formatDate(date)
+              ) : (
+                <span className="text-on-surface-variant">Select date</span>
+              )}
+            </span>
+            <MaterialIcon
+              name="expand_more"
+              className={`shrink-0 text-lg text-neutral transition-transform ${calendarOpen ? "rotate-180" : ""}`}
+            />
           </button>
         </Field>
         {calendarOpen && (
@@ -148,9 +138,6 @@ export function SearchWidget() {
   );
 }
 
-const controlClass =
-  "w-full min-w-0 border-0 bg-transparent py-2 text-left text-sm text-on-surface outline-none sm:py-2.5";
-
 function Field({
   label,
   icon,
@@ -165,12 +152,12 @@ function Field({
       <label className="text-xs font-semibold text-on-surface-variant sm:text-sm">
         {label}
       </label>
-      <div className="flex min-w-0 items-center gap-2.5 rounded-lg border border-outline-variant bg-surface px-3 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+      <div className="flex min-w-0 items-center gap-2.5 rounded-lg border border-outline-variant bg-surface px-3 has-[button[aria-expanded=true]]:border-primary has-[button[aria-expanded=true]]:ring-1 has-[button[aria-expanded=true]]:ring-primary focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
         <MaterialIcon
           name={icon}
           className="shrink-0 text-[18px] text-primary"
         />
-        <div className="min-w-0 flex-1">{children}</div>
+        {children}
       </div>
     </div>
   );

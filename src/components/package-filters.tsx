@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+import { CustomSelect } from "@/components/custom-select";
 
 const TIERS = [
   { value: "", label: "All Types" },
@@ -40,49 +41,50 @@ export function PackageFilters({ cities }: { cities: string[] }) {
   const get = (key: string) => params.get(key) ?? "";
   const hasFilters = Array.from(params.keys()).length > 0;
 
+  const cityOptions = [
+    { value: "", label: "All Cities" },
+    ...cities.map((c) => ({ value: c, label: c })),
+  ];
+
   return (
-    <div className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-outline-variant bg-white p-4 shadow-sm">
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-6">
         <input
           type="search"
           placeholder="Search packages…"
           defaultValue={get("q")}
           onChange={(e) => update("q", e.target.value)}
-          className="rounded-xl border border-black/10 px-3 py-2.5 text-sm outline-none focus:border-brand lg:col-span-2"
+          className="rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary lg:col-span-2"
         />
 
-        <Select value={get("city")} onChange={(v) => update("city", v)}>
-          <option value="">All Cities</option>
-          {cities.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </Select>
+        <CustomSelect
+          variant="standalone"
+          value={get("city")}
+          onChange={(v) => update("city", v)}
+          options={cityOptions}
+          placeholder="All Cities"
+        />
 
-        <Select value={get("tier")} onChange={(v) => update("tier", v)}>
-          {TIERS.map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label}
-            </option>
-          ))}
-        </Select>
+        <CustomSelect
+          variant="standalone"
+          value={get("tier")}
+          onChange={(v) => update("tier", v)}
+          options={TIERS}
+        />
 
-        <Select value={get("audience")} onChange={(v) => update("audience", v)}>
-          {AUDIENCES.map((a) => (
-            <option key={a.value} value={a.value}>
-              {a.label}
-            </option>
-          ))}
-        </Select>
+        <CustomSelect
+          variant="standalone"
+          value={get("audience")}
+          onChange={(v) => update("audience", v)}
+          options={AUDIENCES}
+        />
 
-        <Select value={get("duration")} onChange={(v) => update("duration", v)}>
-          {DURATIONS.map((d) => (
-            <option key={d.value} value={d.value}>
-              {d.label}
-            </option>
-          ))}
-        </Select>
+        <CustomSelect
+          variant="standalone"
+          value={get("duration")}
+          onChange={(v) => update("duration", v)}
+          options={DURATIONS}
+        />
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -91,46 +93,26 @@ export function PackageFilters({ cities }: { cities: string[] }) {
           placeholder="Min price"
           defaultValue={get("minPrice")}
           onChange={(e) => update("minPrice", e.target.value)}
-          className="w-32 rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-brand"
+          className="w-32 rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
         />
-        <span className="text-slate-muted">—</span>
+        <span className="text-neutral">—</span>
         <input
           type="number"
           placeholder="Max price"
           defaultValue={get("maxPrice")}
           onChange={(e) => update("maxPrice", e.target.value)}
-          className="w-32 rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-brand"
+          className="w-32 rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
         />
         {hasFilters && (
           <button
             type="button"
             onClick={() => router.push("/packages")}
-            className="ml-auto text-sm font-medium text-brand hover:underline"
+            className="ml-auto text-sm font-semibold text-primary hover:underline"
           >
             Clear all
           </button>
         )}
       </div>
     </div>
-  );
-}
-
-function Select({
-  value,
-  onChange,
-  children,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand"
-    >
-      {children}
-    </select>
   );
 }
