@@ -6,9 +6,9 @@ export const site = {
   email: "info@alwrdgroup.com",
   location: "Lahore, Pakistan",
   socials: {
-    facebook: "https://facebook.com",
-    instagram: "https://instagram.com",
-    tiktok: "https://tiktok.com",
+    instagram: "https://www.instagram.com/alwrdhajjumrah/",
+    facebook: "https://www.facebook.com/alwrdhajjumrah",
+    tiktok: "https://www.tiktok.com/@alwrdhajjumrah",
   },
 };
 

@@ -38,21 +38,23 @@ export function SiteFooter() {
     <footer className="border-t border-outline-variant bg-surface-container-low">
       <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-8 px-6 py-20 md:grid-cols-4">
         <div className="space-y-4">
-          <Logo />
+          <Logo variant="black" />
           <p className="text-xs leading-relaxed text-on-surface-variant">
             Pakistan&apos;s trusted Umrah platform — plan and book your journey
             directly, with faith, transparency, and no hidden charges.
           </p>
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             {[
-              { href: site.socials.facebook, icon: "share" },
-              { href: site.socials.instagram, icon: "public" },
-            ].map(({ href, icon }) => (
+              { href: site.socials.instagram, icon: "photo_camera", label: "Instagram" },
+              { href: site.socials.facebook, icon: "thumb_up", label: "Facebook" },
+              { href: site.socials.tiktok, icon: "music_note", label: "TikTok" },
+            ].map(({ href, icon, label }) => (
               <a
                 key={href}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={label}
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary transition-all hover:bg-primary hover:text-on-primary"
               >
                 <MaterialIcon name={icon} className="text-sm" />

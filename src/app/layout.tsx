@@ -17,7 +17,7 @@ const libreBaskerville = Libre_Baskerville({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://alwrdgroup.com"),
+  metadataBase: new URL("https://alwrd.vercel.app"),
   title: {
     default: "Al Wrd — Transparent Umrah Booking from Pakistan",
     template: "%s | Al Wrd Hajj & Umrah",

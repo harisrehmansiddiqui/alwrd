@@ -1,26 +1,27 @@
+import Image from "next/image";
 import Link from "next/link";
-import { site } from "@/lib/site";
 
-export function Logo({ light = false }: { light?: boolean }) {
+type LogoVariant = "green" | "black";
+
+const LOGOS: Record<LogoVariant, { src: string; width: number; height: number }> =
+  {
+    green: { src: "/brand/logo-green.png", width: 140, height: 40 },
+    black: { src: "/brand/logo-black.png", width: 120, height: 36 },
+  };
+
+export function Logo({ variant = "green" }: { variant?: LogoVariant }) {
+  const logo = LOGOS[variant];
+
   return (
-    <Link href="/" className="flex items-center gap-2">
-      <span
-        className={`grid h-10 w-10 place-items-center rounded-full ${
-          light ? "bg-white/15" : "bg-primary/10"
-        }`}
-        aria-hidden
-      >
-        <svg viewBox="0 0 24 24" className="h-5 w-5 fill-primary">
-          <path d="M12 2l2.2 4.8L19 8l-3.5 3.4.9 5.1L12 14.9 7.6 16.5l.9-5.1L5 8l4.8-1.2L12 2z" />
-        </svg>
-      </span>
-      <span
-        className={`text-xl font-bold tracking-tight ${
-          light ? "text-on-primary" : "text-primary"
-        }`}
-      >
-        {site.name}
-      </span>
+    <Link href="/" className="inline-flex shrink-0 items-center">
+      <Image
+        src={logo.src}
+        alt="Al Wrd Hajj & Umrah"
+        width={logo.width}
+        height={logo.height}
+        className="h-9 w-auto object-contain sm:h-10"
+        priority
+      />
     </Link>
   );
 }
