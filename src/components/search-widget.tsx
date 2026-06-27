@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { CustomSelect } from "@/components/custom-select";
@@ -26,8 +27,24 @@ const PERSON_COUNTS = Array.from({ length: 10 }, (_, i) => ({
   label: `${i + 1} ${i + 1 === 1 ? "person" : "persons"}`,
 }));
 
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const update = () => setMatches(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [query]);
+
+  return matches;
+}
+
 export function SearchWidget() {
   const router = useRouter();
+  const isDesktop = useMediaQuery("(min-width: 1280px)");
+  const [mounted, setMounted] = useState(false);
   const [city, setCity] = useState("Lahore");
   const [duration, setDuration] = useState("");
   const [type, setType] = useState("standard");
@@ -36,7 +53,36 @@ export function SearchWidget() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const dateRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => setMounted(true), []);
+
   useEffect(() => {
+    if (!calendarOpen || isDesktop) return;
+    function onClick(e: MouseEvent) {
+      const target = e.target as Node;
+      if (dateRef.current?.contains(target)) return;
+      if (
+        target instanceof Element &&
+        target.closest("[data-calendar-overlay]")
+      ) {
+        return;
+      }
+      setCalendarOpen(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [calendarOpen, isDesktop]);
+
+  useEffect(() => {
+    if (!calendarOpen || isDesktop) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [calendarOpen, isDesktop]);
+
+  useEffect(() => {
+    if (!isDesktop) return;
     function onClick(e: MouseEvent) {
       if (dateRef.current && !dateRef.current.contains(e.target as Node)) {
         setCalendarOpen(false);
@@ -44,7 +90,7 @@ export function SearchWidget() {
     }
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
-  }, []);
+  }, [isDesktop]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,17 +101,31 @@ export function SearchWidget() {
     router.push(`/packages?${params.toString()}`);
   }
 
+  function handleDateSelect(d: Date) {
+    setDate(d);
+    setCalendarOpen(false);
+  }
+
+  const calendar = (
+    <AvailabilityCalendar
+      value={date}
+      onSelect={handleDateSelect}
+      compact={!isDesktop}
+    />
+  );
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest p-3 shadow-md sm:gap-3 sm:p-4 lg:gap-4 lg:p-6"
+      className="flex flex-col gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest p-2.5 shadow-md sm:gap-3 sm:p-4 lg:gap-4 lg:p-6"
     >
-      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
         <Field label="Departure City" icon="location_on">
           <CustomSelect
             value={city}
             onChange={setCity}
             options={CITIES.map((c) => ({ value: c, label: c }))}
+            compact
           />
         </Field>
 
@@ -74,6 +134,7 @@ export function SearchWidget() {
             value={duration}
             onChange={setDuration}
             options={DURATIONS}
+            compact
           />
         </Field>
 
@@ -83,14 +144,16 @@ export function SearchWidget() {
             value={type}
             onChange={setType}
             options={PACKAGE_TYPES}
+            compact
           />
         </Field>
 
-        <Field label="No. of Persons" icon="groups">
+        <Field label="Persons" icon="groups">
           <CustomSelect
             value={persons}
             onChange={setPersons}
             options={PERSON_COUNTS}
+            compact
           />
         </Field>
       </div>
@@ -100,7 +163,7 @@ export function SearchWidget() {
           <button
             type="button"
             onClick={() => setCalendarOpen((v) => !v)}
-            className="flex w-full min-w-0 items-center justify-between gap-2 py-2 text-left text-sm outline-none sm:py-2.5"
+            className="flex w-full min-w-0 items-center justify-between gap-2 py-1.5 text-left text-sm outline-none sm:py-2"
           >
             <span className="truncate">
               {date ? (
@@ -115,22 +178,35 @@ export function SearchWidget() {
             />
           </button>
         </Field>
-        {calendarOpen && (
-          <div className="absolute left-0 right-0 z-20 mt-1 sm:left-auto sm:right-0 sm:w-auto">
-            <AvailabilityCalendar
-              value={date}
-              onSelect={(d) => {
-                setDate(d);
-                setCalendarOpen(false);
-              }}
-            />
+
+        {calendarOpen && isDesktop && (
+          <div className="absolute left-0 right-0 z-30 mt-1 sm:left-auto sm:right-0 sm:w-auto">
+            {calendar}
           </div>
         )}
       </div>
 
+      {calendarOpen &&
+        !isDesktop &&
+        mounted &&
+        createPortal(
+          <div data-calendar-overlay className="fixed inset-0 z-[200]">
+            <button
+              type="button"
+              aria-label="Close calendar"
+              className="absolute inset-0 bg-black/40"
+              onClick={() => setCalendarOpen(false)}
+            />
+            <div className="absolute left-1/2 top-1/2 w-[min(calc(100vw-2rem),18rem)] -translate-x-1/2 -translate-y-1/2">
+              {calendar}
+            </div>
+          </div>,
+          document.body,
+        )}
+
       <button
         type="submit"
-        className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark sm:py-3.5 lg:py-4"
+        className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark sm:py-3 lg:py-3.5"
       >
         Get Packages
       </button>
@@ -148,14 +224,14 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-w-0 space-y-1">
-      <label className="text-xs font-semibold text-on-surface-variant sm:text-sm">
+    <div className="min-w-0 space-y-0.5">
+      <label className="text-[11px] font-semibold text-on-surface-variant sm:text-xs">
         {label}
       </label>
-      <div className="flex min-w-0 items-center gap-2.5 rounded-lg border border-outline-variant bg-surface px-3 has-[button[aria-expanded=true]]:border-primary has-[button[aria-expanded=true]]:ring-1 has-[button[aria-expanded=true]]:ring-primary focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+      <div className="flex min-w-0 items-center gap-2 rounded-lg border border-outline-variant bg-surface px-2.5 has-[button[aria-expanded=true]]:border-primary has-[button[aria-expanded=true]]:ring-1 has-[button[aria-expanded=true]]:ring-primary focus-within:border-primary focus-within:ring-1 focus-within:ring-primary sm:gap-2.5 sm:px-3">
         <MaterialIcon
           name={icon}
-          className="shrink-0 text-[18px] text-primary"
+          className="shrink-0 text-base text-primary sm:text-[18px]"
         />
         {children}
       </div>

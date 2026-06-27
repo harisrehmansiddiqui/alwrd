@@ -13,6 +13,7 @@ type Props = {
   placeholder?: string;
   /** Compact trigger for use inside icon fields */
   variant?: "field" | "standalone";
+  compact?: boolean;
 };
 
 export function CustomSelect({
@@ -22,6 +23,7 @@ export function CustomSelect({
   id,
   placeholder = "Select…",
   variant = "field",
+  compact = false,
 }: Props) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -50,7 +52,7 @@ export function CustomSelect({
 
   const triggerClass =
     variant === "field"
-      ? "flex w-full min-w-0 items-center justify-between gap-2 py-2 text-left text-sm text-on-surface outline-none sm:py-2.5"
+      ? `flex w-full min-w-0 items-center justify-between gap-2 text-left text-sm text-on-surface outline-none ${compact ? "py-1.5 sm:py-2" : "py-2 sm:py-2.5"}`
       : "flex w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-left text-sm text-on-surface outline-none transition-colors hover:border-primary/40 focus:border-primary focus:ring-1 focus:ring-primary";
 
   return (

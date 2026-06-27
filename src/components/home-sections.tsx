@@ -28,7 +28,7 @@ export function GroupPackages({ packages }: { packages: Package[] }) {
   if (featured.length === 0) return null;
 
   return (
-    <section className="bg-surface-container-lowest pb-16 pt-6 sm:pb-20 sm:pt-8">
+    <section className="bg-surface-container-lowest pb-16 pt-4 sm:pb-20 sm:pt-6">
       <Container>
         <SectionHeading
           title="Group Packages"
