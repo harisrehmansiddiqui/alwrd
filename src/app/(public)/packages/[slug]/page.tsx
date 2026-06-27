@@ -8,7 +8,7 @@ import {
 } from "@/lib/itinerary";
 import { getPackage, formatPKR } from "@/lib/packages";
 
-export const revalidate = 120;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

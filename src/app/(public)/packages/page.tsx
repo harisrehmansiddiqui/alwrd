@@ -7,6 +7,8 @@ import {
   type PackageFilters as Filters,
 } from "@/lib/packages";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Umrah Packages",
   description:
