@@ -1,43 +1,47 @@
-import Link from "next/link";
-import { whatsappLink } from "@/lib/site";
+import { SearchWidget } from "@/components/search-widget";
+import { MaterialIcon } from "@/components/material-icon";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-ink">
-      {/* Drop a real hero photo at /public/hero.jpg and it layers over this gradient. */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-60"
-        style={{ backgroundImage: "url('/hero.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80" />
-      <div
-        className="absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full opacity-30 blur-3xl"
-        style={{ background: "radial-gradient(circle, #e0a92e, transparent 70%)" }}
-      />
+    <section className="hero-pattern py-20 lg:py-[80px]">
+      <div className="mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-8 px-6 lg:grid-cols-2">
+        <div className="space-y-6">
+          <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary">
+            Book. Budget. Be Blessed.
+          </span>
+          <h1 className="text-[32px] font-bold leading-tight text-on-background md:text-[48px] md:leading-[56px]">
+            Transparent Booking.
+            <br />
+            <span className="text-primary">No Agents. No Hidden Charges.</span>
+          </h1>
+          <p className="max-w-lg text-lg leading-7 text-on-surface-variant">
+            Plan your Umrah with transparent pricing, trusted guidance, honest
+            commitments, and a dedicated support team — delivering exactly what
+            is promised.
+          </p>
+          <SearchWidget />
+        </div>
 
-      <div className="relative mx-auto max-w-4xl px-4 py-24 text-center sm:px-6 sm:py-32">
-        <h1 className="font-display text-4xl font-extrabold uppercase leading-tight text-white sm:text-5xl md:text-6xl">
-          Your Trusted Partner for a Peaceful Umrah
-        </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-base text-white/80 sm:text-lg">
-          Complete Umrah packages from Pakistan including fast visa processing,
-          premium hotels near the Haram, authentic meals, and private transport.
-        </p>
-        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href="/packages"
-            className="rounded-xl bg-brand px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-brand-deep"
-          >
-            Book Your Umrah Now
-          </Link>
-          <a
-            href={whatsappLink("Assalamu alaikum, I'd like to know more about your Umrah packages.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-xl border border-white/25 bg-white/5 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/10"
-          >
-            WhatsApp Support
-          </a>
+        <div className="relative">
+          <div
+            className="aspect-[4/3] w-full rounded-2xl bg-cover bg-center shadow-2xl"
+            style={{ backgroundImage: "url('/hero.jpg')" }}
+            role="img"
+            aria-label="Umrah pilgrimage experience"
+          />
+          <div className="glass absolute -bottom-6 -left-6 hidden rounded-xl border border-outline-variant p-6 shadow-lg md:block">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-on-primary">
+                <MaterialIcon name="verified" />
+              </div>
+              <div>
+                <p className="font-bold text-primary">Licensed Operator</p>
+                <p className="text-xs text-on-surface-variant">
+                  Registered Hajj & Umrah provider
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

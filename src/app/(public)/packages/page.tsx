@@ -30,10 +30,8 @@ export default async function PackagesPage({
     q: params.q,
   };
 
-  const [results, cities] = await Promise.all([
-    filterPackages(filters),
-    getCities(),
-  ]);
+  const results = await filterPackages(filters);
+  const cities = await getCities();
 
   return (
     <div className="bg-surface-tint">
@@ -59,7 +57,7 @@ export default async function PackagesPage({
         {results.length > 0 ? (
           <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {results.map((pkg) => (
-              <PackageCard key={pkg.slug} pkg={pkg} />
+              <PackageCard key={pkg.departureId} pkg={pkg} />
             ))}
           </div>
         ) : (

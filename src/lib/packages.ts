@@ -1,4 +1,5 @@
 import type { Departure, Package as DbPackage, Prisma } from "@prisma/client";
+import { cache } from "react";
 import { prisma } from "@/lib/db";
 
 // Flattened shape the UI renders: a package joined with one of its departures.
@@ -18,6 +19,7 @@ export const TIERS: Record<Tier, PackageTier> = {
 };
 
 export type Package = {
+  departureId: string;
   slug: string;
   title: string;
   audience: AudienceType;
@@ -30,7 +32,11 @@ export type Package = {
   price: number;
   oldPrice?: number;
   image: string;
+  gallery: string[];
   amenities: string[];
+  makkahHotel?: string;
+  madinahHotel?: string;
+  description?: string;
   featured: string | null;
 };
 
@@ -39,6 +45,7 @@ type DepartureWithPackage = Departure & { package: DbPackage };
 function mapCard(dep: DepartureWithPackage): Package {
   const p = dep.package;
   return {
+    departureId: dep.id,
     slug: p.slug,
     title: p.title,
     audience: p.audience as AudienceType,
@@ -51,7 +58,11 @@ function mapCard(dep: DepartureWithPackage): Package {
     price: dep.price,
     oldPrice: dep.oldPrice ?? undefined,
     image: p.image,
+    gallery: (p.gallery as string[]) ?? [],
     amenities: (p.amenities as string[]) ?? [],
+    makkahHotel: p.makkahHotel ?? undefined,
+    madinahHotel: p.madinahHotel ?? undefined,
+    description: p.description ?? undefined,
     featured: p.featured,
   };
 }
@@ -80,6 +91,37 @@ async function queryCards(where: Prisma.DepartureWhereInput): Promise<Package[]>
   });
   return rows.map(mapCard);
 }
+
+/** One card per package slug — earliest upcoming departure wins. */
+function onePerPackage(cards: Package[]): Package[] {
+  const seen = new Set<string>();
+  const out: Package[] = [];
+  for (const card of cards) {
+    if (seen.has(card.slug)) continue;
+    seen.add(card.slug);
+    out.push(card);
+  }
+  return out;
+}
+
+/** Single query for homepage — avoids pool exhaustion when connection_limit=1. */
+export const getHomepagePackages = cache(async (): Promise<{
+  group: Package[];
+  premium: Package[];
+}> => {
+  const rows = await prisma.departure.findMany({
+    where: liveWhere({
+      package: { active: true, featured: { in: ["group", "premium"] } },
+    }),
+    include: { package: true },
+    orderBy: { departureDate: "asc" },
+  });
+  const cards = rows.map(mapCard);
+  return {
+    group: onePerPackage(cards.filter((p) => p.featured === "group")),
+    premium: onePerPackage(cards.filter((p) => p.featured === "premium")),
+  };
+});
 
 export async function getGroupPackages(): Promise<Package[]> {
   return queryCards(liveWhere({ package: { active: true, featured: "group" } }));
@@ -131,7 +173,7 @@ export async function filterPackages(filters: PackageFilters): Promise<Package[]
   return queryCards(where);
 }
 
-export async function getPackage(slug: string): Promise<Package | undefined> {
+export const getPackage = cache(async (slug: string): Promise<Package | undefined> => {
   const pkg = await prisma.package.findFirst({
     where: { slug, active: true },
     include: {
@@ -144,7 +186,7 @@ export async function getPackage(slug: string): Promise<Package | undefined> {
   });
   if (!pkg || pkg.departures.length === 0) return undefined;
   return mapCard({ ...pkg.departures[0], package: pkg });
-}
+});
 
 export async function getCities(): Promise<string[]> {
   const rows = await prisma.departure.findMany({

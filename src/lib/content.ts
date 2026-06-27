@@ -1,34 +1,30 @@
-// Static homepage content. These become admin-managed records in a later phase;
-// keeping them here as typed data means the UI is already wired to the shape.
-
 export const highlights = [
-  { title: "Triple Umrah Journey", desc: "Perform Umrah three times during your stay." },
-  { title: "Premium Umrah Kit", desc: "Ihram, bag and essentials ready on arrival." },
-  { title: "Local SIM with Data Pack", desc: "Stay connected across Makkah and Madinah." },
-  { title: "Wheelchair Assistance", desc: "Support for elderly and special-needs pilgrims." },
-  { title: "24/7 On-Ground Support", desc: "Our team is with you at every step." },
-  { title: "Pre-Departure Orientation", desc: "Know the rituals before you travel." },
-  { title: "Haramain Train", desc: "Fast, comfortable travel between the holy cities." },
-  { title: "Umrah Holidays", desc: "Add guided ziyarat and city tours to your trip." },
+  { title: "Triple Umrah Journey", icon: "travel_explore", desc: "Perform Umrah three times during your stay." },
+  { title: "Premium Umrah Kit", icon: "package_2", desc: "Ihram, bag and essentials ready on arrival." },
+  { title: "Local SIM with Data", icon: "sim_card", desc: "Stay connected across Makkah and Madinah." },
+  { title: "Wheelchair Assistance", icon: "accessible", desc: "Support for elderly and special-needs pilgrims." },
+  { title: "24/7 On-Ground", icon: "support_agent", desc: "Our team is with you at every step." },
+  { title: "Pre-Departure Orientation", icon: "assignment_turned_in", desc: "Know the rituals before you travel." },
+  { title: "Haramain Train", icon: "train", desc: "Fast, comfortable travel between the holy cities." },
+  { title: "Umrah Holidays", icon: "celebration", desc: "Add guided ziyarat and city tours to your trip." },
 ];
 
 export const stats = [
-  { value: "1,100+", label: "Pilgrims served" },
-  { value: "29+", label: "Years of combined experience" },
-  { value: "12,500+", label: "Visas processed" },
-  { value: "55+", label: "Partner travel agencies" },
+  { value: "1,100+", label: "Pilgrims Served", variant: "primary" as const },
+  { value: "29+", label: "Years Experience", variant: "light" as const },
+  { value: "12,500+", label: "Visas Processed", variant: "light" as const },
+  { value: "55+", label: "Agencies", variant: "secondary" as const },
 ];
 
 export const trainFeatures = [
-  { title: "Instant e-ticket", desc: "Book and get tickets instantly." },
-  { title: "Secure Payments", desc: "Trusted and secure checkout process." },
-  { title: "24/7 Customer Support", desc: "Always available to assist you." },
+  { title: "Instant e-tickets", icon: "confirmation_number" },
+  { title: "Secure Payments", icon: "payments" },
 ];
 
 export const esimFeatures = [
-  { title: "Global Coverage", desc: "Works worldwide." },
-  { title: "Affordable Plans", desc: "No roaming charges." },
-  { title: "No Physical SIM", desc: "Instant digital activation." },
+  { title: "Global Coverage", desc: "Works worldwide", icon: "public" },
+  { title: "Affordable Plans", desc: "No roaming charges", icon: "savings" },
+  { title: "No Physical SIM", desc: "Instant activation", icon: "cell_tower" },
 ];
 
 export const testimonials = [
@@ -45,7 +41,7 @@ export const testimonials = [
     city: "Karachi",
     rating: 5,
     quote:
-      "The team guided my parents at every step. 24/7 support meant we never felt alone on the journey.",
+      "Transparent pricing and dedicated support made my journey peaceful and focused on ibadah. Truly no hidden charges!",
     video: true,
   },
   {
@@ -81,20 +77,20 @@ export const galleryImages = [
   "/gallery/4.jpg",
   "/gallery/5.jpg",
   "/gallery/6.jpg",
+  "/gallery/7.jpg",
+  "/gallery/8.jpg",
 ];
 
 export const collaborations = [
   "/collaborations/1.jpg",
   "/collaborations/2.jpg",
-  "/collaborations/3.jpg",
-  "/collaborations/4.jpg",
 ];
 
-export const trustBadges = [
-  { title: "Licensed Travel Operator", desc: "Registered Hajj & Umrah service provider." },
-  { title: "Verified Partners", desc: "Working with trusted airlines and hotels." },
-  { title: "Secure Booking", desc: "Transparent pricing with no hidden charges." },
-];
+export const trustBadges = {
+  title: "Recognized and Certified Travel Operator",
+  desc: "Registered Hajj & Umrah service provider with verified airline and hotel partners — transparent pricing with no hidden charges.",
+  certificate: "Licensed Operator — Pakistan",
+};
 
 export const faqs = [
   {
@@ -126,17 +122,27 @@ export const faqs = [
 export const resources = [
   {
     title: "Essential Du'as for Umrah",
-    desc: "Pilgrim of Umrah are honored guests of Allah — keep these du'as close.",
+    desc: "Pilgrims of Umrah are honored guests of Allah. These essential du'as will guide you.",
     href: "/resources/duas",
+    image: "/resources/duas.jpg",
   },
   {
-    title: "Complete Umrah Checklist",
-    desc: "Everything you need to pack and prepare, step by step.",
+    title: "A Complete Umrah Checklist",
+    desc: "Everything you need to pack and prepare — especially if it's your first time.",
     href: "/resources/checklist",
+    image: "/resources/checklist.jpg",
   },
   {
     title: "Al Wrd Pilgrim Support",
     desc: "Organised, smooth and well-guided Umrah from start to finish.",
     href: "/resources",
+    image: "/resources/support.jpg",
   },
+];
+
+export const premiumFeatures = [
+  { label: "5-star Accommodations", icon: "verified" },
+  { label: "Gourmet Dining", icon: "restaurant" },
+  { label: "VIP Private Transfers", icon: "airport_shuttle" },
+  { label: "24/7 Dedicated Guide", icon: "support_agent" },
 ];

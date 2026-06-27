@@ -1,28 +1,29 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Plus_Jakarta_Sans, Libre_Baskerville } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const libreBaskerville = Libre_Baskerville({
+  variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["400", "700"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://alwrdgroup.com"),
   title: {
-    default: "Al Wrd — Trusted Umrah Packages from Pakistan",
+    default: "Al Wrd — Transparent Umrah Booking from Pakistan",
     template: "%s | Al Wrd Hajj & Umrah",
   },
   description:
-    "Book complete Umrah packages from Pakistan with fast visa processing, premium hotels near the Haram, authentic meals and private transport.",
+    "Plan your Umrah with transparent pricing, trusted guidance, and dedicated support — no agents, no hidden charges.",
   keywords: [
     "Umrah packages Pakistan",
     "Umrah booking",
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Al Wrd Hajj & Umrah",
-    title: "Al Wrd — Trusted Umrah Packages from Pakistan",
+    title: "Al Wrd — Transparent Umrah Booking from Pakistan",
     description:
       "Premium Umrah packages from Pakistan. Fast visa, hotels near the Haram, private transport.",
   },
@@ -45,9 +46,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${poppins.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${libreBaskerville.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-surface">{children}</body>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="flex min-h-full flex-col overflow-x-hidden bg-background font-sans text-on-background">
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
 import { PackageCard } from "@/components/package-card";
-import { getGroupPackages, getPremiumPackages } from "@/lib/packages";
+import { MaterialIcon } from "@/components/material-icon";
+import { formatPKR, type Package } from "@/lib/packages";
 import {
   highlights,
   stats,
@@ -11,29 +13,28 @@ import {
   galleryImages,
   collaborations,
   trustBadges,
+  testimonials,
+  premiumFeatures,
 } from "@/lib/content";
-import { TestimonialsCarousel } from "@/components/testimonials-carousel";
-import Link from "next/link";
 
 function Container({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
+    <div className="mx-auto max-w-[1280px] px-6">{children}</div>
   );
 }
 
-export async function GroupPackages() {
-  const packages = await getGroupPackages();
+export function GroupPackages({ packages }: { packages: Package[] }) {
   return (
-    <section className="py-16">
+    <section className="bg-surface-container-lowest py-20">
       <Container>
         <SectionHeading
           title="Group Packages"
-          subtitle="Pre-designed Umrah packages with fixed itineraries — ideal for families, individuals and group travel at optimised pricing."
+          subtitle="Pre-designed itineraries ideal for families and group travel."
           action={{ label: "View All", href: "/packages?type=group" }}
         />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {packages.map((pkg) => (
-            <PackageCard key={pkg.slug} pkg={pkg} />
+            <PackageCard key={pkg.departureId} pkg={pkg} />
           ))}
         </div>
       </Container>
@@ -41,20 +42,141 @@ export async function GroupPackages() {
   );
 }
 
-export async function PremiumPackages() {
-  const packages = await getPremiumPackages();
+export function PremiumPackages({ packages }: { packages: Package[] }) {
+  const featured = packages[0];
+  if (!featured) return null;
+
   return (
-    <section className="bg-surface-tint py-16">
+    <section className="bg-surface py-20">
       <Container>
         <SectionHeading
           title="Premium Packages"
-          subtitle="Personalised Umrah plans tailored to your travel dates, airline choices, hotel preferences and comfort needs."
-          action={{ label: "View All", href: "/packages?tier=premium" }}
+          subtitle="Personalized plans tailored to your airline choices and 5-star comfort."
         />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {packages.map((pkg) => (
-            <PackageCard key={pkg.slug} pkg={pkg} />
-          ))}
+        <div className="flex flex-col items-stretch overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-xl lg:flex-row">
+          <div className="relative min-h-[300px] lg:w-1/2">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url('${featured.image}')` }}
+            />
+          </div>
+          <div className="space-y-6 p-8 lg:w-1/2 lg:p-12">
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                  Top Choice
+                </span>
+                <h3 className="mt-2 text-[32px] font-bold text-primary">
+                  {featured.title}
+                </h3>
+              </div>
+              <div className="rounded-full bg-primary/10 px-4 py-1 text-xs font-bold text-primary">
+                {featured.durationDays}D / {featured.durationNights}N
+              </div>
+            </div>
+            <p className="text-lg leading-relaxed text-on-surface-variant">
+              {featured.description ?? featured.tagline}
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              {premiumFeatures.map((f) => (
+                <div key={f.label} className="flex items-center gap-3">
+                  <MaterialIcon name={f.icon} className="text-primary" />
+                  <span className="text-base text-on-surface">{f.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-col items-center justify-between gap-6 border-t border-outline-variant pt-6 md:flex-row">
+              <div>
+                <p className="text-xs text-on-surface-variant">Starting from</p>
+                <p className="text-[32px] font-bold text-primary">
+                  {formatPKR(featured.price)}{" "}
+                  <span className="text-xs font-normal text-on-surface-variant">
+                    / person
+                  </span>
+                </p>
+              </div>
+              <Link
+                href={`/packages/${featured.slug}`}
+                className="w-full rounded-lg bg-primary px-8 py-4 text-center text-sm font-semibold text-on-primary shadow-lg shadow-primary/20 transition-transform hover:scale-105 hover:bg-primary-dark md:w-auto"
+              >
+                Explore {featured.title}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+export function GalleryCollaborations() {
+  const featured = testimonials[1];
+  const masonryCols = [
+    [galleryImages[0], galleryImages[1]],
+    [galleryImages[2], galleryImages[3]],
+    [galleryImages[4], galleryImages[5]],
+    [galleryImages[6], galleryImages[7] ?? galleryImages[0]],
+  ];
+
+  return (
+    <section className="bg-surface-container-low py-20">
+      <Container>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          <div className="space-y-6 lg:col-span-4">
+            <h2 className="text-2xl font-semibold text-on-background md:text-[32px]">
+              Collaborations
+            </h2>
+            <p className="text-base text-on-surface-variant">
+              Relive the moments of faith and companionship shared by our
+              pilgrims.
+            </p>
+            <div className="grid grid-cols-2 gap-4 pt-4">
+              {collaborations.map((src, i) => (
+                <div
+                  key={i}
+                  className="h-40 rounded-xl border border-outline-variant bg-cover bg-center shadow-sm"
+                  style={{ backgroundImage: `url('${src}')` }}
+                />
+              ))}
+            </div>
+            <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-6">
+              <div className="mb-4 flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary/20 bg-primary/10 font-bold text-primary">
+                  {featured.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="font-bold text-on-surface">{featured.name}</p>
+                  <p className="text-xs text-on-surface-variant">
+                    {featured.city}
+                  </p>
+                </div>
+              </div>
+              <p className="text-base italic text-on-surface-variant">
+                &ldquo;{featured.quote}&rdquo;
+              </p>
+            </div>
+          </div>
+
+          <div className="lg:col-span-8">
+            <div className="grid h-full grid-cols-2 gap-4 md:grid-cols-4">
+              {masonryCols.map((col, ci) => (
+                <div
+                  key={ci}
+                  className={`space-y-4 ${ci % 2 === 1 ? "pt-8" : ci === 3 ? "pt-12" : ""}`}
+                >
+                  {col.map((src, i) => (
+                    <div
+                      key={`${ci}-${i}`}
+                      className={`w-full rounded-2xl border border-outline-variant bg-cover bg-center shadow-sm ${
+                        i === 0 ? "h-48 md:h-64" : "h-40 md:h-48"
+                      }`}
+                      style={{ backgroundImage: `url('${src}')` }}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </Container>
     </section>
@@ -63,27 +185,23 @@ export async function PremiumPackages() {
 
 export function UniqueHighlights() {
   return (
-    <section className="py-16">
+    <section className="bg-surface-container-lowest py-20">
       <Container>
         <SectionHeading
           title="Our Unique Highlights"
-          subtitle="Unique offerings to make your Umrah more meaningful and comfortable."
+          subtitle="Special offerings to make your Umrah more meaningful, comfortable, and technically seamless."
+          centered
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
           {highlights.map((h) => (
             <div
               key={h.title}
-              className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm transition-shadow hover:shadow-card"
+              className="group rounded-xl border border-outline-variant p-6 text-center transition-all hover:border-primary/40 hover:bg-surface-container-low"
             >
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-pill">
-                <svg viewBox="0 0 24 24" className="h-5 w-5 fill-brand">
-                  <path d="M12 2l2.9 6 6.6.6-5 4.4 1.5 6.5L12 16.9 5.9 19.5 7.4 13l-5-4.4 6.6-.6L12 2z" />
-                </svg>
-              </span>
-              <h3 className="mt-3 font-display text-base font-semibold text-ink">
-                {h.title}
-              </h3>
-              <p className="mt-1 text-sm text-slate-muted">{h.desc}</p>
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-transform group-hover:scale-110">
+                <MaterialIcon name={h.icon} className="text-primary" />
+              </div>
+              <h3 className="text-base font-bold text-on-surface">{h.title}</h3>
             </div>
           ))}
         </div>
@@ -94,27 +212,70 @@ export function UniqueHighlights() {
 
 export function HaramainTrain() {
   return (
-    <section className="py-16">
+    <section className="bg-surface py-20">
       <Container>
-        <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-deep to-brand p-8 text-white sm:p-12">
-          <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
-            Coming Soon
-          </span>
-          <h2 className="mt-4 font-display text-2xl font-bold sm:text-3xl">
-            Haramain High-Speed Train — Fast, Safe & Spiritual
-          </h2>
-          <p className="mt-2 max-w-2xl text-sm text-white/80">
-            Travel effortlessly between the holy cities of Makkah and Madinah
-            with the fastest and most comfortable rail experience in Saudi
-            Arabia.
-          </p>
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            {trainFeatures.map((f) => (
-              <div key={f.title}>
-                <h3 className="font-display text-base font-semibold">
-                  {f.title}
-                </h3>
-                <p className="mt-1 text-sm text-white/70">{f.desc}</p>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
+          <div className="flex flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-sm md:col-span-7 md:flex-row">
+            <div className="flex flex-col justify-center space-y-4 p-8 md:w-1/2">
+              <h3 className="text-xl font-semibold text-primary">
+                Haramain High-Speed Train
+              </h3>
+              <p className="text-base text-on-surface-variant">
+                Travel effortlessly between the holy cities with the fastest
+                rail experience in Saudi Arabia.
+              </p>
+              <ul className="space-y-2">
+                {trainFeatures.map((f) => (
+                  <li
+                    key={f.title}
+                    className="flex items-center gap-2 text-sm text-on-surface"
+                  >
+                    <MaterialIcon name={f.icon} className="text-sm text-primary" />
+                    {f.title}
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                className="w-fit rounded-lg border border-outline-variant bg-surface-container-low px-4 py-2 text-sm font-semibold text-on-surface-variant"
+              >
+                Coming Soon
+              </button>
+            </div>
+            <div
+              className="relative h-48 bg-cover bg-center md:h-auto md:w-1/2"
+              style={{ backgroundImage: "url('/gallery/3.jpg')" }}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 md:col-span-5">
+            {stats.map((s) => (
+              <div
+                key={s.label}
+                className={`flex flex-col items-center justify-center rounded-2xl p-6 text-center shadow-sm ${
+                  s.variant === "primary"
+                    ? "bg-primary text-on-primary shadow-md"
+                    : s.variant === "secondary"
+                      ? "bg-tertiary text-on-tertiary shadow-md"
+                      : "border border-outline-variant bg-surface-container-lowest"
+                }`}
+              >
+                <p
+                  className={`text-2xl font-bold md:text-[32px] ${
+                    s.variant === "light" ? "text-primary" : ""
+                  }`}
+                >
+                  {s.value}
+                </p>
+                <p
+                  className={`text-xs ${
+                    s.variant === "light"
+                      ? "text-on-surface-variant"
+                      : "opacity-90"
+                  }`}
+                >
+                  {s.label}
+                </p>
               </div>
             ))}
           </div>
@@ -124,85 +285,15 @@ export function HaramainTrain() {
   );
 }
 
-export function Testimonials() {
+export function PartnerStrip() {
   return (
-    <section className="bg-surface-tint py-16">
+    <section className="overflow-hidden border-y border-outline-variant bg-surface-container-lowest py-12">
       <Container>
-        <SectionHeading
-          title="What Pilgrims Are Saying"
-          subtitle="Real experiences from those who have planned and performed Umrah with us."
-        />
-        <TestimonialsCarousel />
-      </Container>
-    </section>
-  );
-}
-
-export function Collaborations() {
-  return (
-    <section className="py-16">
-      <Container>
-        <SectionHeading
-          title="Collaborations"
-          subtitle="Trusted by leading travel, hotel and airline partners across the region."
-        />
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {collaborations.map((src, i) => (
-            <div
-              key={i}
-              className="aspect-[4/3] rounded-2xl bg-surface-tint bg-cover bg-center"
-              style={{ backgroundImage: `url('${src}')` }}
-            />
-          ))}
-        </div>
-      </Container>
-    </section>
-  );
-}
-
-export function Gallery() {
-  return (
-    <section className="py-16">
-      <Container>
-        <SectionHeading
-          title="Gallery"
-          subtitle="Moments from the journeys of pilgrims we have proudly served."
-          action={{ label: "View Gallery", href: "/gallery" }}
-        />
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {galleryImages.map((src, i) => (
-            <div
-              key={i}
-              className="aspect-square rounded-xl bg-surface-tint bg-cover bg-center"
-              style={{ backgroundImage: `url('${src}')` }}
-            />
-          ))}
-        </div>
-      </Container>
-    </section>
-  );
-}
-
-export function TrustStats() {
-  return (
-    <section className="border-y border-black/5 bg-white py-12">
-      <Container>
-        <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
-          {stats.map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="font-display text-3xl font-extrabold text-brand-heading sm:text-4xl">
-                {s.value}
-              </div>
-              <div className="mt-1 text-sm text-slate-muted">{s.label}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 border-t border-black/5 pt-8">
+        <div className="flex flex-wrap items-center justify-center gap-12 opacity-60 grayscale transition-all hover:grayscale-0">
           {partnerLogos.map((name) => (
             <span
               key={name}
-              className="font-display text-lg font-bold text-slate-muted/70"
+              className="text-xl font-bold text-on-surface-variant"
             >
               {name}
             </span>
@@ -213,58 +304,48 @@ export function TrustStats() {
   );
 }
 
-export function TrustBadges() {
-  return (
-    <section className="py-16">
-      <Container>
-        <div className="rounded-3xl border border-black/5 bg-white p-8 shadow-sm sm:p-12">
-          <div className="grid gap-8 sm:grid-cols-3">
-            {trustBadges.map((b) => (
-              <div key={b.title} className="flex items-start gap-3">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-pill">
-                  <svg viewBox="0 0 24 24" className="h-5 w-5 fill-brand">
-                    <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" />
-                  </svg>
-                </span>
-                <div>
-                  <h3 className="font-display text-base font-semibold text-ink">
-                    {b.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-muted">{b.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Container>
-    </section>
-  );
-}
-
 export function EsimPromo() {
   return (
-    <section className="py-16">
+    <section className="bg-surface-container-high/20 py-20">
       <Container>
-        <div className="rounded-3xl bg-surface-tint p-8 sm:p-12">
-          <span className="inline-block rounded-full bg-gold/20 px-3 py-1 text-xs font-semibold text-ink">
-            Coming Soon
-          </span>
-          <h2 className="mt-4 font-display text-2xl font-bold text-ink sm:text-3xl">
-            Stay Connected With eSIM During Your Journey
-          </h2>
-          <p className="mt-2 max-w-2xl text-sm text-slate-muted">
-            Instant activation, no roaming charges — keep in touch with family
-            and access essential services throughout your journey.
-          </p>
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            {esimFeatures.map((f) => (
-              <div key={f.title} className="rounded-2xl bg-white p-5 shadow-sm">
-                <h3 className="font-display text-base font-semibold text-ink">
-                  {f.title}
-                </h3>
-                <p className="mt-1 text-sm text-slate-muted">{f.desc}</p>
+        <div className="flex flex-col items-center gap-12 rounded-3xl border border-outline-variant bg-surface-container-lowest p-8 shadow-md lg:flex-row lg:p-12">
+          <div className="space-y-6 lg:w-2/3">
+            <h2 className="text-2xl font-semibold text-on-background md:text-[32px]">
+              Stay Connected With eSIM During Your Journey
+            </h2>
+            <p className="text-lg text-on-surface-variant">
+              Instant activation, no roaming charges, works seamlessly in Saudi
+              Arabia. Access essential services throughout your journey without
+              searching for physical SIM shops.
+            </p>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {esimFeatures.map((f) => (
+                <div
+                  key={f.title}
+                  className="rounded-xl border border-primary/10 bg-surface p-4"
+                >
+                  <MaterialIcon name={f.icon} className="mb-2 text-primary" />
+                  <h4 className="font-bold text-on-surface">{f.title}</h4>
+                  <p className="text-xs text-on-surface-variant">{f.desc}</p>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="rounded-lg border border-primary/20 bg-primary/10 px-8 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/20"
+            >
+              Coming Soon
+            </button>
+          </div>
+          <div className="flex justify-center lg:w-1/3">
+            <div className="relative rounded-3xl border-4 border-primary/10 bg-surface-container-lowest p-8 shadow-xl">
+              <div className="flex h-48 w-48 items-center justify-center rounded-2xl bg-surface-container-low">
+                <MaterialIcon name="qr_code_2" className="text-6xl text-primary/30" />
               </div>
-            ))}
+              <div className="absolute -right-4 -top-4 rounded-lg bg-primary p-2 text-on-primary shadow-lg">
+                <MaterialIcon name="qr_code_scanner" />
+              </div>
+            </div>
           </div>
         </div>
       </Container>
@@ -274,29 +355,38 @@ export function EsimPromo() {
 
 export function ResourcesSection() {
   return (
-    <section className="bg-surface-tint py-16">
+    <section className="bg-background py-20">
       <Container>
         <SectionHeading
           title="Your Journey, Fully Supported"
           subtitle="Helpful resources and services to guide you before and during your Umrah."
+          centered
         />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {resources.map((r) => (
             <Link
               key={r.title}
               href={r.href}
-              className="group rounded-2xl border border-black/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-card"
+              className="group overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest transition-all hover:shadow-xl"
             >
-              <h3 className="font-display text-lg font-semibold text-ink">
-                {r.title}
-              </h3>
-              <p className="mt-2 text-sm text-slate-muted">{r.desc}</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand">
-                Check it out
-                <span className="transition-transform group-hover:translate-x-1">
-                  →
+              <div className="h-48 overflow-hidden bg-surface-container-low">
+                <div
+                  className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                  style={{
+                    backgroundImage: `url('${r.image}'), linear-gradient(135deg, #f0f5e9, #ebf0e3)`,
+                  }}
+                />
+              </div>
+              <div className="space-y-3 p-6">
+                <h3 className="text-xl font-semibold text-on-surface">
+                  {r.title}
+                </h3>
+                <p className="text-sm text-on-surface-variant">{r.desc}</p>
+                <span className="inline-flex items-center text-sm font-semibold text-primary group-hover:underline">
+                  Check it out
+                  <MaterialIcon name="arrow_forward" className="ml-1 text-sm" />
                 </span>
-              </span>
+              </div>
             </Link>
           ))}
         </div>
@@ -304,3 +394,42 @@ export function ResourcesSection() {
     </section>
   );
 }
+
+export function TrustBadges() {
+  return (
+    <section className="bg-surface py-20">
+      <Container>
+        <div className="flex flex-col items-center gap-12 rounded-3xl border border-outline-variant bg-surface-container-lowest p-8 shadow-sm md:flex-row">
+          <div className="md:w-1/2">
+            <div className="rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low p-4">
+              <div className="flex aspect-[4/3] items-center justify-center rounded bg-surface-container">
+                <MaterialIcon
+                  name="verified"
+                  className="text-6xl text-primary/30"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="space-y-4 md:w-1/2">
+            <div className="flex items-center gap-2 text-primary">
+              <MaterialIcon name="verified" />
+              <span className="text-sm font-semibold">Government Verified</span>
+            </div>
+            <h2 className="text-2xl font-semibold text-on-background md:text-[32px]">
+              {trustBadges.title}
+            </h2>
+            <p className="text-lg text-on-surface-variant">{trustBadges.desc}</p>
+            <p className="text-base font-bold text-primary">
+              ({trustBadges.certificate})
+            </p>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+// Keep exports used elsewhere
+export { GalleryCollaborations as Gallery };
+export { GalleryCollaborations as Collaborations };
+export { PartnerStrip as TrustStats };

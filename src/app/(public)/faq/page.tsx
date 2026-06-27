@@ -19,9 +19,9 @@ export default function FaqPage() {
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <FaqAccordion />
 
-        <div className="mt-10 rounded-2xl bg-brand-deep p-8 text-center text-white">
+        <div className="mt-10 rounded-2xl bg-tertiary p-8 text-center text-on-tertiary">
           <h2 className="font-display text-xl font-bold">Still have questions?</h2>
-          <p className="mt-2 text-sm text-white/80">
+          <p className="mt-2 text-sm text-neutral-40">
             Our team is here to help you plan your journey.
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
@@ -29,13 +29,13 @@ export default function FaqPage() {
               href={whatsappLink("Assalamu alaikum, I have a question about Umrah.")}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-brand-deep"
+              className="rounded-xl bg-secondary px-5 py-3 text-sm font-semibold text-on-secondary hover:bg-neutral-20"
             >
               Chat on WhatsApp
             </a>
             <a
               href={`tel:${site.phone.replace(/\s/g, "")}`}
-              className="rounded-xl border border-white/30 px-5 py-3 text-sm font-semibold text-white"
+              className="rounded-xl border border-neutral-40 px-5 py-3 text-sm font-semibold text-on-tertiary"
             >
               Call {site.phone}
             </a>

@@ -3,21 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
+import { MaterialIcon } from "@/components/material-icon";
 import { formatDate } from "@/lib/dates";
 
-const PERSON_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8];
+const CITIES = ["Lahore", "Karachi", "Islamabad", "Faisalabad", "Multan"];
 const PACKAGE_TYPES = [
   { value: "economy", label: "Economy (3-Star)" },
   { value: "standard", label: "Standard (4-Star)" },
   { value: "premium", label: "Premium (5-Star)" },
 ];
-const DURATIONS = [7, 10, 14, 21];
 
 export function SearchWidget() {
   const router = useRouter();
-  const [persons, setPersons] = useState(1);
+  const [city, setCity] = useState("Lahore");
   const [type, setType] = useState("standard");
-  const [duration, setDuration] = useState(14);
   const [date, setDate] = useState<Date | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const dateRef = useRef<HTMLDivElement>(null);
@@ -34,11 +33,7 @@ export function SearchWidget() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const params = new URLSearchParams({
-      persons: String(persons),
-      tier: type,
-      duration: String(duration),
-    });
+    const params = new URLSearchParams({ tier: type, city });
     if (date) params.set("date", date.toISOString().slice(0, 10));
     router.push(`/packages?${params.toString()}`);
   }
@@ -46,62 +41,34 @@ export function SearchWidget() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-3xl bg-white p-5 shadow-card sm:p-6"
+      className="mt-8 space-y-4 rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-md"
     >
-      <div className="grid gap-4 md:grid-cols-4">
-        <Field label="No. of Persons" icon={<PersonIcon />}>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Field label="Departure City" icon="location_on">
           <select
-            value={persons}
-            onChange={(e) => setPersons(Number(e.target.value))}
-            className="w-full bg-transparent text-sm font-medium text-ink outline-none"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className="w-full rounded-lg border border-outline-variant bg-surface py-3 pl-10 pr-4 text-sm text-on-surface outline-none focus:border-primary focus:ring-primary"
           >
-            {PERSON_OPTIONS.map((n) => (
-              <option key={n} value={n}>
-                {n} {n === 1 ? "Person" : "Persons"}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field label="Package Type" icon={<StarIcon />}>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="w-full bg-transparent text-sm font-medium text-ink outline-none"
-          >
-            {PACKAGE_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field label="Duration" icon={<ClockIcon />}>
-          <select
-            value={duration}
-            onChange={(e) => setDuration(Number(e.target.value))}
-            className="w-full bg-transparent text-sm font-medium text-ink outline-none"
-          >
-            {DURATIONS.map((d) => (
-              <option key={d} value={d}>
-                {d} Days
+            {CITIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
               </option>
             ))}
           </select>
         </Field>
 
         <div ref={dateRef} className="relative">
-          <Field label="Start Date" icon={<CalendarIcon />}>
+          <Field label="Travel Month" icon="calendar_month">
             <button
               type="button"
               onClick={() => setCalendarOpen((v) => !v)}
-              className="w-full text-left text-sm font-medium text-ink"
+              className="w-full rounded-lg border border-outline-variant bg-surface py-3 pl-10 pr-4 text-left text-sm text-on-surface outline-none focus:border-primary"
             >
               {date ? (
                 formatDate(date)
               ) : (
-                <span className="text-slate-muted">dd/mm/yyyy</span>
+                <span className="text-on-surface-variant">Select date</span>
               )}
             </button>
           </Field>
@@ -119,12 +86,27 @@ export function SearchWidget() {
         </div>
       </div>
 
+      <label className="sr-only" htmlFor="package-type">
+        Package type
+      </label>
+      <select
+        id="package-type"
+        value={type}
+        onChange={(e) => setType(e.target.value)}
+        className="w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 text-sm text-on-surface outline-none focus:border-primary"
+      >
+        {PACKAGE_TYPES.map((t) => (
+          <option key={t.value} value={t.value}>
+            {t.label}
+          </option>
+        ))}
+      </select>
+
       <button
         type="submit"
-        className="mx-auto mt-5 flex items-center justify-center gap-2 rounded-xl bg-brand px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep"
+        className="w-full rounded-lg bg-primary py-4 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark"
       >
-        Show My Packages
-        <span aria-hidden>→</span>
+        Get Packages
       </button>
     </form>
   );
@@ -136,45 +118,21 @@ function Field({
   children,
 }: {
   label: string;
-  icon: React.ReactNode;
+  icon: string;
   children: React.ReactNode;
 }) {
   return (
-    <label className="block rounded-2xl border border-black/8 bg-surface-tint px-4 py-3">
-      <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-muted">
-        <span className="text-brand">{icon}</span>
+    <div className="relative space-y-1">
+      <label className="text-sm font-semibold text-on-surface-variant">
         {label}
-      </span>
-      {children}
-    </label>
-  );
-}
-
-function PersonIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
-      <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.4 0-8 2.7-8 6v2h16v-2c0-3.3-3.6-6-8-6z" />
-    </svg>
-  );
-}
-function StarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
-      <path d="M12 2l2.9 6 6.6.6-5 4.4 1.5 6.5L12 16.9 5.9 19.5 7.4 13l-5-4.4 6.6-.6L12 2z" />
-    </svg>
-  );
-}
-function ClockIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
-      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.6 4 2.3-1 1.7-5-2.9V6h2v6.6z" />
-    </svg>
-  );
-}
-function CalendarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
-      <path d="M7 2v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zM5 9h14v10H5V9z" />
-    </svg>
+      </label>
+      <div className="relative">
+        <MaterialIcon
+          name={icon}
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-primary"
+        />
+        {children}
+      </div>
+    </div>
   );
 }

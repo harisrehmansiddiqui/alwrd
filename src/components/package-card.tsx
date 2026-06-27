@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { AmenityMarquee } from "@/components/amenity-marquee";
 import {
   type Package,
-  TIERS,
   discountPercent,
   formatPKR,
 } from "@/lib/packages";
@@ -19,75 +19,111 @@ function shortDate(iso: string): string {
   }`;
 }
 
+function HexIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5 shrink-0 fill-sky-500"
+      aria-hidden
+    >
+      <path d="M12 2l8 4.5v11L12 22l-8-4.5v-11L12 2zm0 2.2L6 7.4v9.2l6 3.4 6-3.4V7.4l-6-3.2z" />
+    </svg>
+  );
+}
+
+function galleryThumbs(pkg: Package): string[] {
+  const fromGallery = pkg.gallery.filter(Boolean).slice(0, 3);
+  if (fromGallery.length >= 3) return fromGallery;
+  return [
+    ...fromGallery,
+    ...Array.from({ length: 3 - fromGallery.length }, () => pkg.image),
+  ];
+}
+
 export function PackageCard({ pkg }: { pkg: Package }) {
-  const tier = TIERS[pkg.tier];
   const discount = discountPercent(pkg);
+  const thumbs = galleryThumbs(pkg);
 
   return (
-    <Link
-      href={`/packages/${pkg.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-card"
-    >
-      <div className="relative aspect-[16/10] overflow-hidden bg-surface-tint">
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-          style={{ backgroundImage: `url('${pkg.image}')` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-deep/30 to-transparent" />
-        {discount && (
-          <span className="absolute right-3 top-3 rounded-full bg-gold px-2.5 py-1 text-xs font-bold text-ink">
-            {discount}% off
-          </span>
-        )}
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)]">
+      <div className="relative">
+        <div className="aspect-[16/10] overflow-hidden">
+          <div
+            className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+            style={{ backgroundImage: `url('${pkg.image}')` }}
+          />
+        </div>
+
+        <div className="absolute bottom-0 left-1/2 flex -translate-x-1/2 translate-y-1/2 gap-2">
+          {thumbs.map((src, i) => (
+            <div
+              key={`${src}-${i}`}
+              className="h-11 w-11 overflow-hidden rounded-full border-2 border-white bg-surface-container-low shadow-md sm:h-12 sm:w-12"
+            >
+              <div
+                className="h-full w-full bg-cover bg-center"
+                style={{ backgroundImage: `url('${src}')` }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        <div className="flex items-center justify-between text-xs font-medium text-slate-muted">
-          <span>
-            {pkg.durationDays}D / {pkg.durationNights}N ·{" "}
-            {shortDate(pkg.departureDate)}
-          </span>
-          <span className="rounded-full bg-surface-tint px-2 py-0.5">
+      <div className="flex flex-1 flex-col px-5 pb-5 pt-9">
+        <div className="mb-3 flex items-center justify-between gap-2 text-xs font-medium text-on-surface-variant">
+          <div className="flex flex-wrap gap-1.5">
+            <span className="rounded-full bg-soft-smoke px-2.5 py-1">
+              {pkg.durationDays}D / {pkg.durationNights}N
+            </span>
+            <span className="rounded-full bg-soft-smoke px-2.5 py-1">
+              {shortDate(pkg.departureDate)}
+            </span>
+          </div>
+          <span className="shrink-0 rounded-full bg-soft-smoke px-2.5 py-1">
             {pkg.city}
           </span>
         </div>
 
-        <h3 className="mt-2 flex items-center gap-1.5 font-display text-lg font-semibold text-ink">
-          <svg viewBox="0 0 24 24" className="h-4 w-4 fill-gold">
-            <path d="M12 2l2.9 6 6.6.6-5 4.4 1.5 6.5L12 16.9 5.9 19.5 7.4 13l-5-4.4 6.6-.6L12 2z" />
-          </svg>
-          {pkg.title}
-        </h3>
-        <p className="mt-1 text-sm text-slate-muted">{pkg.tagline}</p>
+        <div className="flex items-center gap-2">
+          <HexIcon />
+          <h3 className="text-lg font-bold text-on-surface">{pkg.title}</h3>
+        </div>
+        <p className="mt-1 text-sm text-on-surface-variant">{pkg.tagline}</p>
 
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {pkg.amenities.map((a) => (
-            <span
-              key={a}
-              className="rounded-md bg-brand-pill px-2 py-0.5 text-[11px] font-medium text-brand-heading"
-            >
-              {a}
-            </span>
-          ))}
+        <div className="mt-4">
+          <AmenityMarquee items={pkg.amenities} />
         </div>
 
-        <div className="mt-auto flex items-end justify-between pt-4">
+        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
           <div>
             {pkg.oldPrice && (
-              <span className="block text-xs text-slate-muted line-through">
-                {formatPKR(pkg.oldPrice)}
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-on-surface-variant line-through">
+                  {formatPKR(pkg.oldPrice)}
+                </span>
+                {discount && (
+                  <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-xs font-bold text-emerald-600">
+                    {discount}% off
+                  </span>
+                )}
+              </div>
             )}
-            <span className="font-display text-lg font-bold text-brand-heading">
+            <p className="mt-0.5 text-xl font-bold text-on-surface sm:text-2xl">
               {formatPKR(pkg.price)}
-            </span>
-            <span className="ml-1 text-xs text-slate-muted">per person</span>
+              <span className="ml-1 text-xs font-normal text-on-surface-variant">
+                per person
+              </span>
+            </p>
           </div>
-          <span className="rounded-lg bg-brand px-3.5 py-2 text-xs font-semibold text-white transition-colors group-hover:bg-brand-deep">
+
+          <Link
+            href={`/packages/${pkg.slug}`}
+            className="shrink-0 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-dark"
+          >
             View Details
-          </span>
+          </Link>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

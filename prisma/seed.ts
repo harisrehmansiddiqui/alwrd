@@ -92,18 +92,30 @@ async function main() {
         featured: p.featured,
       },
     });
-    await prisma.departure.create({
-      data: {
-        packageId: pkg.id,
-        city: p.departure.city,
-        departureDate: new Date(p.departure.date),
-        durationDays: p.departure.days,
-        durationNights: p.departure.nights,
-        price: p.departure.price,
-        oldPrice: p.departure.old,
-        seats: 30,
-      },
+    const departureDate = new Date(p.departure.date);
+    const existing = await prisma.departure.findFirst({
+      where: { packageId: pkg.id, city: p.departure.city, departureDate },
     });
+    const departureData = {
+      city: p.departure.city,
+      departureDate,
+      durationDays: p.departure.days,
+      durationNights: p.departure.nights,
+      price: p.departure.price,
+      oldPrice: p.departure.old,
+      seats: 30,
+      active: true,
+    };
+    if (existing) {
+      await prisma.departure.update({
+        where: { id: existing.id },
+        data: departureData,
+      });
+    } else {
+      await prisma.departure.create({
+        data: { ...departureData, packageId: pkg.id },
+      });
+    }
   }
 
   console.log("Seed complete.");
