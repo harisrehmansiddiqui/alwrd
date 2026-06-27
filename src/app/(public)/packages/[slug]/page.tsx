@@ -51,7 +51,7 @@ export default async function PackageDetailPage({
   return (
     <>
       <div className="border-b border-secondary bg-white">
-        <div className="mx-auto max-w-[1200px] px-5 py-4 lg:px-8">
+        <div className="mx-auto max-w-[1200px] min-w-0 px-4 py-4 lg:px-8">
           <nav className="text-xs text-neutral">
             <span>Home</span>
             <span className="mx-2">›</span>

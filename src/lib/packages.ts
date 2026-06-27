@@ -36,6 +36,7 @@ export type Package = {
   price: number;
   oldPrice?: number;
   image: string;
+  videoUrl?: string;
   gallery: string[];
   amenities: string[];
   makkahHotel?: string;
@@ -62,6 +63,7 @@ function mapCard(dep: DepartureWithPackage): Package {
     price: dep.price,
     oldPrice: dep.oldPrice ?? undefined,
     image: p.image,
+    videoUrl: p.videoUrl ?? undefined,
     gallery: (p.gallery as string[]) ?? [],
     amenities: (p.amenities as string[]) ?? [],
     makkahHotel: p.makkahHotel ?? undefined,

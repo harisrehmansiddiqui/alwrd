@@ -7,6 +7,7 @@ import {
   FullItineraryTimeline,
   BlockRenderer,
 } from "@/components/package/itinerary-blocks";
+import { PackageGallery } from "@/components/package/package-gallery";
 import type {
   ItineraryDay,
   ItineraryBlock,
@@ -86,12 +87,16 @@ export function PackageDetailView({
     return () => observer.disconnect();
   }, [tab, days]);
 
-  const gallery =
+  const galleryImages =
     pkg.gallery.length >= 5
       ? pkg.gallery.slice(0, 5)
-      : [pkg.image, "/gallery/1.jpg", "/gallery/2.jpg", "/gallery/3.jpg", "/gallery/4.jpg"];
-
-  const galleryLabels = ["", "Makkah", "Madinah", "Makkah", "Madinah"];
+      : [
+          pkg.image,
+          "/gallery/1.jpg",
+          "/gallery/2.jpg",
+          "/gallery/3.jpg",
+          "/gallery/4.jpg",
+        ];
 
   function blocksForTab(): ItineraryBlock[] {
     switch (tab) {
@@ -112,33 +117,11 @@ export function PackageDetailView({
     <div className="package-detail min-w-0 overflow-x-hidden bg-white pb-28 lg:pb-10">
       {/* Full-width gallery */}
       <div className="mx-auto max-w-[1200px] min-w-0 px-4 pt-6 sm:px-5 lg:px-8">
-        <div className="grid gap-1.5 sm:grid-cols-[1.2fr_1fr_1fr] sm:grid-rows-2">
-          <div
-            className="relative min-h-[280px] rounded-xl bg-cover bg-center sm:row-span-2 sm:min-h-[400px]"
-            style={{ backgroundImage: `url('${gallery[0]}')` }}
-          >
-            <Link
-              href="/gallery"
-              className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-tertiary shadow-sm"
-            >
-              View Gallery
-              <MaterialIcon name="north_east" className="text-sm" />
-            </Link>
-          </div>
-          {gallery.slice(1, 5).map((src, i) => (
-            <div
-              key={i}
-              className="relative min-h-[140px] rounded-xl bg-cover bg-center sm:min-h-[196px]"
-              style={{ backgroundImage: `url('${src}')` }}
-            >
-              {galleryLabels[i + 1] && (
-                <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 text-[10px] font-bold uppercase text-tertiary">
-                  {galleryLabels[i + 1]}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
+        <PackageGallery
+          videoUrl={pkg.videoUrl}
+          posterUrl={pkg.image}
+          images={galleryImages}
+        />
       </div>
 
       {/* Two-column: overview + booking */}
@@ -167,8 +150,8 @@ export function PackageDetailView({
 
           {/* Day pills — itinerary only */}
           {tab === "itinerary" && (
-            <div className="sticky top-[68px] z-10 -mx-4 bg-white px-4 py-3 sm:-mx-0 sm:px-0">
-              <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="sticky top-[68px] z-10 bg-white py-3">
+              <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {days.map((day) => (
                   <button
                     key={day.id}
@@ -267,8 +250,8 @@ export function PackageDetailView({
 
       {/* Mobile bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 bg-white p-4 shadow-[0_-2px_20px_rgba(0,0,0,0.06)] lg:hidden">
-        <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-4">
-          <div>
+        <div className="mx-auto flex max-w-[1200px] min-w-0 items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
             {pkg.oldPrice && (
               <span className="text-xs text-neutral line-through">
                 {formatPKR(pkg.oldPrice)}
@@ -277,7 +260,7 @@ export function PackageDetailView({
             {discount && (
               <span className="ml-1 text-xs font-bold text-primary">{discount}% off</span>
             )}
-            <p className="text-xl font-bold text-tertiary">
+            <p className="truncate text-lg font-bold text-tertiary sm:text-xl">
               {formatPKR(pkg.price)}
               <span className="text-xs font-normal text-neutral"> — per person</span>
             </p>

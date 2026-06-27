@@ -60,9 +60,9 @@ export function DayTimeline({ day }: { day: ItineraryDay }) {
 
 export function FullItineraryTimeline({ days }: { days: ItineraryDay[] }) {
   return (
-    <div className="relative space-y-12">
+    <div className="relative space-y-10 sm:space-y-12">
       <div
-        className="absolute bottom-0 left-[84px] top-0 w-px bg-neutral-20 sm:left-[104px]"
+        className="absolute bottom-0 left-[84px] top-0 hidden w-px bg-neutral-20 sm:block sm:left-[104px]"
         aria-hidden
       />
       {days.map((day) => (
@@ -75,16 +75,34 @@ export function FullItineraryTimeline({ days }: { days: ItineraryDay[] }) {
 function DaySection({ day }: { day: ItineraryDay }) {
   return (
     <section id={`day-${day.id}`} className="relative scroll-mt-28">
-      <div className="grid grid-cols-[72px_minmax(0,1fr)] gap-x-3 sm:grid-cols-[84px_minmax(0,1fr)] sm:gap-x-5">
+      {/* Mobile: label above content */}
+      <div className="sm:hidden">
+        <div className="mb-4">
+          <span className="inline-block rounded-lg bg-primary-10 px-2.5 py-1 text-xs font-bold text-primary">
+            {day.label}
+          </span>
+          {day.date && (
+            <p className="mt-1 text-[11px] text-neutral">{day.date}</p>
+          )}
+        </div>
+        <div className="min-w-0 space-y-8 border-l-2 border-primary-20 pl-4">
+          {day.blocks.map((block, i) => (
+            <BlockRenderer key={i} block={block} />
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: side rail */}
+      <div className="hidden min-w-0 sm:grid sm:grid-cols-[84px_minmax(0,1fr)] sm:gap-x-5 lg:grid-cols-[96px_minmax(0,1fr)]">
         <div className="flex flex-col items-end pt-1 text-right">
-          <span className="rounded-lg bg-primary-10 px-2 py-1 text-[11px] font-bold leading-tight text-primary sm:text-xs">
+          <span className="rounded-lg bg-primary-10 px-2 py-1 text-xs font-bold leading-tight text-primary">
             {day.label}
           </span>
           {day.date && (
             <span className="mt-1 text-[10px] text-neutral">{day.date}</span>
           )}
         </div>
-        <div className="min-w-0 space-y-8 border-l border-neutral-20 pl-4 sm:pl-6">
+        <div className="min-w-0 space-y-8 border-l border-neutral-20 pl-6">
           {day.blocks.map((block, i) => (
             <BlockRenderer key={i} block={block} />
           ))}
@@ -104,12 +122,12 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="py-2">
-      <h3 className="text-base font-bold text-tertiary">{title}</h3>
+    <section className="min-w-0 py-2">
+      <h3 className="break-words text-base font-bold text-tertiary">{title}</h3>
       {subtitle && (
-        <p className="mt-0.5 text-sm text-neutral">{subtitle}</p>
+        <p className="mt-0.5 break-words text-sm text-neutral">{subtitle}</p>
       )}
-      <div className="mt-4">{children}</div>
+      <div className="mt-4 min-w-0">{children}</div>
     </section>
   );
 }
@@ -242,7 +260,7 @@ function AlertCard({ block }: { block: AlertBlock }) {
 function TransferCard({ block }: { block: TransferBlock }) {
   return (
     <Section title={block.title} subtitle={block.subtitle}>
-      <div className="flex gap-4 rounded-2xl bg-secondary/40 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+      <div className="flex flex-col gap-4 rounded-2xl bg-secondary/40 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] sm:flex-row">
         {block.image && (
           <div
             className="hidden h-24 w-32 shrink-0 rounded-xl bg-cover bg-center sm:block"
@@ -274,28 +292,33 @@ function HotelCard({ block }: { block: HotelBlock }) {
 
   return (
     <Section title={block.title} subtitle={block.subtitle}>
-      <div className="flex gap-4 rounded-2xl bg-secondary/30 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+      <div className="flex flex-col gap-4 rounded-2xl bg-secondary/30 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] sm:flex-row">
         <div
-          className="h-28 w-28 shrink-0 rounded-xl bg-cover bg-center sm:h-32 sm:w-36"
+          className="h-40 w-full shrink-0 rounded-xl bg-cover bg-center sm:h-32 sm:w-36"
           style={{
             backgroundImage: `url('${block.image ?? "/gallery/2.jpg"}')`,
           }}
         />
-        <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold capitalize text-tertiary">{block.name}</p>
-          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-neutral">
-            <span className="flex items-center gap-0.5 text-primary">
+        <div className="min-w-0 flex-1 overflow-hidden">
+          <p className="break-words text-lg font-bold capitalize text-tertiary">
+            {block.name}
+          </p>
+          <div className="mt-1 flex flex-col gap-1 text-xs text-neutral sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1">
+            <span className="flex shrink-0 items-center gap-0.5 text-primary">
               {Array.from({ length: block.stars }).map((_, i) => (
                 <MaterialIcon key={i} name="star" className="text-sm" filled />
               ))}
-              <span className="ml-1 text-neutral">{block.rating}/5.0</span>
+              <span className="ml-1 whitespace-nowrap text-neutral">
+                {block.rating}/5.0
+              </span>
             </span>
-            <span>{block.distanceM}m from Haram</span>
+            <span className="shrink-0">{block.distanceM}m from Haram</span>
           </div>
-          <p className="mt-1 text-xs text-neutral">
-            {block.walkMinutes} min walk · {block.address} · {block.nights} nights
+          <p className="mt-1 break-words text-xs text-neutral">
+            {block.walkMinutes} min walk · {block.address} · {block.nights}{" "}
+            nights
           </p>
-          <div className="mt-3 flex flex-wrap gap-3">
+          <div className="mt-3 flex flex-wrap gap-x-3 gap-y-2">
             {block.amenities.slice(0, 5).map((a) => (
               <span
                 key={a}
@@ -303,7 +326,7 @@ function HotelCard({ block }: { block: HotelBlock }) {
               >
                 <MaterialIcon
                   name={AMENITY_ICONS[a] ?? "check"}
-                  className="text-sm text-primary"
+                  className="shrink-0 text-sm text-primary"
                 />
                 {a}
               </span>
@@ -334,18 +357,21 @@ function HotelCard({ block }: { block: HotelBlock }) {
 function ServiceCard({ block }: { block: ServiceBlock }) {
   return (
     <Section title={block.title}>
-      <div className="flex gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
         {block.image && (
           <div
             className="h-20 w-20 shrink-0 rounded-xl bg-cover bg-center"
             style={{ backgroundImage: `url('${block.image}')` }}
           />
         )}
-        <div className="flex items-start gap-3">
-          <MaterialIcon name="check_circle" className="mt-0.5 text-xl text-primary" />
-          <div>
+        <div className="flex min-w-0 flex-1 items-start gap-3">
+          <MaterialIcon
+            name="check_circle"
+            className="mt-0.5 shrink-0 text-xl text-primary"
+          />
+          <div className="min-w-0 flex-1">
             <p className="font-semibold text-tertiary">{block.name}</p>
-            <p className="mt-1 text-sm text-neutral">{block.desc}</p>
+            <p className="mt-1 break-words text-sm text-neutral">{block.desc}</p>
           </div>
         </div>
       </div>

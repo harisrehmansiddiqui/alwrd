@@ -49,6 +49,7 @@ model Package {
   tagline      String
   description  String?      @db.Text
   image        String
+  videoUrl     String?
   gallery      Json?
   amenities    Json
   inclusions   Json?

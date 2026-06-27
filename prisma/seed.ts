@@ -41,6 +41,14 @@ async function main() {
     });
   }
 
+  const packageGallery = [
+    "/packages/comfort-1.jpg",
+    "/gallery/1.jpg",
+    "/gallery/2.jpg",
+    "/gallery/3.jpg",
+    "/gallery/4.jpg",
+  ];
+
   const packages = [
     {
       slug: "comfort-umrah-lahore-14n",
@@ -49,6 +57,9 @@ async function main() {
       tier: "standard" as const,
       tagline: "Umrah journey filled with blessing & barakah",
       image: "/packages/comfort-1.jpg",
+      videoUrl:
+        "https://cdn.coverr.co/videos/coverr-aerial-view-of-mecca-4775/1080p.mp4",
+      gallery: packageGallery,
       amenities: ["All-Inclusive", "Ziyarat Included", "SIM Card", "4 Star Hotel"],
       featured: "group",
       departure: { city: "Lahore", date: "2026-08-01", days: 15, nights: 14, price: 285000, old: 315000 },
@@ -60,6 +71,15 @@ async function main() {
       tier: "standard" as const,
       tagline: "Designed for a calm and guided Umrah experience",
       image: "/packages/comfort-2.jpg",
+      videoUrl:
+        "https://cdn.coverr.co/videos/coverr-aerial-view-of-mecca-4775/1080p.mp4",
+      gallery: [
+        "/packages/comfort-2.jpg",
+        "/gallery/2.jpg",
+        "/gallery/3.jpg",
+        "/gallery/4.jpg",
+        "/gallery/5.jpg",
+      ],
       amenities: ["All-Inclusive", "Ziyarat Included", "4 Star Hotel", "Taif Tour"],
       featured: "group",
       departure: { city: "Karachi", date: "2026-08-10", days: 15, nights: 14, price: 299000, old: 330000 },
@@ -71,6 +91,9 @@ async function main() {
       tier: "standard" as const,
       tagline: "Family-friendly Umrah with guided support throughout",
       image: "/packages/comfort-1.jpg",
+      videoUrl:
+        "https://cdn.coverr.co/videos/coverr-aerial-view-of-mecca-4775/1080p.mp4",
+      gallery: packageGallery,
       amenities: ["All-Inclusive", "Ziyarat Included", "SIM Card", "4 Star Hotel", "Taif Tour"],
       featured: "group",
       departure: { city: "Islamabad", date: "2026-08-15", days: 15, nights: 14, price: 289000, old: 320000 },
@@ -82,6 +105,15 @@ async function main() {
       tier: "premium" as const,
       tagline: "Stay five-star luxury with our exclusive Royale package",
       image: "/packages/royale-1.jpg",
+      videoUrl:
+        "https://cdn.coverr.co/videos/coverr-aerial-view-of-mecca-4775/1080p.mp4",
+      gallery: [
+        "/packages/royale-1.jpg",
+        "/gallery/5.jpg",
+        "/gallery/6.jpg",
+        "/gallery/7.jpg",
+        "/gallery/8.jpg",
+      ],
       amenities: ["All-Inclusive", "5 Star Hotel", "Private Transport", "Ziyarat Included"],
       featured: "premium",
       departure: { city: "Lahore", date: "2026-09-05", days: 10, nights: 9, price: 610000, old: 680000 },
@@ -91,7 +123,10 @@ async function main() {
   for (const p of packages) {
     const pkg = await prisma.package.upsert({
       where: { slug: p.slug },
-      update: {},
+      update: {
+        gallery: p.gallery,
+        videoUrl: p.videoUrl,
+      },
       create: {
         slug: p.slug,
         title: p.title,
@@ -99,6 +134,8 @@ async function main() {
         tier: p.tier,
         tagline: p.tagline,
         image: p.image,
+        videoUrl: p.videoUrl,
+        gallery: p.gallery,
         amenities: p.amenities,
         featured: p.featured,
       },
