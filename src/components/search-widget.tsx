@@ -27,23 +27,8 @@ const PERSON_COUNTS = Array.from({ length: 10 }, (_, i) => ({
   label: `${i + 1} ${i + 1 === 1 ? "person" : "persons"}`,
 }));
 
-function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const update = () => setMatches(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, [query]);
-
-  return matches;
-}
-
 export function SearchWidget() {
   const router = useRouter();
-  const isDesktop = useMediaQuery("(min-width: 1280px)");
   const [mounted, setMounted] = useState(false);
   const [city, setCity] = useState("Lahore");
   const [duration, setDuration] = useState("");
@@ -56,41 +41,13 @@ export function SearchWidget() {
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (!calendarOpen || isDesktop) return;
-    function onClick(e: MouseEvent) {
-      const target = e.target as Node;
-      if (dateRef.current?.contains(target)) return;
-      if (
-        target instanceof Element &&
-        target.closest("[data-calendar-overlay]")
-      ) {
-        return;
-      }
-      setCalendarOpen(false);
-    }
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [calendarOpen, isDesktop]);
-
-  useEffect(() => {
-    if (!calendarOpen || isDesktop) return;
+    if (!calendarOpen) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [calendarOpen, isDesktop]);
-
-  useEffect(() => {
-    if (!isDesktop) return;
-    function onClick(e: MouseEvent) {
-      if (dateRef.current && !dateRef.current.contains(e.target as Node)) {
-        setCalendarOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [isDesktop]);
+  }, [calendarOpen]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -106,88 +63,84 @@ export function SearchWidget() {
     setCalendarOpen(false);
   }
 
-  const calendar = (
-    <AvailabilityCalendar
-      value={date}
-      onSelect={handleDateSelect}
-      compact={!isDesktop}
-    />
-  );
-
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest p-2.5 shadow-md sm:gap-3 sm:p-4 lg:gap-4 lg:p-6"
-    >
-      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
-        <Field label="Departure City" icon="location_on">
-          <CustomSelect
-            value={city}
-            onChange={setCity}
-            options={CITIES.map((c) => ({ value: c, label: c }))}
-            compact
-          />
-        </Field>
-
-        <Field label="Duration" icon="schedule">
-          <CustomSelect
-            value={duration}
-            onChange={setDuration}
-            options={DURATIONS}
-            compact
-          />
-        </Field>
-
-        <Field label="Package Type" icon="category">
-          <CustomSelect
-            id="package-type"
-            value={type}
-            onChange={setType}
-            options={PACKAGE_TYPES}
-            compact
-          />
-        </Field>
-
-        <Field label="Persons" icon="groups">
-          <CustomSelect
-            value={persons}
-            onChange={setPersons}
-            options={PERSON_COUNTS}
-            compact
-          />
-        </Field>
-      </div>
-
-      <div ref={dateRef} className="relative">
-        <Field label="Travel Date" icon="calendar_month">
-          <button
-            type="button"
-            onClick={() => setCalendarOpen((v) => !v)}
-            className="flex w-full min-w-0 items-center justify-between gap-2 py-1.5 text-left text-sm outline-none sm:py-2"
-          >
-            <span className="truncate">
-              {date ? (
-                formatDate(date)
-              ) : (
-                <span className="text-on-surface-variant">Select date</span>
-              )}
-            </span>
-            <MaterialIcon
-              name="expand_more"
-              className={`shrink-0 text-lg text-neutral transition-transform ${calendarOpen ? "rotate-180" : ""}`}
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest p-2.5 shadow-md sm:gap-2.5 sm:p-3.5 xl:p-4"
+      >
+        <div className="grid grid-cols-2 gap-2 sm:gap-2.5 xl:gap-3">
+          <Field label="Departure City" icon="location_on">
+            <CustomSelect
+              value={city}
+              onChange={setCity}
+              options={CITIES.map((c) => ({ value: c, label: c }))}
+              compact
             />
-          </button>
-        </Field>
+          </Field>
 
-        {calendarOpen && isDesktop && (
-          <div className="absolute left-0 right-0 z-30 mt-1 sm:left-auto sm:right-0 sm:w-auto">
-            {calendar}
+          <Field label="Duration" icon="schedule">
+            <CustomSelect
+              value={duration}
+              onChange={setDuration}
+              options={DURATIONS}
+              compact
+            />
+          </Field>
+
+          <Field label="Package Type" icon="category">
+            <CustomSelect
+              id="package-type"
+              value={type}
+              onChange={setType}
+              options={PACKAGE_TYPES}
+              compact
+            />
+          </Field>
+
+          <Field label="Persons" icon="groups">
+            <CustomSelect
+              value={persons}
+              onChange={setPersons}
+              options={PERSON_COUNTS}
+              compact
+            />
+          </Field>
+        </div>
+
+        <div className="flex flex-col gap-2 md:flex-row md:items-end md:gap-3">
+          <div ref={dateRef} className="relative min-w-0 flex-1">
+            <Field label="Travel Date" icon="calendar_month">
+              <button
+                type="button"
+                onClick={() => setCalendarOpen((v) => !v)}
+                className="flex w-full min-w-0 items-center justify-between gap-2 py-1.5 text-left text-sm outline-none sm:py-2"
+              >
+                <span className="truncate">
+                  {date ? (
+                    formatDate(date)
+                  ) : (
+                    <span className="text-on-surface-variant">Select date</span>
+                  )}
+                </span>
+                <MaterialIcon
+                  name="expand_more"
+                  className={`shrink-0 text-lg text-neutral transition-transform ${calendarOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+            </Field>
           </div>
-        )}
-      </div>
+
+          <button
+            type="submit"
+            className="w-full shrink-0 rounded-lg bg-primary py-2.5 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark md:min-w-[148px] md:py-2.5 xl:min-w-[160px]"
+          >
+            Get Packages
+          </button>
+        </div>
+      </form>
 
       {calendarOpen &&
-        !isDesktop &&
         mounted &&
         createPortal(
           <div data-calendar-overlay className="fixed inset-0 z-[200]">
@@ -198,19 +151,16 @@ export function SearchWidget() {
               onClick={() => setCalendarOpen(false)}
             />
             <div className="absolute left-1/2 top-1/2 w-[min(calc(100vw-2rem),18rem)] -translate-x-1/2 -translate-y-1/2">
-              {calendar}
+              <AvailabilityCalendar
+                value={date}
+                onSelect={handleDateSelect}
+                compact
+              />
             </div>
           </div>,
           document.body,
         )}
-
-      <button
-        type="submit"
-        className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark sm:py-3 lg:py-3.5"
-      >
-        Get Packages
-      </button>
-    </form>
+    </>
   );
 }
 
