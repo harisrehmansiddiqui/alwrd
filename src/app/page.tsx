@@ -1,6 +1,15 @@
 import { Hero } from "@/components/hero";
 import { SearchWidget } from "@/components/search-widget";
 import { WhatsAppFloat } from "@/components/whatsapp-float";
+import {
+  GroupPackages,
+  PremiumPackages,
+  UniqueHighlights,
+  HaramainTrain,
+  TrustStats,
+  EsimPromo,
+  ResourcesSection,
+} from "@/components/home-sections";
 
 export default function Home() {
   return (
@@ -21,6 +30,14 @@ export default function Home() {
           <SearchWidget />
         </div>
       </section>
+
+      <GroupPackages />
+      <PremiumPackages />
+      <UniqueHighlights />
+      <HaramainTrain />
+      <TrustStats />
+      <EsimPromo />
+      <ResourcesSection />
 
       <WhatsAppFloat />
     </>
