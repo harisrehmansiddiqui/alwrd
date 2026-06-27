@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MaterialIcon } from "@/components/material-icon";
-import { DayTimeline, BlockRenderer } from "@/components/package/itinerary-blocks";
+import {
+  FullItineraryTimeline,
+  BlockRenderer,
+} from "@/components/package/itinerary-blocks";
 import type {
   ItineraryDay,
   ItineraryBlock,
@@ -49,13 +52,46 @@ export function PackageDetailView({
   const [activeDayId, setActiveDayId] = useState(days[0]?.id ?? "");
   const discount = discountPercent(pkg);
 
+  const scrollToDay = useCallback((id: string) => {
+    setActiveDayId(id);
+    document.getElementById(`day-${id}`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (tab !== "itinerary" || days.length === 0) return;
+
+    const sections = days
+      .map((d) => document.getElementById(`day-${d.id}`))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) {
+          const id = visible[0].target.id.replace("day-", "");
+          setActiveDayId(id);
+        }
+      },
+      { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.15, 0.35] },
+    );
+
+    sections.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [tab, days]);
+
   const gallery =
     pkg.gallery.length >= 5
       ? pkg.gallery.slice(0, 5)
       : [pkg.image, "/gallery/1.jpg", "/gallery/2.jpg", "/gallery/3.jpg", "/gallery/4.jpg"];
 
   const galleryLabels = ["", "Makkah", "Madinah", "Makkah", "Madinah"];
-  const activeDay = days.find((d) => d.id === activeDayId) ?? days[0];
 
   function blocksForTab(): ItineraryBlock[] {
     switch (tab) {
@@ -73,9 +109,9 @@ export function PackageDetailView({
   }
 
   return (
-    <div className="package-detail bg-white pb-28 lg:pb-10">
+    <div className="package-detail min-w-0 overflow-x-hidden bg-white pb-28 lg:pb-10">
       {/* Full-width gallery */}
-      <div className="mx-auto max-w-[1200px] px-5 pt-6 lg:px-8">
+      <div className="mx-auto max-w-[1200px] min-w-0 px-4 pt-6 sm:px-5 lg:px-8">
         <div className="grid gap-1.5 sm:grid-cols-[1.2fr_1fr_1fr] sm:grid-rows-2">
           <div
             className="relative min-h-[280px] rounded-xl bg-cover bg-center sm:row-span-2 sm:min-h-[400px]"
@@ -106,8 +142,8 @@ export function PackageDetailView({
       </div>
 
       {/* Two-column: overview + booking */}
-      <div className="mx-auto mt-8 grid max-w-[1200px] gap-10 px-5 lg:grid-cols-[1fr_320px] lg:px-8">
-        <div>
+      <div className="mx-auto mt-8 grid max-w-[1200px] min-w-0 gap-10 px-4 sm:px-5 lg:grid-cols-[1fr_320px] lg:px-8">
+        <div className="min-w-0">
           <h2 className="text-xl font-bold text-tertiary">Package Overview</h2>
 
           {/* Icon tabs */}
@@ -131,28 +167,30 @@ export function PackageDetailView({
 
           {/* Day pills — itinerary only */}
           {tab === "itinerary" && (
-            <div className="mt-4 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {days.map((day) => (
-                <button
-                  key={day.id}
-                  type="button"
-                  onClick={() => setActiveDayId(day.id)}
-                  className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
-                    activeDayId === day.id
-                      ? "bg-primary-10 text-primary"
-                      : "text-neutral hover:bg-secondary"
-                  }`}
-                >
-                  {day.label}
-                </button>
-              ))}
+            <div className="sticky top-[68px] z-10 -mx-4 bg-white px-4 py-3 sm:-mx-0 sm:px-0">
+              <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {days.map((day) => (
+                  <button
+                    key={day.id}
+                    type="button"
+                    onClick={() => scrollToDay(day.id)}
+                    className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                      activeDayId === day.id
+                        ? "bg-primary-10 text-primary"
+                        : "text-neutral hover:bg-secondary"
+                    }`}
+                  >
+                    {day.label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
           {/* Content */}
           <div className="mt-6">
-            {tab === "itinerary" && activeDay && (
-              <DayTimeline day={activeDay} />
+            {tab === "itinerary" && (
+              <FullItineraryTimeline days={days} />
             )}
 
             {["flights", "transfers", "hotels", "ziyarat"].includes(tab) && (

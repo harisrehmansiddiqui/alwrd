@@ -77,7 +77,7 @@ export function AmenityMarquee({ items }: { items: string[] }) {
   const loop = [...items, ...items];
 
   return (
-    <div className="amenity-marquee relative overflow-hidden py-1">
+    <div className="amenity-marquee relative max-w-full overflow-hidden py-1">
       <div className="flex w-max animate-amenity-marquee gap-2 hover:[animation-play-state:paused]">
         {loop.map((label, i) => (
           <AmenityPill key={`${label}-${i}`} label={label} index={i % items.length} />

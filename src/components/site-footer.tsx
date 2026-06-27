@@ -36,7 +36,7 @@ const columns = [
 export function SiteFooter() {
   return (
     <footer className="border-t border-outline-variant bg-surface-container-low">
-      <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-8 px-6 py-20 md:grid-cols-4">
+      <div className="mx-auto grid max-w-[1280px] min-w-0 grid-cols-1 gap-8 px-4 py-20 sm:px-6 md:grid-cols-4">
         <div className="space-y-4">
           <Logo variant="black" />
           <p className="text-xs leading-relaxed text-on-surface-variant">
@@ -82,7 +82,7 @@ export function SiteFooter() {
         ))}
       </div>
 
-      <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-4 border-t border-outline-variant px-6 py-6 md:flex-row">
+      <div className="mx-auto flex max-w-[1280px] min-w-0 flex-col items-center justify-between gap-4 border-t border-outline-variant px-4 py-6 sm:px-6 md:flex-row">
         <p className="text-xs text-on-surface-variant">
           © {new Date().getFullYear()} {site.name} Hajj & Umrah. All rights
           reserved. Licensed Hajj & Umrah operator.

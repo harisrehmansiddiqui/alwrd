@@ -3,9 +3,9 @@ import { MaterialIcon } from "@/components/material-icon";
 
 export function Hero() {
   return (
-    <section className="hero-pattern py-20 lg:py-[80px]">
-      <div className="mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-8 px-6 lg:grid-cols-2">
-        <div className="space-y-6">
+    <section className="hero-pattern overflow-hidden py-16 sm:py-20 lg:py-[80px]">
+      <div className="mx-auto grid min-w-0 max-w-[1280px] grid-cols-1 items-center gap-8 px-4 sm:px-6 lg:grid-cols-2">
+        <div className="min-w-0 space-y-6">
           <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary">
             Book. Budget. Be Blessed.
           </span>
@@ -22,7 +22,7 @@ export function Hero() {
           <SearchWidget />
         </div>
 
-        <div className="relative">
+        <div className="relative min-w-0">
           <div
             className="aspect-[4/3] w-full rounded-2xl bg-cover bg-center shadow-2xl"
             style={{ backgroundImage: "url('/hero.jpg')" }}

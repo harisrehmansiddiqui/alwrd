@@ -54,26 +54,43 @@ export function BlockRenderer({ block }: { block: ItineraryBlock }) {
 
 export function DayTimeline({ day }: { day: ItineraryDay }) {
   return (
-    <div className="relative pl-24">
-      {/* Left timeline rail */}
-      <div className="absolute left-0 top-0 flex w-20 flex-col items-end">
-        <span className="rounded-lg bg-primary-10 px-2 py-1 text-xs font-bold text-primary">
-          {day.label}
-        </span>
-        {day.date && (
-          <span className="mt-1 text-[10px] text-neutral">{day.date}</span>
-        )}
-        <div className="absolute left-[calc(100%+12px)] top-8 bottom-0 w-px bg-secondary" />
-      </div>
+    <DaySection day={day} />
+  );
+}
 
-      <div className="space-y-8">
-        {day.blocks.map((block, i) => (
-          <div key={i} className="relative">
-            <BlockRenderer block={block} />
-          </div>
-        ))}
-      </div>
+export function FullItineraryTimeline({ days }: { days: ItineraryDay[] }) {
+  return (
+    <div className="relative space-y-12">
+      <div
+        className="absolute bottom-0 left-[84px] top-0 w-px bg-neutral-20 sm:left-[104px]"
+        aria-hidden
+      />
+      {days.map((day) => (
+        <DaySection key={day.id} day={day} />
+      ))}
     </div>
+  );
+}
+
+function DaySection({ day }: { day: ItineraryDay }) {
+  return (
+    <section id={`day-${day.id}`} className="relative scroll-mt-28">
+      <div className="grid grid-cols-[72px_minmax(0,1fr)] gap-x-3 sm:grid-cols-[84px_minmax(0,1fr)] sm:gap-x-5">
+        <div className="flex flex-col items-end pt-1 text-right">
+          <span className="rounded-lg bg-primary-10 px-2 py-1 text-[11px] font-bold leading-tight text-primary sm:text-xs">
+            {day.label}
+          </span>
+          {day.date && (
+            <span className="mt-1 text-[10px] text-neutral">{day.date}</span>
+          )}
+        </div>
+        <div className="min-w-0 space-y-8 border-l border-neutral-20 pl-4 sm:pl-6">
+          {day.blocks.map((block, i) => (
+            <BlockRenderer key={i} block={block} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -97,63 +114,118 @@ function Section({
   );
 }
 
+function FlightPathGraphic({
+  duration,
+  stops,
+}: {
+  duration: string;
+  stops: string;
+}) {
+  return (
+    <div className="mx-auto flex w-full max-w-[148px] flex-col items-center">
+      <div className="relative h-7 w-full sm:h-8">
+        <svg viewBox="0 0 140 32" className="h-full w-full" aria-hidden>
+          <path
+            d="M 8 28 Q 70 2 132 28"
+            fill="none"
+            stroke="#C7C9C5"
+            strokeWidth="1.5"
+            strokeDasharray="4 3"
+          />
+        </svg>
+        <span className="absolute inset-x-0 top-0 text-center text-[10px] font-medium text-neutral">
+          {duration}
+        </span>
+      </div>
+      <div className="relative -mt-0.5 flex w-full items-center">
+        <div className="h-px flex-1 border-t border-dashed border-neutral-40" />
+        <svg
+          viewBox="0 0 24 24"
+          className="mx-0.5 h-4 w-4 shrink-0 sm:h-[18px] sm:w-[18px]"
+          aria-hidden
+        >
+          <path
+            fill="#8B6E4E"
+            d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 2v1h3v-1l2-2v-5.5L21 16z"
+          />
+        </svg>
+        <div className="h-px flex-1 border-t border-dashed border-neutral-40" />
+      </div>
+      <span className="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-neutral">
+        {stops}
+      </span>
+    </div>
+  );
+}
+
 function FlightCard({ block }: { block: FlightBlock }) {
-  const [open, setOpen] = useState(false);
+  const airlineShort = block.airline.split(" ")[0].slice(0, 2).toUpperCase();
 
   return (
     <Section title={block.title} subtitle={block.subtitle}>
-      <div className="rounded-xl border border-neutral-20 bg-white p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-sm font-bold text-primary">
-            {block.airline.slice(0, 2).toUpperCase()}
+      <div className="overflow-hidden rounded-xl border border-neutral-20 bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-20 px-4 py-3">
+          <span className="text-sm font-semibold text-[#1B3A4B]">
+            {block.fromCity} → {block.toCity}
+          </span>
+          <span className="flex items-center gap-1.5 text-xs text-neutral sm:text-sm">
+            <span className="h-2 w-2 shrink-0 rounded-full bg-[#8B6E4E]" />
+            {block.date}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-5 sm:grid-cols-[64px_auto_1fr_auto] sm:gap-4">
+          <div className="col-span-3 flex h-9 w-14 items-center justify-center rounded-lg border border-neutral-20 bg-white text-xs font-bold text-[#E8602A] sm:col-span-1 sm:h-10 sm:w-16">
+            {airlineShort}
           </div>
-          <div>
-            <p className="text-sm font-semibold text-tertiary">{block.airline}</p>
-            <p className="text-xs text-neutral">{block.date}</p>
+
+          <div className="shrink-0">
+            <p className="text-xl font-bold text-[#1B3A4B] sm:text-2xl">
+              {block.fromCode}
+            </p>
+            <p className="text-sm font-semibold text-tertiary">
+              {block.departTime}
+            </p>
+          </div>
+
+          <div className="col-span-3 min-w-0 sm:col-span-1">
+            <FlightPathGraphic duration={block.duration} stops={block.stops} />
+          </div>
+
+          <div className="shrink-0 text-right">
+            <p className="text-xl font-bold text-[#1B3A4B] sm:text-2xl">
+              {block.toCode}
+            </p>
+            <p className="text-sm font-semibold text-tertiary">
+              {block.arriveTime}
+            </p>
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-          <div>
-            <p className="text-2xl font-bold text-tertiary">{block.fromCode}</p>
-            <p className="text-sm font-semibold">{block.departTime}</p>
-            <p className="mt-0.5 text-xs text-neutral">{block.fromAirport}</p>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-primary">
-            <MaterialIcon name="flight" className="rotate-90 text-xl" />
-            <span className="text-xs font-medium">{block.duration}</span>
-            <span className="text-[10px] uppercase text-neutral">{block.stops}</span>
-          </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold text-tertiary">{block.toCode}</p>
-            <p className="text-sm font-semibold">{block.arriveTime}</p>
-            <p className="mt-0.5 text-xs text-neutral">{block.toAirport}</p>
+        <div className="mx-4 mb-4 flex items-start gap-2 rounded-lg border border-[#E8D4A8] bg-[#FFF8E7] px-3 py-2.5">
+          <svg
+            viewBox="0 0 24 24"
+            className="mt-0.5 h-4 w-4 shrink-0 fill-[#8B6E4E]"
+            aria-hidden
+          >
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+          </svg>
+          <div className="min-w-0 text-xs">
+            <p className="font-bold text-[#8B6E4E]">
+              {block.cabinBaggage} and {block.checkInBaggage}
+            </p>
+            <p className="mt-0.5 text-[#8B6E4E]/85">
+              Any Baggage crossing this specified limit is extra chargeable.
+            </p>
+            <button
+              type="button"
+              className="mt-1 font-medium text-[#8B6E4E] underline underline-offset-2"
+            >
+              View security restricted items
+            </button>
           </div>
         </div>
       </div>
-
-      <div className="mt-3 flex items-start gap-2 rounded-lg border border-primary-20 bg-primary-10 px-3 py-2.5 text-xs text-on-primary-container">
-        <MaterialIcon name="info" className="mt-0.5 shrink-0 text-sm" />
-        <span>
-          {block.cabinBaggage} and {block.checkInBaggage}. Any Baggage crossing
-          this specified limit is extra chargeable.
-        </span>
-      </div>
-
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="mt-3 flex items-center gap-1 text-sm font-semibold text-primary"
-      >
-        View baggage information
-        <MaterialIcon name={open ? "expand_less" : "expand_more"} />
-      </button>
-      {open && (
-        <ul className="mt-2 space-y-1 pl-4 text-sm text-neutral">
-          <li className="list-disc">{block.cabinBaggage}</li>
-          <li className="list-disc">{block.checkInBaggage}</li>
-        </ul>
-      )}
     </Section>
   );
 }
@@ -308,7 +380,7 @@ function ZiyaratCard({ block }: { block: ZiyaratBlock }) {
 
   return (
     <Section title={block.title}>
-      <div className="flex gap-2">
+      <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {visible.map((activity, i) => (
           <div
             key={activity}
