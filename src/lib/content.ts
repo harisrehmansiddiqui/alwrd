@@ -96,6 +96,33 @@ export const trustBadges = [
   { title: "Secure Booking", desc: "Transparent pricing with no hidden charges." },
 ];
 
+export const faqs = [
+  {
+    q: "How do I book an Umrah package?",
+    a: "Browse our packages, open the one you like and submit an inquiry. Our team contacts you on WhatsApp or phone to confirm availability, pricing and the next steps.",
+  },
+  {
+    q: "Is visa processing included?",
+    a: "Yes. Every package includes Umrah visa processing. We handle the documentation so you can focus on your worship.",
+  },
+  {
+    q: "How close are the hotels to the Haram?",
+    a: "We partner with 3, 4 and 5-star hotels within walking distance of Masjid al-Haram in Makkah and Masjid an-Nabawi in Madinah, depending on your package tier.",
+  },
+  {
+    q: "Can I customise dates or hotels?",
+    a: "Absolutely. Share your preferences in the inquiry form and our team will tailor the package to your travel dates, airline choice and hotel preference.",
+  },
+  {
+    q: "How early should I book?",
+    a: "Bookings open from 10 days ahead of travel. For the best availability and pricing we recommend reaching out as early as possible.",
+  },
+  {
+    q: "Do you provide support during the trip?",
+    a: "Yes. Our on-ground team offers 24/7 support throughout your journey, from airport arrival to departure.",
+  },
+];
+
 export const resources = [
   {
     title: "Essential Du'as for Umrah",
