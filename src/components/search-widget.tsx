@@ -36,7 +36,7 @@ export function SearchWidget() {
     e.preventDefault();
     const params = new URLSearchParams({
       persons: String(persons),
-      type,
+      tier: type,
       duration: String(duration),
     });
     if (date) params.set("date", date.toISOString().slice(0, 10));

@@ -127,6 +127,43 @@ export function getPackage(slug: string): Package | undefined {
   return PACKAGES.find((p) => p.slug === slug);
 }
 
+export type PackageFilters = {
+  tier?: string;
+  audience?: string;
+  city?: string;
+  duration?: string;
+  date?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  q?: string;
+};
+
+export function filterPackages(filters: PackageFilters): Package[] {
+  const min = filters.minPrice ? Number(filters.minPrice) : undefined;
+  const max = filters.maxPrice ? Number(filters.maxPrice) : undefined;
+  const query = filters.q?.trim().toLowerCase();
+  const fromDate = filters.date ? new Date(filters.date).getTime() : undefined;
+
+  return getAllPackages().filter((p) => {
+    if (filters.tier && p.tier !== filters.tier) return false;
+    if (filters.audience && p.audience !== filters.audience) return false;
+    if (filters.city && p.city.toLowerCase() !== filters.city.toLowerCase())
+      return false;
+    if (filters.duration && p.durationDays !== Number(filters.duration))
+      return false;
+    if (min !== undefined && p.price < min) return false;
+    if (max !== undefined && p.price > max) return false;
+    if (fromDate && new Date(p.departureDate).getTime() < fromDate) return false;
+    if (query && !`${p.title} ${p.tagline} ${p.city}`.toLowerCase().includes(query))
+      return false;
+    return true;
+  });
+}
+
+export function getCities(): string[] {
+  return Array.from(new Set(getAllPackages().map((p) => p.city))).sort();
+}
+
 export function formatPKR(amount: number): string {
   return `₨${amount.toLocaleString("en-PK")}`;
 }
