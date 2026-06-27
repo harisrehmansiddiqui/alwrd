@@ -1,17 +1,18 @@
 import { PrismaClient } from "@prisma/client";
-import { createHash } from "node:crypto";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
+  const adminPassword = process.env.ADMIN_PASSWORD ?? "Alwrd@2026";
+  const passwordHash = bcrypt.hashSync(adminPassword, 10);
   await prisma.adminUser.upsert({
     where: { email: "admin@alwrdgroup.com" },
-    update: {},
+    update: { passwordHash },
     create: {
       name: "Al Wrd Admin",
       email: "admin@alwrdgroup.com",
-      // Replace with a real bcrypt hash before go-live; placeholder for setup only.
-      passwordHash: createHash("sha256").update("change-me").digest("hex"),
+      passwordHash,
       role: "super_admin",
     },
   });
