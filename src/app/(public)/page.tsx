@@ -13,7 +13,7 @@ import {
 } from "@/components/home-sections";
 import { getHomepagePackages } from "@/lib/packages";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function Home() {
   const { group, premium } = await getHomepagePackages();

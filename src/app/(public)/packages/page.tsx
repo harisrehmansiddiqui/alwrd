@@ -7,7 +7,7 @@ import {
   type PackageFilters as Filters,
 } from "@/lib/packages";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Umrah Packages",
@@ -32,8 +32,10 @@ export default async function PackagesPage({
     q: params.q,
   };
 
-  const results = await filterPackages(filters);
-  const cities = await getCities();
+  const [results, cities] = await Promise.all([
+    filterPackages(filters),
+    getCities(),
+  ]);
 
   return (
     <div className="bg-surface-tint">

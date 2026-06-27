@@ -179,6 +179,15 @@ h4 {
 
 .animate-amenity-marquee {
   animation: amenity-marquee 22s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-amenity-marquee {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+  }
 }
 
 .amenity-marquee::before,

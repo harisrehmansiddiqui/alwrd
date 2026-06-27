@@ -1,6 +1,10 @@
 import type { Departure, Package as DbPackage, Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
+
+const PACKAGES_TAG = "packages";
+const CACHE_SECONDS = 300;
 
 // Flattened shape the UI renders: a package joined with one of its departures.
 export type AudienceType = "group" | "family" | "couple";
@@ -104,24 +108,30 @@ function onePerPackage(cards: Package[]): Package[] {
   return out;
 }
 
-/** Single query for homepage — avoids pool exhaustion when connection_limit=1. */
-export const getHomepagePackages = cache(async (): Promise<{
+/** Single query for homepage — cached at the edge for 5 minutes. */
+export async function getHomepagePackages(): Promise<{
   group: Package[];
   premium: Package[];
-}> => {
-  const rows = await prisma.departure.findMany({
-    where: liveWhere({
-      package: { active: true, featured: { in: ["group", "premium"] } },
-    }),
-    include: { package: true },
-    orderBy: { departureDate: "asc" },
-  });
-  const cards = rows.map(mapCard);
-  return {
-    group: onePerPackage(cards.filter((p) => p.featured === "group")),
-    premium: onePerPackage(cards.filter((p) => p.featured === "premium")),
-  };
-});
+}> {
+  return unstable_cache(
+    async () => {
+      const rows = await prisma.departure.findMany({
+        where: liveWhere({
+          package: { active: true, featured: { in: ["group", "premium"] } },
+        }),
+        include: { package: true },
+        orderBy: { departureDate: "asc" },
+      });
+      const cards = rows.map(mapCard);
+      return {
+        group: onePerPackage(cards.filter((p) => p.featured === "group")),
+        premium: onePerPackage(cards.filter((p) => p.featured === "premium")),
+      };
+    },
+    ["homepage-packages"],
+    { revalidate: CACHE_SECONDS, tags: [PACKAGES_TAG] },
+  )();
+}
 
 export async function getGroupPackages(): Promise<Package[]> {
   return queryCards(liveWhere({ package: { active: true, featured: "group" } }));
@@ -147,33 +157,43 @@ export type PackageFilters = {
 };
 
 export async function filterPackages(filters: PackageFilters): Promise<Package[]> {
-  const pkgWhere: Prisma.PackageWhereInput = { active: true };
-  if (filters.tier) pkgWhere.tier = filters.tier as Tier;
-  if (filters.audience) pkgWhere.audience = filters.audience as AudienceType;
-  if (filters.q) {
-    pkgWhere.OR = [
-      { title: { contains: filters.q, mode: "insensitive" } },
-      { tagline: { contains: filters.q, mode: "insensitive" } },
-    ];
-  }
+  const cacheKey = JSON.stringify(
+    Object.entries(filters).sort(([a], [b]) => a.localeCompare(b)),
+  );
 
-  const where = liveWhere({ package: pkgWhere });
-  if (filters.city) where.city = filters.city;
-  if (filters.duration) where.durationDays = Number(filters.duration);
-  if (filters.date) {
-    where.departureDate = { gte: new Date(filters.date) };
-  }
-  if (filters.minPrice || filters.maxPrice) {
-    where.price = {
-      ...(filters.minPrice ? { gte: Number(filters.minPrice) } : {}),
-      ...(filters.maxPrice ? { lte: Number(filters.maxPrice) } : {}),
-    };
-  }
+  return unstable_cache(
+    async () => {
+      const pkgWhere: Prisma.PackageWhereInput = { active: true };
+      if (filters.tier) pkgWhere.tier = filters.tier as Tier;
+      if (filters.audience) pkgWhere.audience = filters.audience as AudienceType;
+      if (filters.q) {
+        pkgWhere.OR = [
+          { title: { contains: filters.q, mode: "insensitive" } },
+          { tagline: { contains: filters.q, mode: "insensitive" } },
+        ];
+      }
 
-  return queryCards(where);
+      const where = liveWhere({ package: pkgWhere });
+      if (filters.city) where.city = filters.city;
+      if (filters.duration) where.durationDays = Number(filters.duration);
+      if (filters.date) {
+        where.departureDate = { gte: new Date(filters.date) };
+      }
+      if (filters.minPrice || filters.maxPrice) {
+        where.price = {
+          ...(filters.minPrice ? { gte: Number(filters.minPrice) } : {}),
+          ...(filters.maxPrice ? { lte: Number(filters.maxPrice) } : {}),
+        };
+      }
+
+      return queryCards(where);
+    },
+    ["filter-packages", cacheKey],
+    { revalidate: CACHE_SECONDS, tags: [PACKAGES_TAG] },
+  )();
 }
 
-export const getPackage = cache(async (slug: string): Promise<Package | undefined> => {
+async function fetchPackageBySlug(slug: string): Promise<Package | undefined> {
   const pkg = await prisma.package.findFirst({
     where: { slug, active: true },
     include: {
@@ -186,16 +206,30 @@ export const getPackage = cache(async (slug: string): Promise<Package | undefine
   });
   if (!pkg || pkg.departures.length === 0) return undefined;
   return mapCard({ ...pkg.departures[0], package: pkg });
+}
+
+export const getPackage = cache(async (slug: string): Promise<Package | undefined> => {
+  return unstable_cache(
+    async () => fetchPackageBySlug(slug),
+    ["package-by-slug", slug],
+    { revalidate: CACHE_SECONDS, tags: [PACKAGES_TAG, `package:${slug}`] },
+  )();
 });
 
 export async function getCities(): Promise<string[]> {
-  const rows = await prisma.departure.findMany({
-    where: liveWhere(),
-    distinct: ["city"],
-    select: { city: true },
-    orderBy: { city: "asc" },
-  });
-  return rows.map((r) => r.city);
+  return unstable_cache(
+    async () => {
+      const rows = await prisma.departure.findMany({
+        where: liveWhere(),
+        distinct: ["city"],
+        select: { city: true },
+        orderBy: { city: "asc" },
+      });
+      return rows.map((r) => r.city);
+    },
+    ["departure-cities"],
+    { revalidate: 600, tags: [PACKAGES_TAG] },
+  )();
 }
 
 export function formatPKR(amount: number): string {
