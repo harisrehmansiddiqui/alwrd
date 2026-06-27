@@ -51,83 +51,73 @@ export function SearchWidget() {
     router.push(`/packages?${params.toString()}`);
   }
 
-  const fieldClass =
-    "w-full rounded-lg border border-outline-variant bg-surface py-3 pl-10 pr-4 text-sm text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary";
-
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 flex flex-col gap-4 rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-md"
+      className="flex flex-col gap-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest p-3 shadow-md sm:gap-3 sm:p-4 lg:gap-4 lg:p-6"
     >
-      {/* 1. Departure city */}
-      <Field label="Departure City" icon="location_on">
-        <select
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          className={fieldClass}
-        >
-          {CITIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-      </Field>
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:gap-4">
+        <Field label="Departure City" icon="location_on">
+          <select
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className={controlClass}
+          >
+            {CITIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </Field>
 
-      {/* 2. Duration */}
-      <Field label="Duration" icon="schedule">
-        <select
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          className={fieldClass}
-        >
-          {DURATIONS.map((d) => (
-            <option key={d.value || "any"} value={d.value}>
-              {d.label}
-            </option>
-          ))}
-        </select>
-      </Field>
+        <Field label="Duration" icon="schedule">
+          <select
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+            className={controlClass}
+          >
+            {DURATIONS.map((d) => (
+              <option key={d.value || "any"} value={d.value}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+        </Field>
 
-      {/* 3. Package type */}
-      <Field label="Package Type" icon="category">
-        <select
-          id="package-type"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className={fieldClass}
-        >
-          {PACKAGE_TYPES.map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label}
-            </option>
-          ))}
-        </select>
-      </Field>
+        <Field label="Package Type" icon="category">
+          <select
+            id="package-type"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className={controlClass}
+          >
+            {PACKAGE_TYPES.map((t) => (
+              <option key={t.value} value={t.value}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+        </Field>
 
-      {/* 4. No of persons */}
-      <Field label="No. of Persons" icon="groups">
-        <select
-          value={persons}
-          onChange={(e) => setPersons(e.target.value)}
-          className={fieldClass}
-        >
-          {PERSON_COUNTS.map((n) => (
-            <option key={n} value={String(n)}>
-              {n} {n === 1 ? "person" : "persons"}
-            </option>
-          ))}
-        </select>
-      </Field>
+        <Field label="No. of Persons" icon="groups">
+          <select
+            value={persons}
+            onChange={(e) => setPersons(e.target.value)}
+            className={controlClass}
+          >
+            {PERSON_COUNTS.map((n) => (
+              <option key={n} value={String(n)}>
+                {n} {n === 1 ? "person" : "persons"}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
 
-      {/* 5. Date */}
       <div ref={dateRef} className="relative">
         <Field label="Travel Date" icon="calendar_month">
-          <button
-            type="button"
-            onClick={() => setCalendarOpen((v) => !v)}
-            className={`${fieldClass} text-left`}
-          >
+          <button type="button" onClick={() => setCalendarOpen((v) => !v)} className={controlClass}>
             {date ? (
               formatDate(date)
             ) : (
@@ -136,7 +126,7 @@ export function SearchWidget() {
           </button>
         </Field>
         {calendarOpen && (
-          <div className="absolute left-0 right-0 z-20 mt-2 sm:left-auto sm:right-0 sm:w-auto">
+          <div className="absolute left-0 right-0 z-20 mt-1 sm:left-auto sm:right-0 sm:w-auto">
             <AvailabilityCalendar
               value={date}
               onSelect={(d) => {
@@ -150,13 +140,16 @@ export function SearchWidget() {
 
       <button
         type="submit"
-        className="w-full rounded-lg bg-primary py-4 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark"
+        className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark sm:py-3.5 lg:py-4"
       >
         Get Packages
       </button>
     </form>
   );
 }
+
+const controlClass =
+  "w-full min-w-0 border-0 bg-transparent py-2 text-left text-sm text-on-surface outline-none sm:py-2.5";
 
 function Field({
   label,
@@ -168,16 +161,16 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative space-y-1">
-      <label className="text-sm font-semibold text-on-surface-variant">
+    <div className="min-w-0 space-y-1">
+      <label className="text-xs font-semibold text-on-surface-variant sm:text-sm">
         {label}
       </label>
-      <div className="relative">
+      <div className="flex min-w-0 items-center gap-2.5 rounded-lg border border-outline-variant bg-surface px-3 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
         <MaterialIcon
           name={icon}
-          className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-primary"
+          className="shrink-0 text-[18px] text-primary"
         />
-        {children}
+        <div className="min-w-0 flex-1">{children}</div>
       </div>
     </div>
   );

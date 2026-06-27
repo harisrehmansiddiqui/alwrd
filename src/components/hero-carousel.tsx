@@ -7,10 +7,10 @@ type Slide = { src: string; alt: string };
 
 export function HeroCarousel({
   slides,
-  fillHeight = false,
+  className = "",
 }: {
   slides: Slide[];
-  fillHeight?: boolean;
+  className?: string;
 }) {
   const [active, setActive] = useState(0);
   const count = slides.length;
@@ -34,11 +34,7 @@ export function HeroCarousel({
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-2xl shadow-2xl ${
-        fillHeight
-          ? "absolute inset-0 h-full min-h-[280px]"
-          : "aspect-[4/3]"
-      }`}
+      className={`relative w-full overflow-hidden rounded-2xl shadow-2xl ${className}`}
     >
       {slides.map((slide, i) => (
         <div
@@ -53,14 +49,14 @@ export function HeroCarousel({
             alt={slide.alt}
             fill
             className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 50vw"
+            sizes="(max-width: 1280px) 100vw, 640px"
             priority={i === 0}
           />
         </div>
       ))}
 
       {count > 1 && (
-        <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
+        <div className="absolute inset-x-0 bottom-3 flex justify-center gap-2">
           {slides.map((slide, i) => (
             <button
               key={slide.src}
@@ -68,7 +64,7 @@ export function HeroCarousel({
               onClick={() => goTo(i)}
               aria-label={`Show slide ${i + 1}: ${slide.alt}`}
               aria-current={i === active}
-              className={`h-2 w-2 rounded-full transition-all ${
+              className={`h-1.5 w-1.5 rounded-full transition-all sm:h-2 sm:w-2 ${
                 i === active
                   ? "scale-110 bg-white"
                   : "bg-white/45 hover:bg-white/70"
