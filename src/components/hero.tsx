@@ -1,9 +1,10 @@
 import { SearchWidget } from "@/components/search-widget";
-import { MaterialIcon } from "@/components/material-icon";
+import { HeroCarousel } from "@/components/hero-carousel";
+import { heroSlides } from "@/lib/content";
 
 export function Hero() {
   return (
-    <section className="hero-pattern overflow-hidden py-16 sm:py-20 lg:py-[80px]">
+    <section className="hero-pattern overflow-hidden py-12 sm:py-16 lg:py-[72px]">
       <div className="mx-auto grid min-w-0 max-w-[1280px] grid-cols-1 items-center gap-8 px-4 sm:px-6 lg:grid-cols-2">
         <div className="min-w-0 space-y-6">
           <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary">
@@ -23,25 +24,7 @@ export function Hero() {
         </div>
 
         <div className="relative min-w-0">
-          <div
-            className="aspect-[4/3] w-full rounded-2xl bg-cover bg-center shadow-2xl"
-            style={{ backgroundImage: "url('/hero.jpg')" }}
-            role="img"
-            aria-label="Umrah pilgrimage experience"
-          />
-          <div className="glass absolute -bottom-6 -left-6 hidden rounded-xl border border-outline-variant p-6 shadow-lg md:block">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-on-primary">
-                <MaterialIcon name="verified" />
-              </div>
-              <div>
-                <p className="font-bold text-primary">Licensed Operator</p>
-                <p className="text-xs text-on-surface-variant">
-                  Registered Hajj & Umrah provider
-                </p>
-              </div>
-            </div>
-          </div>
+          <HeroCarousel slides={heroSlides} />
         </div>
       </div>
     </section>

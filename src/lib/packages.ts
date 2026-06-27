@@ -124,7 +124,7 @@ export async function getHomepagePackages(): Promise<{
       });
       const cards = rows.map(mapCard);
       return {
-        group: onePerPackage(cards.filter((p) => p.featured === "group")),
+        group: cards.filter((p) => p.featured === "group").slice(0, 3),
         premium: onePerPackage(cards.filter((p) => p.featured === "premium")),
       };
     },

@@ -81,6 +81,13 @@ export const galleryImages = [
   "/gallery/8.jpg",
 ];
 
+export const heroSlides = [
+  { src: "/hero.jpg", alt: "Pilgrims at the Holy Mosque in Makkah" },
+  { src: "/gallery/1.jpg", alt: "Umrah journey at the Haram" },
+  { src: "/gallery/2.jpg", alt: "Madinah — the city of the Prophet" },
+  { src: "/gallery/3.jpg", alt: "Guided ziyarat and support team" },
+];
+
 export const collaborations = [
   "/collaborations/1.jpg",
   "/collaborations/2.jpg",

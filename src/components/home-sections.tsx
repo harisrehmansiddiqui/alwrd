@@ -24,16 +24,19 @@ function Container({ children }: { children: React.ReactNode }) {
 }
 
 export function GroupPackages({ packages }: { packages: Package[] }) {
+  const featured = packages.slice(0, 3);
+  if (featured.length === 0) return null;
+
   return (
-    <section className="bg-surface-container-lowest py-20">
+    <section className="bg-surface-container-lowest pb-16 pt-6 sm:pb-20 sm:pt-8">
       <Container>
         <SectionHeading
           title="Group Packages"
           subtitle="Pre-designed itineraries ideal for families and group travel."
           action={{ label: "View All", href: "/packages?type=group" }}
         />
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {packages.map((pkg) => (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+          {featured.map((pkg) => (
             <PackageCard key={pkg.departureId} pkg={pkg} />
           ))}
         </div>

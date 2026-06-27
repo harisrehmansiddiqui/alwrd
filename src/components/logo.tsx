@@ -2,14 +2,26 @@ import Image from "next/image";
 import Link from "next/link";
 
 type LogoVariant = "green" | "black";
+type LogoSize = "header" | "footer";
 
 const LOGOS: Record<LogoVariant, { src: string; width: number; height: number }> =
   {
-    green: { src: "/brand/logo-green.png", width: 220, height: 56 },
-    black: { src: "/brand/logo-black.png", width: 180, height: 48 },
+    green: { src: "/brand/logo-green.png", width: 260, height: 68 },
+    black: { src: "/brand/logo-black.png", width: 280, height: 72 },
   };
 
-export function Logo({ variant = "green" }: { variant?: LogoVariant }) {
+const SIZE_CLASS: Record<LogoSize, string> = {
+  header: "h-12 w-auto object-contain sm:h-14 md:h-16 lg:h-[72px]",
+  footer: "h-10 w-auto object-contain sm:h-11 md:h-12",
+};
+
+export function Logo({
+  variant = "green",
+  size = "header",
+}: {
+  variant?: LogoVariant;
+  size?: LogoSize;
+}) {
   const logo = LOGOS[variant];
 
   return (
@@ -19,7 +31,7 @@ export function Logo({ variant = "green" }: { variant?: LogoVariant }) {
         alt="Al Wrd Hajj & Umrah"
         width={logo.width}
         height={logo.height}
-        className="h-11 w-auto object-contain sm:h-12 md:h-14"
+        className={SIZE_CLASS[size]}
         priority
       />
     </Link>

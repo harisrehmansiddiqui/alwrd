@@ -65,6 +65,17 @@ async function main() {
       departure: { city: "Karachi", date: "2026-08-10", days: 15, nights: 14, price: 299000, old: 330000 },
     },
     {
+      slug: "comfort-umrah-islamabad-14n",
+      title: "Comfort Package",
+      audience: "family" as const,
+      tier: "standard" as const,
+      tagline: "Family-friendly Umrah with guided support throughout",
+      image: "/packages/comfort-1.jpg",
+      amenities: ["All-Inclusive", "Ziyarat Included", "SIM Card", "4 Star Hotel", "Taif Tour"],
+      featured: "group",
+      departure: { city: "Islamabad", date: "2026-08-15", days: 15, nights: 14, price: 289000, old: 320000 },
+    },
+    {
       slug: "royale-umrah-lahore-9n",
       title: "Royale Package",
       audience: "couple" as const,

@@ -38,7 +38,7 @@ export function SiteFooter() {
     <footer className="border-t border-outline-variant bg-surface-container-low">
       <div className="mx-auto grid max-w-[1280px] min-w-0 grid-cols-1 gap-8 px-4 py-20 sm:px-6 md:grid-cols-4">
         <div className="space-y-4">
-          <Logo variant="black" />
+          <Logo variant="black" size="footer" />
           <p className="text-xs leading-relaxed text-on-surface-variant">
             Pakistan&apos;s trusted Umrah platform — plan and book your journey
             directly, with faith, transparency, and no hidden charges.

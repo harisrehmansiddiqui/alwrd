@@ -128,7 +128,7 @@ function FlightPathGraphic({
           <path
             d="M 8 28 Q 70 2 132 28"
             fill="none"
-            stroke="#C7C9C5"
+            stroke="#99cc99"
             strokeWidth="1.5"
             strokeDasharray="4 3"
           />
@@ -145,7 +145,7 @@ function FlightPathGraphic({
           aria-hidden
         >
           <path
-            fill="#8B6E4E"
+            fill="#006400"
             d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 2v1h3v-1l2-2v-5.5L21 16z"
           />
         </svg>
@@ -169,7 +169,7 @@ function FlightCard({ block }: { block: FlightBlock }) {
             {block.fromCity} → {block.toCity}
           </span>
           <span className="flex items-center gap-1.5 text-xs text-neutral sm:text-sm">
-            <span className="h-2 w-2 shrink-0 rounded-full bg-[#8B6E4E]" />
+            <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />
             {block.date}
           </span>
         </div>
@@ -202,24 +202,24 @@ function FlightCard({ block }: { block: FlightBlock }) {
           </div>
         </div>
 
-        <div className="mx-4 mb-4 flex items-start gap-2 rounded-lg border border-[#E8D4A8] bg-[#FFF8E7] px-3 py-2.5">
+        <div className="mx-4 mb-4 flex items-start gap-2 rounded-lg border border-primary-20 bg-primary-10 px-3 py-2.5">
           <svg
             viewBox="0 0 24 24"
-            className="mt-0.5 h-4 w-4 shrink-0 fill-[#8B6E4E]"
+            className="mt-0.5 h-4 w-4 shrink-0 fill-primary"
             aria-hidden
           >
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
           </svg>
           <div className="min-w-0 text-xs">
-            <p className="font-bold text-[#8B6E4E]">
+            <p className="font-bold text-on-primary-container">
               {block.cabinBaggage} and {block.checkInBaggage}
             </p>
-            <p className="mt-0.5 text-[#8B6E4E]/85">
+            <p className="mt-0.5 text-on-primary-container/85">
               Any Baggage crossing this specified limit is extra chargeable.
             </p>
             <button
               type="button"
-              className="mt-1 font-medium text-[#8B6E4E] underline underline-offset-2"
+              className="mt-1 font-medium text-primary underline underline-offset-2"
             >
               View security restricted items
             </button>
