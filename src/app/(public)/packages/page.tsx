@@ -7,7 +7,7 @@ import {
   type PackageFilters as Filters,
 } from "@/lib/packages";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Umrah Packages",

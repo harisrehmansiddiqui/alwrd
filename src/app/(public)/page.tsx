@@ -13,7 +13,8 @@ import {
 } from "@/components/home-sections";
 import { getHomepagePackages } from "@/lib/packages";
 
-export const revalidate = 300;
+// Dynamic page, but package data is cached via unstable_cache in lib/packages.
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const { group, premium } = await getHomepagePackages();
