@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { inquirySchema, makeReference } from "@/lib/inquiry";
+import { prisma } from "@/lib/db";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -17,16 +18,44 @@ export async function POST(request: Request) {
     );
   }
 
+  const data = parsed.data;
   const reference = makeReference();
 
-  // The inquiry is captured here. Persisting it to the inquiries table and
-  // sending the admin alert + pilgrim confirmation email are wired in once the
-  // database and mail credentials are connected.
-  const inquiry = { reference, ...parsed.data, receivedAt: new Date().toISOString() };
-  console.log("New inquiry received:", inquiry);
+  // Link to a package if the inquiry came from a package page.
+  let packageId: string | undefined;
+  if (data.packageSlug) {
+    const pkg = await prisma.package.findUnique({
+      where: { slug: data.packageSlug },
+      select: { id: true },
+    });
+    packageId = pkg?.id;
+  }
 
-  return NextResponse.json(
-    { status: "received", reference },
-    { status: 201 },
-  );
+  try {
+    await prisma.inquiry.create({
+      data: {
+        reference,
+        travelerName: data.travelerName,
+        phone: data.phone,
+        email: data.email,
+        passportNumber: data.passportNumber || null,
+        travelDate: data.travelDate || null,
+        groupSize: data.groupSize,
+        specialRequests: data.specialRequests || null,
+        status: "high_quality_lead",
+        packageId,
+      },
+    });
+  } catch (err) {
+    console.error("Failed to save inquiry:", err);
+    return NextResponse.json(
+      { error: "We couldn't submit your inquiry. Please try again." },
+      { status: 500 },
+    );
+  }
+
+  // Admin alert + pilgrim confirmation email are sent here once mail
+  // credentials are configured.
+
+  return NextResponse.json({ status: "received", reference }, { status: 201 });
 }

@@ -1,6 +1,7 @@
-// Domain types for packages. These mirror the Prisma models so swapping the
-// in-memory data below for real database queries later is a drop-in change.
+import type { Departure, Package as DbPackage, Prisma } from "@prisma/client";
+import { prisma } from "@/lib/db";
 
+// Flattened shape the UI renders: a package joined with one of its departures.
 export type AudienceType = "group" | "family" | "couple";
 export type Tier = "economy" | "standard" | "premium";
 
@@ -23,108 +24,73 @@ export type Package = {
   tier: Tier;
   tagline: string;
   city: string;
-  departureDate: string; // ISO date
+  departureDate: string;
   durationDays: number;
   durationNights: number;
-  price: number; // PKR per person
+  price: number;
   oldPrice?: number;
   image: string;
   amenities: string[];
-  featured: "group" | "premium";
+  featured: string | null;
 };
 
-const PACKAGES: Package[] = [
-  {
-    slug: "comfort-umrah-lahore-14n",
-    title: "Comfort Package",
-    audience: "family",
-    tier: "standard",
-    tagline: "Umrah journey filled with blessing & barakah",
-    city: "Lahore",
-    departureDate: "2026-08-01",
-    durationDays: 15,
-    durationNights: 14,
-    price: 285000,
-    oldPrice: 315000,
-    image: "/packages/comfort-1.jpg",
-    amenities: ["All-Inclusive", "Ziyarat Included", "SIM Card", "4 Star Hotel"],
-    featured: "group",
-  },
-  {
-    slug: "comfort-umrah-karachi-14n",
-    title: "Comfort Package",
-    audience: "group",
-    tier: "standard",
-    tagline: "Designed for a calm and guided Umrah experience",
-    city: "Karachi",
-    departureDate: "2026-08-10",
-    durationDays: 15,
-    durationNights: 14,
-    price: 299000,
-    oldPrice: 330000,
-    image: "/packages/comfort-2.jpg",
-    amenities: ["All-Inclusive", "Ziyarat Included", "4 Star Hotel", "Taif Tour"],
-    featured: "group",
-  },
-  {
-    slug: "comfort-umrah-islamabad-14n",
-    title: "Comfort Package",
-    audience: "couple",
-    tier: "standard",
-    tagline: "Premium comfort without premium pricing",
-    city: "Islamabad",
-    departureDate: "2026-08-17",
-    durationDays: 15,
-    durationNights: 14,
-    price: 294000,
-    oldPrice: 324000,
-    image: "/packages/comfort-3.jpg",
-    amenities: ["All-Inclusive", "Ziyarat Included", "4 Star Hotel", "Triple Umrah"],
-    featured: "group",
-  },
-  {
-    slug: "royale-umrah-lahore-9n",
-    title: "Royale Package",
-    audience: "couple",
-    tier: "premium",
-    tagline: "Stay five-luxury with our exclusive Royale package",
-    city: "Lahore",
-    departureDate: "2026-09-05",
-    durationDays: 10,
-    durationNights: 9,
-    price: 610000,
-    oldPrice: 680000,
-    image: "/packages/royale-1.jpg",
-    amenities: ["All-Inclusive", "5 Star Hotel", "Private Transport", "Ziyarat Included"],
-    featured: "premium",
-  },
-];
+type DepartureWithPackage = Departure & { package: DbPackage };
 
-const today = () => {
+function mapCard(dep: DepartureWithPackage): Package {
+  const p = dep.package;
+  return {
+    slug: p.slug,
+    title: p.title,
+    audience: p.audience as AudienceType,
+    tier: p.tier as Tier,
+    tagline: p.tagline,
+    city: dep.city,
+    departureDate: dep.departureDate.toISOString(),
+    durationDays: dep.durationDays,
+    durationNights: dep.durationNights,
+    price: dep.price,
+    oldPrice: dep.oldPrice ?? undefined,
+    image: p.image,
+    amenities: (p.amenities as string[]) ?? [],
+    featured: p.featured,
+  };
+}
+
+function startOfToday(): Date {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   return d;
-};
-
-// Past or already-departed packages must never surface (PDF requirement).
-function isLive(pkg: Package): boolean {
-  return new Date(pkg.departureDate).getTime() >= today().getTime();
 }
 
-export function getGroupPackages(): Package[] {
-  return PACKAGES.filter((p) => p.featured === "group" && isLive(p));
+// Live departures only: active package, active departure, not already departed.
+function liveWhere(extra?: Prisma.DepartureWhereInput): Prisma.DepartureWhereInput {
+  return {
+    active: true,
+    departureDate: { gte: startOfToday() },
+    package: { active: true },
+    ...extra,
+  };
 }
 
-export function getPremiumPackages(): Package[] {
-  return PACKAGES.filter((p) => p.featured === "premium" && isLive(p));
+async function queryCards(where: Prisma.DepartureWhereInput): Promise<Package[]> {
+  const rows = await prisma.departure.findMany({
+    where,
+    include: { package: true },
+    orderBy: { departureDate: "asc" },
+  });
+  return rows.map(mapCard);
 }
 
-export function getAllPackages(): Package[] {
-  return PACKAGES.filter(isLive);
+export async function getGroupPackages(): Promise<Package[]> {
+  return queryCards(liveWhere({ package: { active: true, featured: "group" } }));
 }
 
-export function getPackage(slug: string): Package | undefined {
-  return PACKAGES.find((p) => p.slug === slug);
+export async function getPremiumPackages(): Promise<Package[]> {
+  return queryCards(liveWhere({ package: { active: true, featured: "premium" } }));
+}
+
+export async function getAllPackages(): Promise<Package[]> {
+  return queryCards(liveWhere());
 }
 
 export type PackageFilters = {
@@ -138,30 +104,56 @@ export type PackageFilters = {
   q?: string;
 };
 
-export function filterPackages(filters: PackageFilters): Package[] {
-  const min = filters.minPrice ? Number(filters.minPrice) : undefined;
-  const max = filters.maxPrice ? Number(filters.maxPrice) : undefined;
-  const query = filters.q?.trim().toLowerCase();
-  const fromDate = filters.date ? new Date(filters.date).getTime() : undefined;
+export async function filterPackages(filters: PackageFilters): Promise<Package[]> {
+  const pkgWhere: Prisma.PackageWhereInput = { active: true };
+  if (filters.tier) pkgWhere.tier = filters.tier as Tier;
+  if (filters.audience) pkgWhere.audience = filters.audience as AudienceType;
+  if (filters.q) {
+    pkgWhere.OR = [
+      { title: { contains: filters.q, mode: "insensitive" } },
+      { tagline: { contains: filters.q, mode: "insensitive" } },
+    ];
+  }
 
-  return getAllPackages().filter((p) => {
-    if (filters.tier && p.tier !== filters.tier) return false;
-    if (filters.audience && p.audience !== filters.audience) return false;
-    if (filters.city && p.city.toLowerCase() !== filters.city.toLowerCase())
-      return false;
-    if (filters.duration && p.durationDays !== Number(filters.duration))
-      return false;
-    if (min !== undefined && p.price < min) return false;
-    if (max !== undefined && p.price > max) return false;
-    if (fromDate && new Date(p.departureDate).getTime() < fromDate) return false;
-    if (query && !`${p.title} ${p.tagline} ${p.city}`.toLowerCase().includes(query))
-      return false;
-    return true;
-  });
+  const where = liveWhere({ package: pkgWhere });
+  if (filters.city) where.city = filters.city;
+  if (filters.duration) where.durationDays = Number(filters.duration);
+  if (filters.date) {
+    where.departureDate = { gte: new Date(filters.date) };
+  }
+  if (filters.minPrice || filters.maxPrice) {
+    where.price = {
+      ...(filters.minPrice ? { gte: Number(filters.minPrice) } : {}),
+      ...(filters.maxPrice ? { lte: Number(filters.maxPrice) } : {}),
+    };
+  }
+
+  return queryCards(where);
 }
 
-export function getCities(): string[] {
-  return Array.from(new Set(getAllPackages().map((p) => p.city))).sort();
+export async function getPackage(slug: string): Promise<Package | undefined> {
+  const pkg = await prisma.package.findFirst({
+    where: { slug, active: true },
+    include: {
+      departures: {
+        where: { active: true, departureDate: { gte: startOfToday() } },
+        orderBy: { departureDate: "asc" },
+        take: 1,
+      },
+    },
+  });
+  if (!pkg || pkg.departures.length === 0) return undefined;
+  return mapCard({ ...pkg.departures[0], package: pkg });
+}
+
+export async function getCities(): Promise<string[]> {
+  const rows = await prisma.departure.findMany({
+    where: liveWhere(),
+    distinct: ["city"],
+    select: { city: true },
+    orderBy: { city: "asc" },
+  });
+  return rows.map((r) => r.city);
 }
 
 export function formatPKR(amount: number): string {

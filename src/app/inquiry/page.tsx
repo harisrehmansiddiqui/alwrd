@@ -15,7 +15,7 @@ export default async function InquiryPage({
   searchParams: Promise<{ package?: string }>;
 }) {
   const { package: slug } = await searchParams;
-  const pkg = slug ? getPackage(slug) : undefined;
+  const pkg = slug ? await getPackage(slug) : undefined;
 
   return (
     <div className="bg-surface-tint">

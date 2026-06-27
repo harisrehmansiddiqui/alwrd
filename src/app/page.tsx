@@ -15,6 +15,8 @@ import {
   TrustBadges,
 } from "@/components/home-sections";
 
+export const revalidate = 300;
+
 export default function Home() {
   return (
     <>

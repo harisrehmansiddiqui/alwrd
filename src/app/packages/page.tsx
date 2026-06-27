@@ -30,8 +30,10 @@ export default async function PackagesPage({
     q: params.q,
   };
 
-  const results = filterPackages(filters);
-  const cities = getCities();
+  const [results, cities] = await Promise.all([
+    filterPackages(filters),
+    getCities(),
+  ]);
 
   return (
     <div className="bg-surface-tint">

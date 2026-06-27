@@ -21,8 +21,8 @@ function Container({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function GroupPackages() {
-  const packages = getGroupPackages();
+export async function GroupPackages() {
+  const packages = await getGroupPackages();
   return (
     <section className="py-16">
       <Container>
@@ -41,8 +41,8 @@ export function GroupPackages() {
   );
 }
 
-export function PremiumPackages() {
-  const packages = getPremiumPackages();
+export async function PremiumPackages() {
+  const packages = await getPremiumPackages();
   return (
     <section className="bg-surface-tint py-16">
       <Container>

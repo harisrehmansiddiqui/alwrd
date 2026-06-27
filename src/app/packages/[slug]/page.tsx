@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  getAllPackages,
   getPackage,
   TIERS,
   discountPercent,
@@ -10,6 +9,8 @@ import {
   type Package,
 } from "@/lib/packages";
 import { whatsappLink } from "@/lib/site";
+
+export const revalidate = 120;
 
 const STANDARD_INCLUSIONS = [
   "Return economy flights",
@@ -31,17 +32,13 @@ function buildItinerary(pkg: Package) {
   ];
 }
 
-export function generateStaticParams() {
-  return getAllPackages().map((p) => ({ slug: p.slug }));
-}
-
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const pkg = getPackage(slug);
+  const pkg = await getPackage(slug);
   if (!pkg) return { title: "Package not found" };
   return {
     title: `${pkg.title} — ${pkg.durationDays} Days from ${pkg.city}`,
@@ -55,7 +52,7 @@ export default async function PackageDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const pkg = getPackage(slug);
+  const pkg = await getPackage(slug);
   if (!pkg) notFound();
 
   const tier = TIERS[pkg.tier];
