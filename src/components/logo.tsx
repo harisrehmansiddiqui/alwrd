@@ -11,7 +11,7 @@ const LOGOS: Record<LogoVariant, { src: string; width: number; height: number }>
   };
 
 const SIZE_CLASS: Record<LogoSize, string> = {
-  header: "h-12 w-auto object-contain sm:h-14 md:h-16 lg:h-[72px]",
+  header: "h-10 w-auto object-contain sm:h-11 lg:h-12 xl:h-14",
   footer: "h-10 w-auto object-contain sm:h-11 md:h-12",
 };
 
