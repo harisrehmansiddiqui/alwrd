@@ -194,18 +194,32 @@ export function UniqueHighlights() {
           title="Our Unique Highlights"
           subtitle="Special offerings to make your Umrah more meaningful, comfortable, and technically seamless."
           centered
+          action={{ label: "View Details", href: "/our-services" }}
         />
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4">
           {highlights.map((h) => (
-            <div
+            <article
               key={h.title}
-              className="group rounded-xl border border-outline-variant p-6 text-center transition-all hover:border-primary/40 hover:bg-surface-container-low"
+              className="group overflow-hidden rounded-2xl border border-outline-variant bg-white transition-all hover:border-primary/40 hover:shadow-[0_8px_30px_rgba(0,100,0,0.08)]"
             >
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-transform group-hover:scale-110">
-                <MaterialIcon name={h.icon} className="text-primary" />
+              <div
+                className="relative aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                style={{ backgroundImage: `url('${h.image}')` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-sm">
+                  <MaterialIcon name={h.icon} className="text-primary" />
+                </div>
               </div>
-              <h3 className="text-base font-bold text-on-surface">{h.title}</h3>
-            </div>
+              <div className="p-4 text-center sm:p-5">
+                <h3 className="text-sm font-bold text-on-surface sm:text-base">
+                  {h.title}
+                </h3>
+                <p className="mt-1 hidden text-xs font-light text-on-surface-variant sm:block">
+                  {h.desc}
+                </p>
+              </div>
+            </article>
           ))}
         </div>
       </Container>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Logo } from "@/components/logo";
+import { SocialLinks } from "@/components/social-links";
 import { mainNav } from "@/lib/site";
 
 export function SiteHeader() {
@@ -40,7 +41,9 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <SocialLinks size="sm" className="hidden sm:flex" />
+
           <Link
             href="/login"
             className="rounded-lg bg-primary px-6 py-2 text-sm font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-dark sm:inline-block"

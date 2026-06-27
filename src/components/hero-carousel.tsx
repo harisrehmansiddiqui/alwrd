@@ -5,7 +5,13 @@ import { useCallback, useEffect, useState } from "react";
 
 type Slide = { src: string; alt: string };
 
-export function HeroCarousel({ slides }: { slides: Slide[] }) {
+export function HeroCarousel({
+  slides,
+  fillHeight = false,
+}: {
+  slides: Slide[];
+  fillHeight?: boolean;
+}) {
   const [active, setActive] = useState(0);
   const count = slides.length;
 
@@ -27,7 +33,13 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
   if (count === 0) return null;
 
   return (
-    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl shadow-2xl">
+    <div
+      className={`relative w-full overflow-hidden rounded-2xl shadow-2xl ${
+        fillHeight
+          ? "absolute inset-0 h-full min-h-[280px]"
+          : "aspect-[4/3]"
+      }`}
+    >
       {slides.map((slide, i) => (
         <div
           key={slide.src}
@@ -41,7 +53,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
             alt={slide.alt}
             fill
             className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 640px"
+            sizes="(max-width: 1024px) 100vw, 50vw"
             priority={i === 0}
           />
         </div>

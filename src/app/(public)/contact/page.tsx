@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact-form";
+import { SocialLinks } from "@/components/social-links";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -22,10 +23,11 @@ export default function ContactPage() {
           <h1 className="mx-auto mt-3 max-w-[900px] text-[30px] font-bold leading-9 text-tertiary lg:mt-4 lg:text-[56px] lg:leading-[66px]">
             Our Friendly Team Would Love To Hear From You.
           </h1>
-          <p className="mx-auto mt-4 max-w-[624px] text-sm leading-[18px] text-[#475467] lg:mt-5 lg:text-xl lg:leading-[30px]">
+          <p className="mx-auto mt-4 max-w-[624px] text-sm font-light leading-[18px] text-[#475467] lg:mt-5 lg:text-xl lg:leading-[30px]">
             You can contact us by filling out the form below. We&apos;re here to
             help and ensure you get the support you need.
           </p>
+          <SocialLinks className="mx-auto mt-6 justify-center" />
         </div>
 
         {/* Form + image */}

@@ -1,12 +1,52 @@
 export const highlights = [
-  { title: "Triple Umrah Journey", icon: "travel_explore", desc: "Perform Umrah three times during your stay." },
-  { title: "Premium Umrah Kit", icon: "package_2", desc: "Ihram, bag and essentials ready on arrival." },
-  { title: "Local SIM with Data", icon: "sim_card", desc: "Stay connected across Makkah and Madinah." },
-  { title: "Wheelchair Assistance", icon: "accessible", desc: "Support for elderly and special-needs pilgrims." },
-  { title: "24/7 On-Ground", icon: "support_agent", desc: "Our team is with you at every step." },
-  { title: "Pre-Departure Orientation", icon: "assignment_turned_in", desc: "Know the rituals before you travel." },
-  { title: "Haramain Train", icon: "train", desc: "Fast, comfortable travel between the holy cities." },
-  { title: "Umrah Holidays", icon: "celebration", desc: "Add guided ziyarat and city tours to your trip." },
+  {
+    title: "Triple Umrah Journey",
+    icon: "travel_explore",
+    desc: "Perform Umrah three times during your stay.",
+    image: "/gallery/1.jpg",
+  },
+  {
+    title: "Premium Umrah Kit",
+    icon: "package_2",
+    desc: "Ihram, bag and essentials ready on arrival.",
+    image: "/gallery/2.jpg",
+  },
+  {
+    title: "Local SIM with Data",
+    icon: "sim_card",
+    desc: "Stay connected across Makkah and Madinah.",
+    image: "/gallery/3.jpg",
+  },
+  {
+    title: "Wheelchair Assistance",
+    icon: "accessible",
+    desc: "Support for elderly and special-needs pilgrims.",
+    image: "/gallery/4.jpg",
+  },
+  {
+    title: "24/7 On-Ground",
+    icon: "support_agent",
+    desc: "Our team is with you at every step.",
+    image: "/gallery/5.jpg",
+  },
+  {
+    title: "Pre-Departure Orientation",
+    icon: "assignment_turned_in",
+    desc: "Know the rituals before you travel.",
+    image: "/gallery/6.jpg",
+  },
+  {
+    title: "Haramain Train",
+    icon: "train",
+    desc: "Fast, comfortable travel between the holy cities.",
+    image: "/gallery/7.jpg",
+  },
+  {
+    title: "Umrah Holidays",
+    icon: "celebration",
+    desc: "Add guided ziyarat and city tours to your trip.",
+    image: "/gallery/8.jpg",
+  },
 ];
 
 export const stats = [

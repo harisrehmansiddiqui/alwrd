@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { MaterialIcon } from "@/components/material-icon";
 import { Logo } from "@/components/logo";
+import { SocialLinks } from "@/components/social-links";
 import { site } from "@/lib/site";
 
 const columns = [
@@ -43,24 +43,7 @@ export function SiteFooter() {
             Pakistan&apos;s trusted Umrah platform — plan and book your journey
             directly, with faith, transparency, and no hidden charges.
           </p>
-          <div className="flex gap-3">
-            {[
-              { href: site.socials.instagram, icon: "photo_camera", label: "Instagram" },
-              { href: site.socials.facebook, icon: "thumb_up", label: "Facebook" },
-              { href: site.socials.tiktok, icon: "music_note", label: "TikTok" },
-            ].map(({ href, icon, label }) => (
-              <a
-                key={href}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary transition-all hover:bg-primary hover:text-on-primary"
-              >
-                <MaterialIcon name={icon} className="text-sm" />
-              </a>
-            ))}
-          </div>
+          <SocialLinks />
         </div>
 
         {columns.map((col) => (
