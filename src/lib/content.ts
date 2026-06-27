@@ -31,6 +31,71 @@ export const esimFeatures = [
   { title: "No Physical SIM", desc: "Instant digital activation." },
 ];
 
+export const testimonials = [
+  {
+    name: "Arman Khan",
+    city: "Lahore",
+    rating: 5,
+    quote:
+      "From visa to hotels near the Haram, everything was handled. The smoothest Umrah we could have asked for.",
+    video: true,
+  },
+  {
+    name: "Nafisa Siddiqui",
+    city: "Karachi",
+    rating: 5,
+    quote:
+      "The team guided my parents at every step. 24/7 support meant we never felt alone on the journey.",
+    video: true,
+  },
+  {
+    name: "Wasim Shaikh",
+    city: "Islamabad",
+    rating: 5,
+    quote:
+      "Transparent pricing, no hidden charges, and premium hotels exactly as promised. Highly recommended.",
+    video: false,
+  },
+  {
+    name: "Hira Malik",
+    city: "Faisalabad",
+    rating: 5,
+    quote:
+      "Authentic Pakistani meals and private transport made the whole trip comfortable for the family.",
+    video: false,
+  },
+];
+
+export const partnerLogos = [
+  "Saudia",
+  "PIA",
+  "Akasa Air",
+  "flynas",
+  "AirSial",
+];
+
+export const galleryImages = [
+  "/gallery/1.jpg",
+  "/gallery/2.jpg",
+  "/gallery/3.jpg",
+  "/gallery/4.jpg",
+  "/gallery/5.jpg",
+  "/gallery/6.jpg",
+];
+
+export const collaborations = [
+  "/collaborations/1.jpg",
+  "/collaborations/2.jpg",
+  "/collaborations/3.jpg",
+  "/collaborations/4.jpg",
+];
+
+export const trustBadges = [
+  { title: "Licensed Travel Operator", desc: "Registered Hajj & Umrah service provider." },
+  { title: "Verified Partners", desc: "Working with trusted airlines and hotels." },
+  { title: "Secure Booking", desc: "Transparent pricing with no hidden charges." },
+];
+
 export const resources = [
   {
     title: "Essential Du'as for Umrah",

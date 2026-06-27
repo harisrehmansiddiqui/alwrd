@@ -7,7 +7,12 @@ import {
   trainFeatures,
   esimFeatures,
   resources,
+  partnerLogos,
+  galleryImages,
+  collaborations,
+  trustBadges,
 } from "@/lib/content";
+import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import Link from "next/link";
 
 function Container({ children }: { children: React.ReactNode }) {
@@ -119,6 +124,65 @@ export function HaramainTrain() {
   );
 }
 
+export function Testimonials() {
+  return (
+    <section className="bg-surface-tint py-16">
+      <Container>
+        <SectionHeading
+          title="What Pilgrims Are Saying"
+          subtitle="Real experiences from those who have planned and performed Umrah with us."
+        />
+        <TestimonialsCarousel />
+      </Container>
+    </section>
+  );
+}
+
+export function Collaborations() {
+  return (
+    <section className="py-16">
+      <Container>
+        <SectionHeading
+          title="Collaborations"
+          subtitle="Trusted by leading travel, hotel and airline partners across the region."
+        />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {collaborations.map((src, i) => (
+            <div
+              key={i}
+              className="aspect-[4/3] rounded-2xl bg-surface-tint bg-cover bg-center"
+              style={{ backgroundImage: `url('${src}')` }}
+            />
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+export function Gallery() {
+  return (
+    <section className="py-16">
+      <Container>
+        <SectionHeading
+          title="Gallery"
+          subtitle="Moments from the journeys of pilgrims we have proudly served."
+          action={{ label: "View Gallery", href: "/gallery" }}
+        />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          {galleryImages.map((src, i) => (
+            <div
+              key={i}
+              className="aspect-square rounded-xl bg-surface-tint bg-cover bg-center"
+              style={{ backgroundImage: `url('${src}')` }}
+            />
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
 export function TrustStats() {
   return (
     <section className="border-y border-black/5 bg-white py-12">
@@ -132,6 +196,45 @@ export function TrustStats() {
               <div className="mt-1 text-sm text-slate-muted">{s.label}</div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 border-t border-black/5 pt-8">
+          {partnerLogos.map((name) => (
+            <span
+              key={name}
+              className="font-display text-lg font-bold text-slate-muted/70"
+            >
+              {name}
+            </span>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+export function TrustBadges() {
+  return (
+    <section className="py-16">
+      <Container>
+        <div className="rounded-3xl border border-black/5 bg-white p-8 shadow-sm sm:p-12">
+          <div className="grid gap-8 sm:grid-cols-3">
+            {trustBadges.map((b) => (
+              <div key={b.title} className="flex items-start gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-pill">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 fill-brand">
+                    <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" />
+                  </svg>
+                </span>
+                <div>
+                  <h3 className="font-display text-base font-semibold text-ink">
+                    {b.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-muted">{b.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </Container>
     </section>

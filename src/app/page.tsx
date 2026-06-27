@@ -4,11 +4,15 @@ import { WhatsAppFloat } from "@/components/whatsapp-float";
 import {
   GroupPackages,
   PremiumPackages,
+  Testimonials,
+  Collaborations,
   UniqueHighlights,
   HaramainTrain,
+  Gallery,
   TrustStats,
   EsimPromo,
   ResourcesSection,
+  TrustBadges,
 } from "@/components/home-sections";
 
 export default function Home() {
@@ -33,11 +37,15 @@ export default function Home() {
 
       <GroupPackages />
       <PremiumPackages />
+      <Testimonials />
+      <Collaborations />
       <UniqueHighlights />
       <HaramainTrain />
+      <Gallery />
       <TrustStats />
       <EsimPromo />
       <ResourcesSection />
+      <TrustBadges />
 
       <WhatsAppFloat />
     </>
