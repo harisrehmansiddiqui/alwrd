@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #1e8a2d;
+  --color-brand-deep: #0c6b12;
+  --color-brand-heading: #14661c;
+  --color-brand-pill: #e3f1e3;
+  --color-gold: #e0a92e;
+  --color-ink: #1a1a1a;
+  --color-slate-muted: #5c6b5c;
+  --color-surface: #ffffff;
+  --color-surface-tint: #f4f8f4;
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-poppins), system-ui, sans-serif;
+
+  --shadow-card: 0 8px 30px rgba(20, 40, 20, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Urdu reads right-to-left and gets a nastaliq-friendly stack */
+[lang="ur"] {
+  font-family: "Noto Nastaliq Urdu", var(--font-sans);
+}
