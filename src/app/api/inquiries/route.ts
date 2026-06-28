@@ -21,7 +21,6 @@ export async function POST(request: Request) {
   const data = parsed.data;
   const reference = makeReference();
 
-  // Link to a package if the inquiry came from a package page.
   let packageId: string | undefined;
   if (data.packageSlug) {
     const pkg = await prisma.package.findUnique({
@@ -30,6 +29,24 @@ export async function POST(request: Request) {
     });
     packageId = pkg?.id;
   }
+
+  const bookingMeta =
+    data.roomPreference || data.paymentOption || data.travelers?.length
+      ? {
+          roomPreference: data.roomPreference,
+          paymentOption: data.paymentOption,
+          couponCode: data.couponCode || null,
+          bookingTotal: data.bookingTotal ?? null,
+          travelers: data.travelers ?? [],
+        }
+      : null;
+
+  const specialRequests = [
+    data.specialRequests?.trim(),
+    bookingMeta ? `[Booking]\n${JSON.stringify(bookingMeta, null, 2)}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
   try {
     await prisma.inquiry.create({
@@ -41,9 +58,11 @@ export async function POST(request: Request) {
         passportNumber: data.passportNumber || null,
         travelDate: data.travelDate || null,
         groupSize: data.groupSize,
-        specialRequests: data.specialRequests || null,
+        specialRequests: specialRequests || null,
         status: "high_quality_lead",
         packageId,
+        departureId: data.departureId || null,
+        notes: bookingMeta ?? undefined,
       },
     });
   } catch (err) {
@@ -53,9 +72,6 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-
-  // Admin alert + pilgrim confirmation email are sent here once mail
-  // credentials are configured.
 
   return NextResponse.json({ status: "received", reference }, { status: 201 });
 }

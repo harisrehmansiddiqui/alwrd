@@ -35,7 +35,7 @@ export default async function PackageDetailPage({
 
   const itinerary = buildItinerary(pkg);
   const meals = buildMealPlan(pkg);
-  const bookHref = `/inquiry?package=${pkg.slug}`;
+  const bookHref = `/packages/${pkg.slug}/book`;
 
   const makkahNights = Math.max(1, Math.round(pkg.durationNights * 0.57));
   const madinahNights = Math.max(1, pkg.durationNights - makkahNights);
