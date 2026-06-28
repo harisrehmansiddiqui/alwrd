@@ -106,10 +106,8 @@ export function SearchWidget() {
               compact
             />
           </Field>
-        </div>
 
-        <div className="flex flex-col gap-2 md:flex-row md:items-end md:gap-3">
-          <div ref={dateRef} className="relative min-w-0 flex-1">
+          <div ref={dateRef} className="relative col-span-2">
             <Field label="Travel Date" icon="calendar_month">
               <button
                 type="button"
@@ -130,14 +128,14 @@ export function SearchWidget() {
               </button>
             </Field>
           </div>
-
-          <button
-            type="submit"
-            className="w-full shrink-0 rounded-lg bg-primary py-2.5 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark md:min-w-[148px] md:py-2.5 xl:min-w-[160px]"
-          >
-            Get Packages
-          </button>
         </div>
+
+        <button
+          type="submit"
+          className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark sm:py-3"
+        >
+          Get Packages
+        </button>
       </form>
 
       {calendarOpen &&
@@ -175,7 +173,7 @@ function Field({
 }) {
   return (
     <div className="min-w-0 space-y-0.5">
-      <label className="text-[11px] font-semibold text-on-surface-variant sm:text-xs">
+      <label className="whitespace-nowrap text-[11px] font-semibold text-on-surface-variant sm:text-xs">
         {label}
       </label>
       <div className="flex min-w-0 items-center gap-2 rounded-lg border border-outline-variant bg-surface px-2.5 has-[button[aria-expanded=true]]:border-primary has-[button[aria-expanded=true]]:ring-1 has-[button[aria-expanded=true]]:ring-primary focus-within:border-primary focus-within:ring-1 focus-within:ring-primary sm:gap-2.5 sm:px-3">
