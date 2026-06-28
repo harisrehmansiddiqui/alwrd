@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { CustomSelect } from "@/components/custom-select";
@@ -29,7 +28,6 @@ const PERSON_COUNTS = Array.from({ length: 10 }, (_, i) => ({
 
 export function SearchWidget() {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
   const [city, setCity] = useState("Lahore");
   const [duration, setDuration] = useState("");
   const [type, setType] = useState("standard");
@@ -38,14 +36,21 @@ export function SearchWidget() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const dateRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setMounted(true), []);
-
   useEffect(() => {
     if (!calendarOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    function onPointerDown(e: MouseEvent) {
+      if (dateRef.current && !dateRef.current.contains(e.target as Node)) {
+        setCalendarOpen(false);
+      }
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setCalendarOpen(false);
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.body.style.overflow = prev;
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
     };
   }, [calendarOpen]);
 
@@ -64,101 +69,89 @@ export function SearchWidget() {
   }
 
   return (
-    <>
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest p-2.5 shadow-md sm:gap-2.5 sm:p-3.5 xl:p-4"
-      >
-        <div className="grid grid-cols-2 gap-2 sm:gap-2.5 xl:gap-3">
-          <Field label="Departure City" icon="location_on">
-            <CustomSelect
-              value={city}
-              onChange={setCity}
-              options={CITIES.map((c) => ({ value: c, label: c }))}
-              compact
-            />
-          </Field>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest p-2.5 shadow-md sm:gap-2.5 sm:p-3.5 xl:p-4"
+    >
+      <div className="grid grid-cols-2 gap-2 sm:gap-2.5 xl:gap-3">
+        <Field label="Departure City" icon="location_on">
+          <CustomSelect
+            value={city}
+            onChange={setCity}
+            options={CITIES.map((c) => ({ value: c, label: c }))}
+            compact
+          />
+        </Field>
 
-          <Field label="Duration" icon="schedule">
-            <CustomSelect
-              value={duration}
-              onChange={setDuration}
-              options={DURATIONS}
-              compact
-            />
-          </Field>
+        <Field label="Duration" icon="schedule">
+          <CustomSelect
+            value={duration}
+            onChange={setDuration}
+            options={DURATIONS}
+            compact
+          />
+        </Field>
 
-          <Field label="Package Type" icon="category">
-            <CustomSelect
-              id="package-type"
-              value={type}
-              onChange={setType}
-              options={PACKAGE_TYPES}
-              compact
-            />
-          </Field>
+        <Field label="Package Type" icon="category">
+          <CustomSelect
+            id="package-type"
+            value={type}
+            onChange={setType}
+            options={PACKAGE_TYPES}
+            compact
+          />
+        </Field>
 
-          <Field label="Persons" icon="groups">
-            <CustomSelect
-              value={persons}
-              onChange={setPersons}
-              options={PERSON_COUNTS}
-              compact
-            />
-          </Field>
+        <Field label="Persons" icon="groups">
+          <CustomSelect
+            value={persons}
+            onChange={setPersons}
+            options={PERSON_COUNTS}
+            compact
+          />
+        </Field>
 
-          <div ref={dateRef} className="relative col-span-2">
-            <Field label="Travel Date" icon="calendar_month">
-              <button
-                type="button"
-                onClick={() => setCalendarOpen((v) => !v)}
-                className="flex w-full min-w-0 items-center justify-between gap-2 py-1.5 text-left text-sm outline-none sm:py-2"
-              >
-                <span className="truncate">
-                  {date ? (
-                    formatDate(date)
-                  ) : (
-                    <span className="text-on-surface-variant">Select date</span>
-                  )}
-                </span>
-                <MaterialIcon
-                  name="expand_more"
-                  className={`shrink-0 text-lg text-neutral transition-transform ${calendarOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-            </Field>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark sm:py-3"
-        >
-          Get Packages
-        </button>
-      </form>
-
-      {calendarOpen &&
-        mounted &&
-        createPortal(
-          <div data-calendar-overlay className="fixed inset-0 z-[200]">
+        <div ref={dateRef} className="relative col-span-2">
+          <Field label="Travel Date" icon="calendar_month">
             <button
               type="button"
-              aria-label="Close calendar"
-              className="absolute inset-0 bg-black/40"
-              onClick={() => setCalendarOpen(false)}
-            />
-            <div className="absolute left-1/2 top-1/2 w-[min(calc(100vw-2rem),18rem)] -translate-x-1/2 -translate-y-1/2">
+              aria-expanded={calendarOpen}
+              onClick={() => setCalendarOpen((v) => !v)}
+              className="flex w-full min-w-0 items-center justify-between gap-2 py-1.5 text-left text-sm outline-none sm:py-2"
+            >
+              <span className="truncate">
+                {date ? (
+                  formatDate(date)
+                ) : (
+                  <span className="text-on-surface-variant">Select date</span>
+                )}
+              </span>
+              <MaterialIcon
+                name="expand_more"
+                className={`shrink-0 text-lg text-neutral transition-transform ${calendarOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+          </Field>
+
+          {calendarOpen && (
+            <div className="absolute left-0 right-0 top-full z-50 mt-1 sm:left-auto sm:right-0 sm:w-72">
               <AvailabilityCalendar
                 value={date}
                 onSelect={handleDateSelect}
                 compact
               />
             </div>
-          </div>,
-          document.body,
-        )}
-    </>
+          )}
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark sm:py-3"
+      >
+        Get Packages
+      </button>
+    </form>
   );
 }
 

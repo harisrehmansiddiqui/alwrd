@@ -10,15 +10,16 @@ import {
   calculateBookingTotal,
   formatPKR,
   formatTravelDate,
+  BOOKING_TABS,
   PAYMENT_OPTIONS,
   ROOM_OPTIONS,
-  SERVICE_ICONS,
+  type BookingTabId,
   type PaymentOption,
   type RoomPreference,
   type TravelerForm,
 } from "@/lib/booking";
 import type { ItineraryBlock, ItineraryDay } from "@/lib/itinerary";
-import { collectBlocks } from "@/lib/itinerary";
+import { buildInsuranceInfo, buildVisaInfo, collectBlocks } from "@/lib/itinerary";
 import type { Package } from "@/lib/packages";
 import { TIERS } from "@/lib/packages";
 
@@ -45,6 +46,7 @@ export function BookingCheckoutView({ pkg, days, travelDateLabel }: Props) {
   const [contactEmail, setContactEmail] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [openTraveler, setOpenTraveler] = useState(0);
+  const [activeTab, setActiveTab] = useState<BookingTabId>("flights");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [reference, setReference] = useState("");
   const [error, setError] = useState("");
@@ -53,7 +55,17 @@ export function BookingCheckoutView({ pkg, days, travelDateLabel }: Props) {
   const transfers = collectBlocks(days, "transfer");
   const hotels = collectBlocks(days, "hotel");
   const ziyarat = collectBlocks(days, "ziyarat");
-  const services = collectBlocks(days, "service");
+  const visaInfo = buildVisaInfo();
+  const insuranceInfo = buildInsuranceInfo();
+
+  const tabTitles: Record<BookingTabId, string> = {
+    flights: "Flight Details",
+    hotels: "Hotels",
+    transfers: "Transfers",
+    ziyarat: "Ziyarat",
+    visa: "Visa & Documentation",
+    insurance: "Travel Insurance",
+  };
 
   const pricing = useMemo(
     () => calculateBookingTotal(pkg, travelerCount, room),
@@ -295,27 +307,55 @@ export function BookingCheckoutView({ pkg, days, travelDateLabel }: Props) {
                 );
               })}
             </div>
-
-            <div className="mt-6 flex flex-wrap justify-center gap-4 border-t border-neutral-20 pt-5 sm:gap-6">
-              {SERVICE_ICONS.map((s) => (
-                <div key={s.label} className="flex flex-col items-center gap-1">
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-primary-10">
-                    <MaterialIcon name={s.icon} className="text-lg text-primary" />
-                  </span>
-                  <span className="text-[11px] font-medium text-neutral">{s.label}</span>
-                </div>
-              ))}
-            </div>
           </section>
 
-          {/* Itinerary sections */}
-          <ItinerarySection title="Flight Details" blocks={flights} />
-          <ItinerarySection title="Transfers" blocks={transfers} />
-          <ItinerarySection title="Hotels" blocks={hotels} />
-          <ItinerarySection title="Ziyarat" blocks={ziyarat} />
-          {services.length > 0 && (
-            <ItinerarySection title="Additional Services" blocks={services} />
-          )}
+          {/* Package inclusions — tabbed like package detail */}
+          <section className="rounded-2xl border border-neutral-20 bg-white p-4 shadow-sm sm:p-6">
+            <h2 className="text-lg font-bold text-tertiary">Package Inclusions</h2>
+
+            <div className="mt-4 flex gap-1 overflow-x-auto border-b border-secondary pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {BOOKING_TABS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setActiveTab(t.id)}
+                  className={`flex shrink-0 flex-col items-center gap-1 px-3 py-3 text-xs font-medium transition-colors sm:px-4 ${
+                    activeTab === t.id
+                      ? "border-b-2 border-primary bg-primary-10 text-primary"
+                      : "text-neutral hover:text-primary"
+                  }`}
+                >
+                  <MaterialIcon name={t.icon} className="text-xl" />
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-6">
+              <h3 className="text-base font-bold text-tertiary">
+                {tabTitles[activeTab]}
+              </h3>
+
+              {activeTab === "flights" && (
+                <TabBlocks blocks={flights} empty="No flight details available." />
+              )}
+              {activeTab === "hotels" && (
+                <TabBlocks blocks={hotels} empty="No hotel details available." />
+              )}
+              {activeTab === "transfers" && (
+                <TabBlocks blocks={transfers} empty="No transfer details available." />
+              )}
+              {activeTab === "ziyarat" && (
+                <TabBlocks blocks={ziyarat} empty="No ziyarat details available." />
+              )}
+              {activeTab === "visa" && (
+                <InfoList sections={visaInfo} />
+              )}
+              {activeTab === "insurance" && (
+                <InfoList sections={insuranceInfo} />
+              )}
+            </div>
+          </section>
         </div>
 
         {/* Sidebar — desktop */}
@@ -454,23 +494,49 @@ function TravelerAccordion({
   );
 }
 
-function ItinerarySection({
-  title,
+function TabBlocks({
   blocks,
+  empty,
 }: {
-  title: string;
   blocks: ItineraryBlock[];
+  empty: string;
 }) {
-  if (blocks.length === 0) return null;
+  if (blocks.length === 0) {
+    return <p className="mt-4 text-sm text-neutral">{empty}</p>;
+  }
   return (
-    <section className="rounded-2xl border border-neutral-20 bg-white p-4 shadow-sm sm:p-6">
-      <h2 className="text-lg font-bold text-tertiary">{title}</h2>
-      <div className="mt-4 space-y-8">
-        {blocks.map((block, i) => (
-          <BlockRenderer key={i} block={block} />
-        ))}
-      </div>
-    </section>
+    <div className="mt-4 space-y-8">
+      {blocks.map((block, i) => (
+        <BlockRenderer key={i} block={block} />
+      ))}
+    </div>
+  );
+}
+
+function InfoList({
+  sections,
+}: {
+  sections: { title: string; items: string[] }[];
+}) {
+  return (
+    <div className="mt-4 space-y-6">
+      {sections.map((section) => (
+        <div key={section.title}>
+          <h4 className="font-semibold text-tertiary">{section.title}</h4>
+          <ul className="mt-3 space-y-2">
+            {section.items.map((item) => (
+              <li
+                key={item}
+                className="flex items-start gap-2 text-sm text-neutral"
+              >
+                <MaterialIcon name="check_circle" className="mt-0.5 shrink-0 text-primary" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
   );
 }
 

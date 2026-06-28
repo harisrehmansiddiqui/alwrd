@@ -57,14 +57,19 @@ export const PAYMENT_OPTIONS: {
   },
 ];
 
-export const SERVICE_ICONS = [
-  { icon: "flight", label: "Flight" },
-  { icon: "hotel", label: "Hotel" },
-  { icon: "directions_bus", label: "Transfer" },
-  { icon: "mosque", label: "Ziyarat" },
-  { icon: "badge", label: "Visa" },
-  { icon: "health_and_safety", label: "Insurance" },
+export const BOOKING_TABS = [
+  { id: "flights", icon: "flight", label: "Flight" },
+  { id: "hotels", icon: "hotel", label: "Hotel" },
+  { id: "transfers", icon: "directions_bus", label: "Transfer" },
+  { id: "ziyarat", icon: "mosque", label: "Ziyarat" },
+  { id: "visa", icon: "badge", label: "Visa" },
+  { id: "insurance", icon: "health_and_safety", label: "Insurance" },
 ] as const;
+
+export type BookingTabId = (typeof BOOKING_TABS)[number]["id"];
+
+/** @deprecated use BOOKING_TABS */
+export const SERVICE_ICONS = BOOKING_TABS;
 
 export function emptyTraveler(primary = false): TravelerForm {
   return {
