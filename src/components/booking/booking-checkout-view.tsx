@@ -3,23 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { BlockRenderer } from "@/components/package/itinerary-blocks";
+import { BookingPackageOverview } from "@/components/booking/booking-package-overview";
 import { CustomSelect } from "@/components/custom-select";
 import { MaterialIcon } from "@/components/material-icon";
 import {
   calculateBookingTotal,
   formatPKR,
   formatTravelDate,
-  BOOKING_TABS,
   PAYMENT_OPTIONS,
   ROOM_OPTIONS,
-  type BookingTabId,
   type PaymentOption,
   type RoomPreference,
   type TravelerForm,
 } from "@/lib/booking";
-import type { ItineraryBlock, ItineraryDay } from "@/lib/itinerary";
-import { buildInsuranceInfo, buildVisaInfo, collectBlocks } from "@/lib/itinerary";
+import type { ItineraryDay, MealPlan, PackagePolicy } from "@/lib/itinerary";
 import type { Package } from "@/lib/packages";
 import { TIERS } from "@/lib/packages";
 
@@ -31,10 +28,18 @@ const GENDER_OPTIONS = [
 type Props = {
   pkg: Package;
   days: ItineraryDay[];
+  meals: MealPlan[];
+  policies: PackagePolicy[];
   travelDateLabel: string;
 };
 
-export function BookingCheckoutView({ pkg, days, travelDateLabel }: Props) {
+export function BookingCheckoutView({
+  pkg,
+  days,
+  meals,
+  policies,
+  travelDateLabel,
+}: Props) {
   const [travelerCount, setTravelerCount] = useState(1);
   const [travelers, setTravelers] = useState<TravelerForm[]>([
     { name: "", gender: "", dob: "", passportNumber: "", passportExpiry: "" },
@@ -46,26 +51,9 @@ export function BookingCheckoutView({ pkg, days, travelDateLabel }: Props) {
   const [contactEmail, setContactEmail] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [openTraveler, setOpenTraveler] = useState(0);
-  const [activeTab, setActiveTab] = useState<BookingTabId>("flights");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [reference, setReference] = useState("");
   const [error, setError] = useState("");
-
-  const flights = collectBlocks(days, "flight");
-  const transfers = collectBlocks(days, "transfer");
-  const hotels = collectBlocks(days, "hotel");
-  const ziyarat = collectBlocks(days, "ziyarat");
-  const visaInfo = buildVisaInfo();
-  const insuranceInfo = buildInsuranceInfo();
-
-  const tabTitles: Record<BookingTabId, string> = {
-    flights: "Flight Details",
-    hotels: "Hotels",
-    transfers: "Transfers",
-    ziyarat: "Ziyarat",
-    visa: "Visa & Documentation",
-    insurance: "Travel Insurance",
-  };
 
   const pricing = useMemo(
     () => calculateBookingTotal(pkg, travelerCount, room),
@@ -309,53 +297,7 @@ export function BookingCheckoutView({ pkg, days, travelDateLabel }: Props) {
             </div>
           </section>
 
-          {/* Package inclusions — tabbed like package detail */}
-          <section className="rounded-2xl border border-neutral-20 bg-white p-4 shadow-sm sm:p-6">
-            <h2 className="text-lg font-bold text-tertiary">Package Inclusions</h2>
-
-            <div className="mt-4 flex gap-1 overflow-x-auto border-b border-secondary pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {BOOKING_TABS.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setActiveTab(t.id)}
-                  className={`flex shrink-0 flex-col items-center gap-1 px-3 py-3 text-xs font-medium transition-colors sm:px-4 ${
-                    activeTab === t.id
-                      ? "border-b-2 border-primary bg-primary-10 text-primary"
-                      : "text-neutral hover:text-primary"
-                  }`}
-                >
-                  <MaterialIcon name={t.icon} className="text-xl" />
-                  {t.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-6">
-              <h3 className="text-base font-bold text-tertiary">
-                {tabTitles[activeTab]}
-              </h3>
-
-              {activeTab === "flights" && (
-                <TabBlocks blocks={flights} empty="No flight details available." />
-              )}
-              {activeTab === "hotels" && (
-                <TabBlocks blocks={hotels} empty="No hotel details available." />
-              )}
-              {activeTab === "transfers" && (
-                <TabBlocks blocks={transfers} empty="No transfer details available." />
-              )}
-              {activeTab === "ziyarat" && (
-                <TabBlocks blocks={ziyarat} empty="No ziyarat details available." />
-              )}
-              {activeTab === "visa" && (
-                <InfoList sections={visaInfo} />
-              )}
-              {activeTab === "insurance" && (
-                <InfoList sections={insuranceInfo} />
-              )}
-            </div>
-          </section>
+          <BookingPackageOverview days={days} meals={meals} policies={policies} />
         </div>
 
         {/* Sidebar — desktop */}
@@ -490,52 +432,6 @@ function TravelerAccordion({
           </Field>
         </div>
       )}
-    </div>
-  );
-}
-
-function TabBlocks({
-  blocks,
-  empty,
-}: {
-  blocks: ItineraryBlock[];
-  empty: string;
-}) {
-  if (blocks.length === 0) {
-    return <p className="mt-4 text-sm text-neutral">{empty}</p>;
-  }
-  return (
-    <div className="mt-4 space-y-8">
-      {blocks.map((block, i) => (
-        <BlockRenderer key={i} block={block} />
-      ))}
-    </div>
-  );
-}
-
-function InfoList({
-  sections,
-}: {
-  sections: { title: string; items: string[] }[];
-}) {
-  return (
-    <div className="mt-4 space-y-6">
-      {sections.map((section) => (
-        <div key={section.title}>
-          <h4 className="font-semibold text-tertiary">{section.title}</h4>
-          <ul className="mt-3 space-y-2">
-            {section.items.map((item) => (
-              <li
-                key={item}
-                className="flex items-start gap-2 text-sm text-neutral"
-              >
-                <MaterialIcon name="check_circle" className="mt-0.5 shrink-0 text-primary" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
     </div>
   );
 }

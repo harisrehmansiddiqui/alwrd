@@ -19,18 +19,7 @@ import type { Package } from "@/lib/packages";
 import { discountPercent, formatPKR } from "@/lib/packages";
 import { faqs } from "@/lib/content";
 
-const TABS = [
-  { id: "itinerary", label: "Itinerary", icon: "map" },
-  { id: "flights", label: "Flights", icon: "flight" },
-  { id: "transfers", label: "Transfers", icon: "directions_bus" },
-  { id: "hotels", label: "Hotels", icon: "hotel" },
-  { id: "meals", label: "Meals", icon: "restaurant" },
-  { id: "ziyarat", label: "Ziyarat", icon: "mosque" },
-  { id: "faq", label: "FAQ", icon: "help" },
-  { id: "policies", label: "Policies", icon: "policy" },
-] as const;
-
-type TabId = (typeof TABS)[number]["id"];
+import { PACKAGE_OVERVIEW_TABS, type PackageOverviewTabId } from "@/lib/package-overview-tabs";
 
 type Props = {
   pkg: Package;
@@ -49,7 +38,7 @@ export function PackageDetailView({
   bookHref,
   travelDateLabel,
 }: Props) {
-  const [tab, setTab] = useState<TabId>("itinerary");
+  const [tab, setTab] = useState<PackageOverviewTabId>("itinerary");
   const [activeDayId, setActiveDayId] = useState(days[0]?.id ?? "");
   const discount = discountPercent(pkg);
 
@@ -131,7 +120,7 @@ export function PackageDetailView({
 
           {/* Icon tabs */}
           <div className="mt-5 flex gap-1 overflow-x-auto border-b border-secondary pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {TABS.map((t) => (
+            {PACKAGE_OVERVIEW_TABS.map((t) => (
               <button
                 key={t.id}
                 type="button"

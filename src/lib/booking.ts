@@ -1,5 +1,9 @@
 import type { Package } from "@/lib/packages";
 import { formatPKR } from "@/lib/packages";
+import {
+  PACKAGE_OVERVIEW_TABS,
+  type PackageOverviewTabId,
+} from "@/lib/package-overview-tabs";
 
 export type RoomPreference = "quad" | "triple";
 export type PaymentOption = "full" | "partial" | "office";
@@ -57,16 +61,8 @@ export const PAYMENT_OPTIONS: {
   },
 ];
 
-export const BOOKING_TABS = [
-  { id: "flights", icon: "flight", label: "Flight" },
-  { id: "hotels", icon: "hotel", label: "Hotel" },
-  { id: "transfers", icon: "directions_bus", label: "Transfer" },
-  { id: "ziyarat", icon: "mosque", label: "Ziyarat" },
-  { id: "visa", icon: "badge", label: "Visa" },
-  { id: "insurance", icon: "health_and_safety", label: "Insurance" },
-] as const;
-
-export type BookingTabId = (typeof BOOKING_TABS)[number]["id"];
+export const BOOKING_TABS = PACKAGE_OVERVIEW_TABS;
+export type BookingTabId = PackageOverviewTabId;
 
 /** @deprecated use BOOKING_TABS */
 export const SERVICE_ICONS = BOOKING_TABS;

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BookingCheckoutView } from "@/components/booking/booking-checkout-view";
-import { buildItinerary } from "@/lib/itinerary";
+import { buildItinerary, buildMealPlan, packagePolicies } from "@/lib/itinerary";
 import { formatTravelDate } from "@/lib/booking";
 import { getPackage } from "@/lib/packages";
 
@@ -31,12 +31,15 @@ export default async function BookingPage({
   if (!pkg) notFound();
 
   const days = buildItinerary(pkg);
+  const meals = buildMealPlan(pkg);
   const travelDateLabel = formatTravelDate(pkg.departureDate);
 
   return (
     <BookingCheckoutView
       pkg={pkg}
       days={days}
+      meals={meals}
+      policies={packagePolicies}
       travelDateLabel={travelDateLabel}
     />
   );
