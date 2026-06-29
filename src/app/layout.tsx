@@ -1,29 +1,13 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/json-ld";
+import {
+  defaultMetadata,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/seo";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://alwrd.vercel.app"),
-  title: {
-    default: "Al Wrd — Transparent Umrah Booking from Pakistan",
-    template: "%s | Al Wrd Hajj & Umrah",
-  },
-  description:
-    "Plan your Umrah with transparent pricing, trusted guidance, and dedicated support — no agents, no hidden charges.",
-  keywords: [
-    "Umrah packages Pakistan",
-    "Umrah booking",
-    "Hajj and Umrah",
-    "Umrah visa",
-    "Makkah hotels",
-  ],
-  openGraph: {
-    type: "website",
-    siteName: "Al Wrd Hajj & Umrah",
-    title: "Al Wrd — Transparent Umrah Booking from Pakistan",
-    description:
-      "Premium Umrah packages from Pakistan. Fast visa, hotels near the Haram, private transport.",
-  },
-};
+export const metadata: Metadata = defaultMetadata();
 
 export default function RootLayout({
   children,
@@ -37,6 +21,7 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col overflow-x-hidden bg-background font-sans text-on-background">
+        <JsonLd data={[organizationSchema(), websiteSchema()]} />
         {children}
       </body>
     </html>

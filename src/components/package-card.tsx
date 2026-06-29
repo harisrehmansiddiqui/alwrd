@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { AmenityMarquee } from "@/components/amenity-marquee";
 import {
@@ -43,14 +44,21 @@ function galleryThumbs(pkg: Package): string[] {
 export function PackageCard({ pkg }: { pkg: Package }) {
   const discount = discountPercent(pkg);
   const thumbs = galleryThumbs(pkg);
+  const href = `/packages/${pkg.slug}`;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)]">
+    <Link
+      href={href}
+      className="group flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)]"
+    >
       <div className="relative">
-        <div className="aspect-[16/10] overflow-hidden">
-          <div
-            className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-            style={{ backgroundImage: `url('${pkg.image}')` }}
+        <div className="relative aspect-[16/10] overflow-hidden">
+          <Image
+            src={pkg.image}
+            alt={pkg.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
           />
         </div>
 
@@ -58,11 +66,14 @@ export function PackageCard({ pkg }: { pkg: Package }) {
           {thumbs.map((src, i) => (
             <div
               key={`${src}-${i}`}
-              className="h-11 w-11 overflow-hidden rounded-full border-2 border-white bg-surface-container-low shadow-md sm:h-12 sm:w-12"
+              className="relative h-11 w-11 overflow-hidden rounded-full border-2 border-white bg-surface-container-low shadow-md sm:h-12 sm:w-12"
             >
-              <div
-                className="h-full w-full bg-cover bg-center"
-                style={{ backgroundImage: `url('${src}')` }}
+              <Image
+                src={src}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="48px"
               />
             </div>
           ))}
@@ -116,14 +127,11 @@ export function PackageCard({ pkg }: { pkg: Package }) {
             </p>
           </div>
 
-          <Link
-            href={`/packages/${pkg.slug}`}
-            className="shrink-0 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-dark"
-          >
+          <span className="shrink-0 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-colors group-hover:bg-primary-dark">
             View Details
-          </Link>
+          </span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }

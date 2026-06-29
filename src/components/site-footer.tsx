@@ -20,6 +20,8 @@ const columns = [
       { label: "How It Works", href: "/how-it-works" },
       { label: "Contact Us", href: "/contact" },
       { label: "Our Services", href: "/our-services" },
+      { label: "Gallery", href: "/gallery" },
+      { label: "Send Inquiry", href: "/inquiry" },
     ],
   },
   {

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/json-ld";
 import { PackageDetailView } from "@/components/package/package-detail-view";
 import {
   buildItinerary,
@@ -7,6 +9,12 @@ import {
   packagePolicies,
 } from "@/lib/itinerary";
 import { getPackage, formatPKR } from "@/lib/packages";
+import {
+  absoluteUrl,
+  breadcrumbSchema,
+  packagePageDescription,
+  packageProductSchema,
+} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -18,9 +26,18 @@ export async function generateMetadata({
   const { slug } = await params;
   const pkg = await getPackage(slug);
   if (!pkg) return { title: "Package not found" };
+  const description = packagePageDescription(pkg);
+  const url = absoluteUrl(`/packages/${slug}`);
   return {
     title: `${pkg.title} — ${pkg.durationDays} Days from ${pkg.city}`,
-    description: `${pkg.tagline}. ${pkg.durationDays}D/${pkg.durationNights}N Umrah package from ${pkg.city}, from ${formatPKR(pkg.price)} per person.`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: `${pkg.title} | Al Wrd Hajj & Umrah`,
+      description,
+      url,
+      images: [{ url: absoluteUrl(pkg.image), alt: pkg.title }],
+    },
   };
 }
 
@@ -48,14 +65,27 @@ export default async function PackageDetailPage({
     year: "numeric",
   });
 
+  const breadcrumbs = [
+    { name: "Home", path: "/" },
+    { name: "Umrah Packages", path: "/packages" },
+    { name: pkg.title, path: `/packages/${pkg.slug}` },
+  ];
+
   return (
     <>
+      <JsonLd
+        data={[packageProductSchema(pkg), breadcrumbSchema(breadcrumbs)]}
+      />
       <div className="border-b border-secondary bg-white">
         <div className="mx-auto max-w-[1200px] min-w-0 px-4 py-4 lg:px-8">
-          <nav className="text-xs text-neutral">
-            <span>Home</span>
+          <nav aria-label="Breadcrumb" className="text-xs text-neutral">
+            <Link href="/" className="hover:text-primary hover:underline">
+              Home
+            </Link>
             <span className="mx-2">›</span>
-            <span>Umrah</span>
+            <Link href="/packages" className="hover:text-primary hover:underline">
+              Umrah
+            </Link>
             <span className="mx-2">›</span>
             <span className="text-tertiary">{pkg.title}</span>
           </nav>

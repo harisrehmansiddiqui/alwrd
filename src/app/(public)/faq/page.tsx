@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/page-header";
 import { FaqAccordion } from "@/components/faq-accordion";
+import { JsonLd } from "@/components/json-ld";
+import { faqs } from "@/lib/content";
+import { faqPageSchema } from "@/lib/seo";
 import { whatsappLink, site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -12,6 +15,7 @@ export const metadata: Metadata = {
 export default function FaqPage() {
   return (
     <div className="bg-surface-tint">
+      <JsonLd data={faqPageSchema(faqs)} />
       <PageHeader
         title="Frequently Asked Questions"
         subtitle="Everything you need to know before you book your Umrah."

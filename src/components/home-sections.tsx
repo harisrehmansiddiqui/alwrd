@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
 import { PackageCard } from "@/components/package-card";
@@ -126,9 +127,17 @@ export function GalleryCollaborations() {
       <Container>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div className="space-y-6 lg:col-span-4">
-            <h2 className="text-2xl font-semibold text-on-background md:text-[32px]">
-              Collaborations
-            </h2>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <h2 className="text-2xl font-semibold text-on-background md:text-[32px]">
+                Collaborations
+              </h2>
+              <Link
+                href="/gallery"
+                className="text-sm font-semibold text-primary hover:underline"
+              >
+                View gallery →
+              </Link>
+            </div>
             <p className="text-base text-on-surface-variant">
               Relive the moments of faith and companionship shared by our
               pilgrims.
@@ -198,14 +207,19 @@ export function UniqueHighlights() {
         />
         <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4">
           {highlights.map((h) => (
-            <article
+            <Link
               key={h.title}
+              href={h.href}
               className="group overflow-hidden rounded-2xl border border-outline-variant bg-white transition-all hover:border-primary/40 hover:shadow-[0_8px_30px_rgba(0,100,0,0.08)]"
             >
-              <div
-                className="relative aspect-[4/3] bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                style={{ backgroundImage: `url('${h.image}')` }}
-              >
+              <div className="relative aspect-[4/3] overflow-hidden">
+                <Image
+                  src={h.image}
+                  alt={h.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 50vw, 25vw"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 <div className="absolute bottom-3 left-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-sm">
                   <MaterialIcon name={h.icon} className="text-primary" />
@@ -219,7 +233,7 @@ export function UniqueHighlights() {
                   {h.desc}
                 </p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </Container>
