@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AmenityMarquee } from "@/components/amenity-marquee";
 import {
   type Package,
+  bookUrl,
   discountPercent,
   formatPKR,
 } from "@/lib/packages";
@@ -44,14 +45,12 @@ function galleryThumbs(pkg: Package): string[] {
 export function PackageCard({ pkg }: { pkg: Package }) {
   const discount = discountPercent(pkg);
   const thumbs = galleryThumbs(pkg);
-  const href = `/packages/${pkg.slug}`;
+  const detailHref = `/packages/${pkg.slug}`;
+  const bookingHref = bookUrl(pkg.slug, pkg.departureId);
 
   return (
-    <Link
-      href={href}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)]"
-    >
-      <div className="relative">
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)]">
+      <Link href={detailHref} className="relative block">
         <div className="relative aspect-[16/10] overflow-hidden">
           <Image
             src={pkg.image}
@@ -78,7 +77,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
             </div>
           ))}
         </div>
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col px-5 pb-5 pt-9">
         <div className="mb-3 flex items-center justify-between gap-2 text-xs font-medium text-on-surface-variant">
@@ -95,17 +94,21 @@ export function PackageCard({ pkg }: { pkg: Package }) {
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <HexIcon />
-          <h3 className="text-lg font-bold text-on-surface">{pkg.title}</h3>
-        </div>
-        <p className="mt-1 text-sm text-on-surface-variant">{pkg.tagline}</p>
+        <Link href={detailHref} className="block">
+          <div className="flex items-center gap-2">
+            <HexIcon />
+            <h3 className="text-lg font-bold text-on-surface transition-colors group-hover:text-primary">
+              {pkg.title}
+            </h3>
+          </div>
+          <p className="mt-1 text-sm text-on-surface-variant">{pkg.tagline}</p>
+        </Link>
 
         <div className="mt-4">
           <AmenityMarquee items={pkg.amenities} />
         </div>
 
-        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
+        <div className="mt-auto pt-5">
           <div>
             {pkg.oldPrice && (
               <div className="flex flex-wrap items-center gap-2">
@@ -127,11 +130,22 @@ export function PackageCard({ pkg }: { pkg: Package }) {
             </p>
           </div>
 
-          <span className="shrink-0 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-colors group-hover:bg-primary-dark">
-            View Details
-          </span>
+          <div className="mt-4 flex gap-2">
+            <Link
+              href={detailHref}
+              className="flex-1 rounded-lg border border-primary px-4 py-2.5 text-center text-sm font-semibold text-primary transition-colors hover:bg-primary-10"
+            >
+              View Details
+            </Link>
+            <Link
+              href={bookingHref}
+              className="flex-1 rounded-lg bg-primary px-4 py-2.5 text-center text-sm font-semibold text-on-primary transition-colors hover:bg-primary-dark"
+            >
+              Book Now
+            </Link>
+          </div>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

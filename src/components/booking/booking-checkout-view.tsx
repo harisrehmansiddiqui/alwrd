@@ -8,9 +8,13 @@ import { CustomSelect } from "@/components/custom-select";
 import { MaterialIcon } from "@/components/material-icon";
 import {
   calculateBookingTotal,
+  emptyTraveler,
   formatPKR,
+  formatPakistanPhone,
   formatTravelDate,
+  isValidPakistanMobile,
   PAYMENT_OPTIONS,
+  PK_PAYMENT_INSTRUCTIONS,
   ROOM_OPTIONS,
   type PaymentOption,
   type RoomPreference,
@@ -41,9 +45,7 @@ export function BookingCheckoutView({
   travelDateLabel,
 }: Props) {
   const [travelerCount, setTravelerCount] = useState(1);
-  const [travelers, setTravelers] = useState<TravelerForm[]>([
-    { name: "", gender: "", dob: "", passportNumber: "", passportExpiry: "" },
-  ]);
+  const [travelers, setTravelers] = useState<TravelerForm[]>([emptyTraveler(true)]);
   const [room, setRoom] = useState<RoomPreference>("quad");
   const [payment, setPayment] = useState<PaymentOption>("partial");
   const [coupon, setCoupon] = useState("");
@@ -62,13 +64,14 @@ export function BookingCheckoutView({
 
   const canSubmit = useMemo(() => {
     if (!termsAccepted || status === "submitting") return false;
-    const phoneOk = contactPhone.replace(/\D/g, "").length >= 10;
+    const phoneOk = isValidPakistanMobile(contactPhone);
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim());
     const travelersOk = travelers.slice(0, travelerCount).every(
-      (t) =>
+      (t, i) =>
         t.name.trim().length >= 2 &&
         t.gender &&
-        t.passportNumber.trim().length >= 5,
+        t.passportNumber.trim().length >= 5 &&
+        (i > 0 || t.cnic.replace(/\D/g, "").length === 13),
     );
     return phoneOk && emailOk && travelersOk;
   }, [travelers, travelerCount, termsAccepted, status, contactPhone, contactEmail]);
@@ -78,13 +81,7 @@ export function BookingCheckoutView({
     setTravelers((prev) => {
       const next = [...prev];
       while (next.length < count) {
-        next.push({
-          name: "",
-          gender: "",
-          dob: "",
-          passportNumber: "",
-          passportExpiry: "",
-        });
+        next.push(emptyTraveler());
       }
       return next.slice(0, count);
     });
@@ -110,7 +107,7 @@ export function BookingCheckoutView({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           travelerName: primary.name.trim(),
-          phone: `+92 ${contactPhone.replace(/\D/g, "")}`,
+          phone: formatPakistanPhone(contactPhone),
           email: contactEmail.trim(),
           passportNumber: primary.passportNumber.trim(),
           travelDate: pkg.departureDate.slice(0, 10),
@@ -150,8 +147,10 @@ export function BookingCheckoutView({
           Reference: <strong className="text-tertiary">{reference}</strong>
         </p>
         <p className="mt-4 text-sm leading-relaxed text-neutral">
-          Our team will contact you within 24 hours to confirm traveler details and
-          complete {payment === "office" ? "payment at our office" : "your payment"}.
+          Our team will contact you within 24 hours to confirm traveler details.
+        </p>
+        <p className="mt-3 rounded-lg bg-secondary/80 px-4 py-3 text-left text-sm leading-relaxed text-tertiary">
+          {PK_PAYMENT_INSTRUCTIONS[payment]}
         </p>
         <Link
           href="/packages"
@@ -422,6 +421,16 @@ function TravelerAccordion({
               className={inputClass}
             />
           </Field>
+          {index === 0 && (
+            <Field label="CNIC (Primary traveler)">
+              <input
+                value={traveler.cnic}
+                onChange={(e) => onChange({ cnic: e.target.value })}
+                placeholder="XXXXX-XXXXXXX-X"
+                className={inputClass}
+              />
+            </Field>
+          )}
           <Field label="Passport Expiry">
             <input
               type="date"

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { BookingCheckoutView } from "@/components/booking/booking-checkout-view";
 import { buildItinerary, buildMealPlan, packagePolicies } from "@/lib/itinerary";
 import { formatTravelDate } from "@/lib/booking";
-import { getPackage } from "@/lib/packages";
+import { getPackageByDeparture } from "@/lib/packages";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +13,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const pkg = await getPackage(slug);
+  const pkg = await getPackageByDeparture(slug);
   if (!pkg) return { title: "Booking" };
   return {
     title: `Book ${pkg.title}`,
@@ -23,11 +23,14 @@ export async function generateMetadata({
 
 export default async function BookingPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ departure?: string }>;
 }) {
   const { slug } = await params;
-  const pkg = await getPackage(slug);
+  const { departure } = await searchParams;
+  const pkg = await getPackageByDeparture(slug, departure);
   if (!pkg) notFound();
 
   const days = buildItinerary(pkg);

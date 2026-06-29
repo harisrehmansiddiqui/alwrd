@@ -8,7 +8,7 @@ import {
   buildMealPlan,
   packagePolicies,
 } from "@/lib/itinerary";
-import { getPackage, formatPKR } from "@/lib/packages";
+import { getPackage, getPackageDepartures } from "@/lib/packages";
 import {
   absoluteUrl,
   breadcrumbSchema,
@@ -50,20 +50,14 @@ export default async function PackageDetailPage({
   const pkg = await getPackage(slug);
   if (!pkg) notFound();
 
+  const departures = await getPackageDepartures(slug);
+  if (departures.length === 0) notFound();
+
   const itinerary = buildItinerary(pkg);
   const meals = buildMealPlan(pkg);
-  const bookHref = `/packages/${pkg.slug}/book`;
 
   const makkahNights = Math.max(1, Math.round(pkg.durationNights * 0.57));
   const madinahNights = Math.max(1, pkg.durationNights - makkahNights);
-
-  const startDate = new Date(pkg.departureDate);
-  const travelDateLabel = startDate.toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
 
   const breadcrumbs = [
     { name: "Home", path: "/" },
@@ -99,11 +93,10 @@ export default async function PackageDetailPage({
 
       <PackageDetailView
         pkg={pkg}
+        departures={departures}
         days={itinerary}
         meals={meals}
         policies={packagePolicies}
-        bookHref={bookHref}
-        travelDateLabel={travelDateLabel}
       />
     </>
   );

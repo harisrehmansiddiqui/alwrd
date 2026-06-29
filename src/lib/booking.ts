@@ -6,12 +6,13 @@ import {
 } from "@/lib/package-overview-tabs";
 
 export type RoomPreference = "quad" | "triple";
-export type PaymentOption = "full" | "partial" | "office";
+export type PaymentOption = "full" | "partial" | "bank" | "jazzcash" | "office";
 
 export type TravelerForm = {
   name: string;
   gender: string;
   dob: string;
+  cnic: string;
   passportNumber: string;
   passportExpiry: string;
 };
@@ -46,20 +47,62 @@ export const PAYMENT_OPTIONS: {
 }[] = [
   {
     id: "partial",
-    label: "Pay partial amount",
-    desc: "Secure your seat with a minimum deposit",
+    label: "Partial deposit",
+    desc: "Secure your seat — pay minimum deposit first",
   },
   {
     id: "full",
-    label: "Pay full amount",
-    desc: "Complete payment in one transaction",
+    label: "Full payment (PKR)",
+    desc: "Pay the complete package amount in one go",
+  },
+  {
+    id: "bank",
+    label: "Bank transfer",
+    desc: "Transfer to our Pakistani bank account (details on confirmation)",
+  },
+  {
+    id: "jazzcash",
+    label: "JazzCash / EasyPaisa",
+    desc: "Pay via mobile wallet in Pakistan",
   },
   {
     id: "office",
-    label: "Pay at the office",
-    desc: "Visit our Lahore office to complete payment",
+    label: "Pay at office",
+    desc: "Visit our Islamabad office to complete payment",
   },
 ];
+
+export const PK_PAYMENT_INSTRUCTIONS: Record<
+  "bank" | "jazzcash" | "office" | "partial" | "full",
+  string
+> = {
+  partial:
+    "Our team will share the deposit amount and payment link or account details on WhatsApp within 24 hours.",
+  full: "Our team will send a payment summary and confirmed PKR total on WhatsApp.",
+  bank: "Bank account details (IBAN / account title) will be shared on WhatsApp after we verify your booking request.",
+  jazzcash:
+    "Send your deposit to our official JazzCash / EasyPaisa merchant number — details provided on WhatsApp.",
+  office:
+    "Visit our Islamabad head office with your reference number and CNIC to complete payment in person.",
+};
+
+/** Normalize Pakistani mobile input to +92XXXXXXXXXX */
+export function formatPakistanPhone(input: string): string {
+  const digits = input.replace(/\D/g, "");
+  if (digits.startsWith("92") && digits.length >= 12) {
+    return `+${digits}`;
+  }
+  if (digits.startsWith("0")) {
+    return `+92${digits.slice(1)}`;
+  }
+  return `+92${digits}`;
+}
+
+export function isValidPakistanMobile(input: string): boolean {
+  const digits = input.replace(/\D/g, "");
+  const local = digits.startsWith("92") ? digits.slice(2) : digits;
+  return /^3\d{9}$/.test(local);
+}
 
 export const BOOKING_TABS = PACKAGE_OVERVIEW_TABS;
 export type BookingTabId = PackageOverviewTabId;
@@ -72,6 +115,7 @@ export function emptyTraveler(primary = false): TravelerForm {
     name: primary ? "" : "",
     gender: "",
     dob: "",
+    cnic: "",
     passportNumber: "",
     passportExpiry: "",
   };

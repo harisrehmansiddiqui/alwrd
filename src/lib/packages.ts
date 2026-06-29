@@ -209,6 +209,44 @@ export async function filterPackages(filters: PackageFilters): Promise<Package[]
   )();
 }
 
+export async function getPackageDepartures(slug: string): Promise<Package[]> {
+  return unstable_cache(
+    async () => {
+      const rows = await prisma.departure.findMany({
+        where: liveWhere({ package: { slug, active: true } }),
+        include: { package: true },
+        orderBy: { departureDate: "asc" },
+      });
+      return rows.map(mapCard);
+    },
+    ["package-departures", slug],
+    { revalidate: CACHE_SECONDS, tags: [PACKAGES_TAG, `package:${slug}`] },
+  )();
+}
+
+export async function getPackageByDeparture(
+  slug: string,
+  departureId?: string,
+): Promise<Package | undefined> {
+  if (departureId) {
+    const row = await prisma.departure.findFirst({
+      where: {
+        id: departureId,
+        active: true,
+        departureDate: { gte: earliestBookableDate() },
+        package: { slug, active: true },
+      },
+      include: { package: true },
+    });
+    if (row) return mapCard(row);
+  }
+  return getPackage(slug);
+}
+
+export function bookUrl(slug: string, departureId: string): string {
+  return `/packages/${slug}/book?departure=${departureId}`;
+}
+
 async function fetchPackageBySlug(slug: string): Promise<Package | undefined> {
   const pkg = await prisma.package.findFirst({
     where: { slug, active: true },
