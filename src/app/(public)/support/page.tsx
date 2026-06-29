@@ -1,168 +1,189 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
+import { FaqAccordion } from "@/components/faq-accordion";
+import { JsonLd } from "@/components/json-ld";
 import { PageHeader } from "@/components/page-header";
 import { WhatsAppQrCard } from "@/components/whatsapp-qr";
 import { MaterialIcon } from "@/components/material-icon";
-import { contactPhones, contactEmails, offices, telHref } from "@/lib/company";
+import { contactPhones, contactEmails, telHref } from "@/lib/company";
 import { SUPPORT_WHATSAPP_MESSAGE } from "@/lib/collaborations";
-import { absoluteUrl } from "@/lib/seo";
+import {
+  SUPPORT_COMMITMENT,
+  SUPPORT_ECOSYSTEM,
+  SUPPORT_FAQS,
+  SUPPORT_PROCESS,
+  SUPPORT_SAFETY,
+} from "@/lib/support-content";
+import { absoluteUrl, faqPageSchema } from "@/lib/seo";
 import { whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Pilgrim Support",
+  title: "24/7 Pilgrim Support",
   description:
-    "24/7 Umrah pilgrim support from Al Wrd — WhatsApp, phone, email, and on-ground coordinators in Makkah and Madinah.",
+    "Alwrd 24/7 pilgrim support — WhatsApp, phone, and on-ground coordinators in Makkah and Madinah. Always with you before, during, and after your Umrah.",
   alternates: { canonical: absoluteUrl("/support") },
 };
-
-const quickLinks = [
-  { title: "Essential Du'as", href: "/resources/duas", icon: "menu_book" },
-  { title: "Umrah Checklist", href: "/resources/checklist", icon: "checklist" },
-  {
-    title: "24/7 On-Ground Support",
-    href: "/our-services/on-ground-support",
-    icon: "support_agent",
-  },
-  { title: "FAQ", href: "/faq", icon: "help" },
-  { title: "Contact offices", href: "/contact", icon: "location_on" },
-  { title: "Send inquiry", href: "/inquiry", icon: "mail" },
-];
 
 export default function SupportPage() {
   return (
     <div className="bg-surface-tint">
+      <JsonLd data={faqPageSchema([...SUPPORT_FAQS])} />
       <PageHeader
-        title="Your Journey, Fully Supported"
-        subtitle="Reach our team before, during, and after your Umrah — by QR, WhatsApp, phone, or email."
+        title="Alwrd 24/7 Pilgrim Support"
+        subtitle="Always with you — from airport arrival to your return home."
       />
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
+        <blockquote className="rounded-2xl border border-primary/15 bg-white p-8 text-lg leading-relaxed text-ink/90 shadow-sm sm:p-10">
+          {SUPPORT_COMMITMENT}
+        </blockquote>
+
+        <h2 className="mt-16 font-display text-2xl font-bold text-ink">
+          Our state-of-the-art support ecosystem
+        </h2>
+        <div className="mt-8 grid gap-5 sm:grid-cols-2">
+          {SUPPORT_ECOSYSTEM.map((item) => (
+            <div
+              key={item.title}
+              className="rounded-2xl border border-outline-variant bg-white p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
+            >
+              <span className="grid h-12 w-12 place-items-center rounded-xl bg-primary/10">
+                <MaterialIcon name={item.icon} className="text-2xl text-primary" />
+              </span>
+              <h3 className="mt-4 font-display text-lg font-semibold text-ink">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-muted">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="mt-16 font-display text-2xl font-bold text-ink">
+          How our support process works
+        </h2>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {SUPPORT_PROCESS.map((step) => (
+            <div
+              key={step.step}
+              className="relative rounded-2xl border border-outline-variant bg-white p-5 text-center shadow-sm"
+            >
+              <span className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-primary text-sm font-bold text-on-primary">
+                {step.step}
+              </span>
+              <h3 className="mt-3 font-display font-semibold text-ink">{step.title}</h3>
+              <p className="mt-1 text-xs leading-relaxed text-slate-muted">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:items-start">
           <div>
-            <h2 className="font-display text-2xl font-bold text-ink">
-              Scan &amp; connect instantly
-            </h2>
+            <h2 className="font-display text-2xl font-bold text-ink">Connection hub</h2>
             <p className="mt-2 text-slate-muted">
-              Save this QR on your phone before travel. Scan at the airport or in
-              the Haram to message our coordinators directly on WhatsApp.
+              Pakistan and Saudi Arabia support lines — scan or tap to connect.
             </p>
             <ul className="mt-6 space-y-3">
-              {[
-                "Pre-departure questions about visa and packing",
-                "On-ground help with hotels, transport, and ziyarat",
-                "Emergency escalation to our KSA operations team",
-              ].map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-2 text-sm text-on-surface-variant"
+              <li>
+                <p className="text-xs font-bold uppercase tracking-wide text-primary">
+                  Pakistan
+                </p>
+                {contactPhones
+                  .filter((p) => p.label === "Pakistan")
+                  .map((p) => (
+                    <a
+                      key={p.number}
+                      href={telHref(p.number)}
+                      className="mt-1 block text-sm font-medium text-ink hover:text-primary"
+                    >
+                      {p.number}
+                    </a>
+                  ))}
+              </li>
+              <li className="pt-2">
+                <p className="text-xs font-bold uppercase tracking-wide text-primary">
+                  Saudi Arabia
+                </p>
+                {contactPhones
+                  .filter((p) => p.label === "Saudi Arabia")
+                  .map((p) => (
+                    <a
+                      key={p.number}
+                      href={telHref(p.number)}
+                      className="mt-1 block text-sm font-medium text-ink hover:text-primary"
+                    >
+                      {p.number}
+                    </a>
+                  ))}
+              </li>
+              <li className="pt-2">
+                <p className="text-xs font-bold uppercase tracking-wide text-primary">
+                  Official WhatsApp (24/7)
+                </p>
+                <a
+                  href={whatsappLink(SUPPORT_WHATSAPP_MESSAGE)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
                 >
-                  <MaterialIcon
-                    name="check_circle"
-                    className="shrink-0 text-lg text-primary"
-                  />
-                  {item}
-                </li>
-              ))}
+                  Click to chat
+                  <MaterialIcon name="open_in_new" className="text-sm" />
+                </a>
+              </li>
+              <li className="pt-2">
+                <p className="text-xs font-bold uppercase tracking-wide text-primary">
+                  Support email
+                </p>
+                <a
+                  href={`mailto:${contactEmails[1]?.address ?? "support@alwrdgroup.com"}`}
+                  className="mt-1 block text-sm font-medium text-primary hover:underline"
+                >
+                  {contactEmails[1]?.address ?? "support@alwrdgroup.com"}
+                </a>
+              </li>
             </ul>
           </div>
           <WhatsAppQrCard
             message={SUPPORT_WHATSAPP_MESSAGE}
             title="Al Wrd Pilgrim Support"
-            subtitle="Scan to open WhatsApp — available 24/7 in Saudi Arabia."
-            className="mx-auto max-w-sm lg:mx-0 lg:ml-auto"
+            subtitle="Scan to open WhatsApp — same as Smart Umrah QR flow."
+            className="mx-auto max-w-sm lg:ml-auto"
           />
         </div>
 
-        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-2xl border border-outline-variant bg-white p-6 shadow-sm">
-            <MaterialIcon name="call" className="text-2xl text-primary" />
-            <h3 className="mt-3 font-display font-semibold text-ink">Phone</h3>
-            <ul className="mt-3 space-y-2">
-              {contactPhones.map((p) => (
-                <li key={p.number}>
-                  <a
-                    href={telHref(p.number)}
-                    className="text-sm text-primary hover:underline"
-                  >
-                    {p.number}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-2xl border border-outline-variant bg-white p-6 shadow-sm">
-            <MaterialIcon name="mail" className="text-2xl text-primary" />
-            <h3 className="mt-3 font-display font-semibold text-ink">Email</h3>
-            <ul className="mt-3 space-y-2">
-              {contactEmails.map((e) => (
-                <li key={e.address}>
-                  <a
-                    href={`mailto:${e.address}`}
-                    className="text-sm text-primary hover:underline"
-                  >
-                    {e.address}
-                  </a>
-                  <span className="block text-xs text-slate-muted">
-                    {e.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-2xl border border-outline-variant bg-white p-6 shadow-sm">
-            <MaterialIcon name="location_on" className="text-2xl text-primary" />
-            <h3 className="mt-3 font-display font-semibold text-ink">Offices</h3>
-            <ul className="mt-3 space-y-2">
-              {offices.map((o) => (
-                <li key={o.id} className="text-sm text-on-surface-variant">
-                  <strong className="text-ink">{o.city}</strong> — {o.label}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/contact"
-              className="mt-3 inline-block text-sm font-semibold text-primary hover:underline"
-            >
-              View maps →
-            </Link>
-          </div>
-        </div>
+        <section className="mt-16 rounded-2xl border border-outline-variant bg-white p-8 shadow-sm">
+          <h2 className="font-display text-xl font-bold text-ink">
+            The safety verification process
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-slate-muted">{SUPPORT_SAFETY}</p>
+        </section>
 
-        <h2 className="mt-16 font-display text-2xl font-bold text-ink">
-          Helpful resources
-        </h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {quickLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="flex items-center gap-3 rounded-2xl border border-outline-variant bg-white p-4 shadow-sm transition-all hover:border-primary/40 hover:shadow-md"
-            >
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10">
-                <MaterialIcon name={link.icon} className="text-primary" />
-              </span>
-              <span className="font-medium text-ink">{link.title}</span>
-            </Link>
-          ))}
-        </div>
+        <section className="mt-16">
+          <h2 className="font-display text-2xl font-bold text-ink">Support FAQ</h2>
+          <div className="mt-6">
+            <FaqAccordion items={[...SUPPORT_FAQS]} />
+          </div>
+        </section>
 
         <div className="mt-12 rounded-2xl bg-primary p-8 text-center text-on-primary sm:p-10">
           <h2 className="font-display text-xl font-bold sm:text-2xl">
-            Need help right now?
+            Need immediate assistance?
           </h2>
           <p className="mx-auto mt-2 max-w-lg text-sm opacity-90">
-            Message us on WhatsApp and a coordinator will respond as quickly as
-            possible.
+            Our support team is online and ready to help.
           </p>
           <a
             href={whatsappLink(SUPPORT_WHATSAPP_MESSAGE)}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-block rounded-lg bg-white px-6 py-3 text-sm font-semibold text-primary hover:bg-white/90"
+            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 text-sm font-bold text-primary hover:bg-white/90"
           >
-            Chat on WhatsApp
+            Chat with a specialist now
           </a>
+          <p className="mt-4">
+            <Link href="/contact" className="text-sm underline opacity-90 hover:opacity-100">
+              View all contact options
+            </Link>
+          </p>
         </div>
       </div>
     </div>

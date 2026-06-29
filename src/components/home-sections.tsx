@@ -6,6 +6,7 @@ import { SUPPORT_WHATSAPP_MESSAGE } from "@/lib/collaborations";
 import { PackageCard } from "@/components/package-card";
 import { MaterialIcon } from "@/components/material-icon";
 import { formatPKR, type Package } from "@/lib/packages";
+import { PREMIUM_AUDIENCE_CARDS } from "@/lib/premium-audience";
 import {
   highlights,
   stats,
@@ -17,7 +18,6 @@ import {
   collaborations,
   trustBadges,
   testimonials,
-  premiumFeatures,
 } from "@/lib/content";
 
 function Container({ children }: { children: React.ReactNode }) {
@@ -48,67 +48,68 @@ export function GroupPackages({ packages }: { packages: Package[] }) {
   );
 }
 
-export function PremiumPackages({ packages }: { packages: Package[] }) {
-  const featured = packages[0];
-  if (!featured) return null;
-
+export function PremiumPackages(_props: { packages?: Package[] }) {
   return (
     <section className="bg-surface py-20">
       <Container>
         <SectionHeading
           title="Premium Packages"
           subtitle="Personalized plans tailored to your airline choices and 5-star comfort."
+          centered
         />
-        <div className="flex flex-col items-stretch overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-xl lg:flex-row">
-          <div className="relative min-h-[300px] lg:w-1/2">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('${featured.image}')` }}
-            />
-          </div>
-          <div className="space-y-6 p-8 lg:w-1/2 lg:p-12">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-widest text-primary">
-                  Top Choice
-                </span>
-                <h3 className="mt-2 text-[32px] font-bold text-primary">
-                  {featured.title}
-                </h3>
-              </div>
-              <div className="rounded-full bg-primary/10 px-4 py-1 text-xs font-bold text-primary">
-                {featured.durationDays}D / {featured.durationNights}N
-              </div>
-            </div>
-            <p className="text-lg leading-relaxed text-on-surface-variant">
-              {featured.description ?? featured.tagline}
-            </p>
-            <div className="grid grid-cols-2 gap-4">
-              {premiumFeatures.map((f) => (
-                <div key={f.label} className="flex items-center gap-3">
-                  <MaterialIcon name={f.icon} className="text-primary" />
-                  <span className="text-base text-on-surface">{f.label}</span>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-col items-center justify-between gap-6 border-t border-outline-variant pt-6 md:flex-row">
-              <div>
-                <p className="text-xs text-on-surface-variant">Starting from</p>
-                <p className="text-[32px] font-bold text-primary">
-                  {formatPKR(featured.price)}{" "}
-                  <span className="text-xs font-normal text-on-surface-variant">
-                    / person
+        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {PREMIUM_AUDIENCE_CARDS.map((card) => (
+            <article
+              key={card.slug}
+              className="group flex flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden">
+                <Image
+                  src={card.image}
+                  alt={card.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                {card.badge && (
+                  <span className="absolute left-4 top-4 rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-on-primary">
+                    {card.badge}
                   </span>
-                </p>
+                )}
+                <div className="absolute bottom-4 left-4 right-4">
+                  <h3 className="text-xl font-bold text-white">{card.title}</h3>
+                  <p className="mt-1 line-clamp-2 text-xs text-white/85">{card.subtitle}</p>
+                </div>
               </div>
-              <Link
-                href={`/packages/${featured.slug}`}
-                className="w-full rounded-lg bg-primary px-8 py-4 text-center text-sm font-semibold text-on-primary shadow-lg shadow-primary/20 transition-transform hover:scale-105 hover:bg-primary-dark md:w-auto"
-              >
-                Explore {featured.title}
-              </Link>
-            </div>
-          </div>
+              <div className="flex flex-1 flex-col p-5">
+                <ul className="space-y-2">
+                  {card.features.map((f) => (
+                    <li
+                      key={f}
+                      className="flex items-center gap-2 text-sm text-on-surface-variant"
+                    >
+                      <MaterialIcon name="check_circle" className="shrink-0 text-base text-primary" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-auto border-t border-outline-variant pt-5">
+                  <p className="text-xs text-on-surface-variant">Starting from</p>
+                  <p className="text-2xl font-bold text-primary">
+                    {formatPKR(card.priceFrom)}
+                    <span className="text-xs font-normal text-on-surface-variant"> / person</span>
+                  </p>
+                  <Link
+                    href={card.href}
+                    className="mt-4 block rounded-lg bg-primary py-3 text-center text-sm font-semibold text-on-primary transition-colors hover:bg-primary-dark"
+                  >
+                    {card.cta}
+                  </Link>
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
       </Container>
     </section>

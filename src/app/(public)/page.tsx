@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/hero";
 import { WhatsAppFloat } from "@/components/whatsapp-float";
+import { TestimonialsSection } from "@/components/testimonials-carousel";
 import {
   GroupPackages,
   PremiumPackages,
@@ -39,6 +40,7 @@ export default async function Home() {
       <Hero />
       <GroupPackages packages={group} />
       <PremiumPackages packages={premium} />
+      <TestimonialsSection />
       <GalleryCollaborations />
       <UniqueHighlights />
       <HaramainTrain />
