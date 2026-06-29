@@ -23,7 +23,7 @@ export function CampaignNav() {
       }`}
     >
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-4 sm:px-6">
-        <Logo variant="green" size="header" />
+        <Logo variant="black" size="header" />
         <span className="hidden font-semibold uppercase tracking-widest text-on-surface-variant md:block md:text-xs lg:text-sm">
           Smart Umrah System
         </span>

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CampaignInquiryForm } from "@/components/campaign-inquiry-form";
-import { CampaignFooter } from "@/components/campaign/campaign-footer";
 import { CampaignNav } from "@/components/campaign/campaign-nav";
+import { SiteFooter } from "@/components/site-footer";
 import { MaterialIcon } from "@/components/material-icon";
 import {
   CAMPAIGN_ADVANTAGES,
@@ -22,8 +22,8 @@ export function CampaignLandingView() {
         {/* Hero */}
         <section className="relative flex min-h-[600px] items-center overflow-hidden lg:min-h-[870px]">
           <Image
-            src="/hero.jpg"
-            alt="The Holy Kaaba in Makkah at golden hour"
+            src="/campaign-hero.jpg"
+            alt="Pilgrims at the Holy Kaaba in Makkah"
             fill
             priority
             className="object-cover"
@@ -35,7 +35,7 @@ export function CampaignLandingView() {
               <span className="mb-6 inline-block rounded-full border border-primary-30/40 bg-primary-20/30 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-primary-10 backdrop-blur-sm sm:text-sm">
                 Pakistan&apos;s 1st Tech-Enabled Umrah Experience
               </span>
-              <h1 className="text-4xl font-heavy leading-tight sm:text-5xl lg:text-[56px] lg:leading-[64px]">
+              <h1 className="text-4xl font-heavy leading-tight text-white sm:text-5xl lg:text-[56px] lg:leading-[64px]">
                 Your Sacred Journey,{" "}
                 <span className="text-primary-20">Simplified.</span>
               </h1>
@@ -219,7 +219,7 @@ export function CampaignLandingView() {
           <div className="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6">
             <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
               <div className="flex-1 text-on-primary">
-                <h2 className="text-3xl font-heavy leading-tight sm:text-4xl lg:text-[56px] lg:leading-[64px]">
+                <h2 className="text-3xl font-heavy leading-tight text-white sm:text-4xl lg:text-[56px] lg:leading-[64px]">
                   Start Your Journey Today
                 </h2>
                 <p className="mt-6 max-w-lg text-lg leading-relaxed text-primary-10 opacity-90">
@@ -270,7 +270,7 @@ export function CampaignLandingView() {
           </div>
         </section>
       </main>
-      <CampaignFooter />
+      <SiteFooter />
     </div>
   );
 }
