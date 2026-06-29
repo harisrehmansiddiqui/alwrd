@@ -4,9 +4,9 @@ import { heroSlides } from "@/lib/content";
 
 export function Hero() {
   return (
-    <section className="hero-pattern overflow-x-hidden py-3 sm:py-6 xl:py-6 2xl:py-10">
-      <div className="mx-auto grid min-w-0 max-w-[1280px] grid-cols-1 gap-3 px-4 sm:gap-6 sm:px-6 xl:grid-cols-2 xl:items-start xl:gap-8 2xl:gap-10">
-        <div className="flex min-w-0 flex-col space-y-2 sm:space-y-3 xl:space-y-3 2xl:space-y-4">
+    <section className="hero-pattern overflow-x-hidden overflow-y-visible py-3 sm:py-6 xl:py-6 2xl:py-10">
+      <div className="mx-auto grid min-w-0 max-w-[1280px] grid-cols-1 gap-3 overflow-visible px-4 sm:gap-6 sm:px-6 xl:grid-cols-2 xl:items-start xl:gap-8 2xl:gap-10">
+        <div className="flex min-w-0 flex-col space-y-2 overflow-visible sm:space-y-3 xl:space-y-3 2xl:space-y-4">
           <span className="inline-block w-fit rounded-full bg-primary/10 px-3 py-0.5 text-[11px] font-semibold text-primary sm:px-4 sm:py-1 sm:text-sm">
             Book. Budget. Be Blessed.
           </span>

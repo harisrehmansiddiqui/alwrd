@@ -34,12 +34,12 @@ export function SearchWidget() {
   const [persons, setPersons] = useState("1");
   const [date, setDate] = useState<Date | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const dateRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (!calendarOpen) return;
     function onPointerDown(e: MouseEvent) {
-      if (dateRef.current && !dateRef.current.contains(e.target as Node)) {
+      if (formRef.current && !formRef.current.contains(e.target as Node)) {
         setCalendarOpen(false);
       }
     }
@@ -70,8 +70,9 @@ export function SearchWidget() {
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit}
-      className="flex flex-col gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest p-2.5 shadow-md sm:gap-2.5 sm:p-3.5 xl:p-4"
+      className="flex flex-col gap-2 overflow-visible rounded-xl border border-outline-variant bg-surface-container-lowest p-2.5 shadow-md sm:gap-2.5 sm:p-3.5 xl:p-4"
     >
       <div className="grid grid-cols-2 gap-2 sm:gap-2.5 xl:gap-3">
         <Field label="Departure City" icon="location_on">
@@ -111,7 +112,7 @@ export function SearchWidget() {
           />
         </Field>
 
-        <div ref={dateRef} className="relative col-span-2">
+        <div className="col-span-2">
           <Field label="Travel Date" icon="calendar_month">
             <button
               type="button"
@@ -132,18 +133,19 @@ export function SearchWidget() {
               />
             </button>
           </Field>
-
-          {calendarOpen && (
-            <div className="absolute left-0 right-0 top-full z-50 mt-1 sm:left-auto sm:right-0 sm:w-72">
-              <AvailabilityCalendar
-                value={date}
-                onSelect={handleDateSelect}
-                compact
-              />
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Inline calendar — expands form and pushes content below */}
+      {calendarOpen && (
+        <div className="w-full sm:max-w-[18rem]">
+          <AvailabilityCalendar
+            value={date}
+            onSelect={handleDateSelect}
+            compact
+          />
+        </div>
+      )}
 
       <button
         type="submit"
