@@ -295,3 +295,14 @@ h1 {
 .package-detail .font-serif-display {
   font-family: var(--font-serif);
 }
+
+.campaign-soft-float {
+  box-shadow: 0 24px 48px -12px rgba(0, 100, 0, 0.08);
+}
+
+.campaign-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 100, 0, 0.2);
+}
