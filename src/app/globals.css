@@ -160,18 +160,20 @@ svg {
   max-width: 100%;
 }
 
-h1,
-h2,
-h3,
-h4 {
-  font-family: var(--font-display);
-  letter-spacing: -0.02em;
-  color: var(--color-tertiary);
-  font-weight: 700;
-}
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    color: var(--color-tertiary);
+    font-weight: 700;
+  }
 
-h1 {
-  font-weight: 800;
+  h1 {
+    font-weight: 800;
+  }
 }
 
 .font-heavy {

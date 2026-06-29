@@ -31,15 +31,14 @@ export function CampaignLandingView() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/45 to-transparent" />
           <div className="relative z-10 mx-auto w-full max-w-[1200px] px-4 sm:px-6">
-            <div className="max-w-2xl text-on-primary">
-              <span className="mb-6 inline-block rounded-full border border-primary-30/40 bg-primary-20/30 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-primary-10 backdrop-blur-sm sm:text-sm">
+            <div className="max-w-2xl text-white">
+              <span className="mb-6 inline-block rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur-sm sm:text-sm">
                 Pakistan&apos;s 1st Tech-Enabled Umrah Experience
               </span>
               <h1 className="text-4xl font-heavy leading-tight text-white sm:text-5xl lg:text-[56px] lg:leading-[64px]">
-                Your Sacred Journey,{" "}
-                <span className="text-primary-20">Simplified.</span>
+                Your Sacred Journey, Simplified.
               </h1>
-              <p className="mt-6 max-w-lg text-lg leading-relaxed opacity-90">
+              <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/90">
                 Al Wrd brings transparency and technology to your pilgrimage. Manage
                 your Umrah through our smart system with real-time updates and 24/7
                 support.
@@ -218,24 +217,24 @@ export function CampaignLandingView() {
           />
           <div className="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6">
             <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
-              <div className="flex-1 text-on-primary">
+              <div className="flex-1 text-white">
                 <h2 className="text-3xl font-heavy leading-tight text-white sm:text-4xl lg:text-[56px] lg:leading-[64px]">
                   Start Your Journey Today
                 </h2>
-                <p className="mt-6 max-w-lg text-lg leading-relaxed text-primary-10 opacity-90">
+                <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/90">
                   Request a personalized quote and let our smart system handle the
                   complexity of your spiritual journey.
                 </p>
-                <div className="mt-10 grid grid-cols-2 gap-8">
+                <div className="mt-10 grid grid-cols-2 gap-8 text-white">
                   <div>
-                    <p className="text-2xl font-bold text-primary-20">{pilgrimsStat.value}</p>
-                    <p className="text-xs uppercase tracking-widest opacity-70">
+                    <p className="text-2xl font-bold text-white">{pilgrimsStat.value}</p>
+                    <p className="text-xs uppercase tracking-widest text-white/70">
                       {pilgrimsStat.label}
                     </p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-primary-20">100%</p>
-                    <p className="text-xs uppercase tracking-widest opacity-70">
+                    <p className="text-2xl font-bold text-white">100%</p>
+                    <p className="text-xs uppercase tracking-widest text-white/70">
                       Verified Hotels
                     </p>
                   </div>
