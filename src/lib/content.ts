@@ -133,7 +133,7 @@ export const resources = [
   {
     title: "Al Wrd Pilgrim Support",
     desc: "Organised, smooth and well-guided Umrah from start to finish.",
-    href: "/resources",
+    href: "/support",
     image: "/resources/support.jpg",
   },
 ];

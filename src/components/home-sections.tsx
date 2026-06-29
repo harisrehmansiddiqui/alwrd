@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
+import { WhatsAppQrCard } from "@/components/whatsapp-qr";
+import { SUPPORT_WHATSAPP_MESSAGE } from "@/lib/collaborations";
 import { PackageCard } from "@/components/package-card";
 import { MaterialIcon } from "@/components/material-icon";
 import { formatPKR, type Package } from "@/lib/packages";
@@ -132,10 +134,10 @@ export function GalleryCollaborations() {
                 Collaborations
               </h2>
               <Link
-                href="/gallery"
+                href="/collaborations"
                 className="text-sm font-semibold text-primary hover:underline"
               >
-                View gallery →
+                View collaborations →
               </Link>
             </div>
             <p className="text-base text-on-surface-variant">
@@ -369,14 +371,12 @@ export function EsimPromo() {
             </button>
           </div>
           <div className="flex justify-center lg:w-1/3">
-            <div className="relative rounded-3xl border-4 border-primary/10 bg-surface-container-lowest p-8 shadow-xl">
-              <div className="flex h-48 w-48 items-center justify-center rounded-2xl bg-surface-container-low">
-                <MaterialIcon name="qr_code_2" className="text-6xl text-primary/30" />
-              </div>
-              <div className="absolute -right-4 -top-4 rounded-lg bg-primary p-2 text-on-primary shadow-lg">
-                <MaterialIcon name="qr_code_scanner" />
-              </div>
-            </div>
+            <WhatsAppQrCard
+              message="Assalamu alaikum, I am interested in eSIM for my Umrah trip."
+              title="Scan for WhatsApp"
+              subtitle="eSIM activation coming soon — message us to register interest."
+              size={176}
+            />
           </div>
         </div>
       </Container>
@@ -420,6 +420,31 @@ export function ResourcesSection() {
               </div>
             </Link>
           ))}
+        </div>
+
+        <div className="mt-12 flex flex-col items-center gap-8 rounded-3xl border border-outline-variant bg-surface-container-low p-8 lg:flex-row lg:p-10">
+          <div className="flex-1 text-center lg:text-left">
+            <h3 className="font-display text-xl font-bold text-on-background sm:text-2xl">
+              Scan for instant pilgrim support
+            </h3>
+            <p className="mt-2 max-w-lg text-sm text-on-surface-variant">
+              Save our WhatsApp QR before you travel — message coordinators in
+              Pakistan or Saudi Arabia anytime during your journey.
+            </p>
+            <Link
+              href="/support"
+              className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
+            >
+              Visit support page →
+            </Link>
+          </div>
+          <WhatsAppQrCard
+            message={SUPPORT_WHATSAPP_MESSAGE}
+            title="Al Wrd Support"
+            subtitle="Scan with your phone camera"
+            size={160}
+            className="shrink-0"
+          />
         </div>
       </Container>
     </section>

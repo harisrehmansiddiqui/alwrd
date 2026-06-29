@@ -24,6 +24,8 @@ const columns = [
       { label: "Contact Us", href: "/contact" },
       { label: "Our Services", href: "/our-services" },
       { label: "Gallery", href: "/gallery" },
+      { label: "Collaborations", href: "/collaborations" },
+      { label: "Pilgrim Support", href: "/support" },
       { label: "Send Inquiry", href: "/inquiry" },
     ],
   },
@@ -31,6 +33,7 @@ const columns = [
     title: "Resources",
     links: [
       { label: "FAQ", href: "/faq" },
+      { label: "Pilgrim Support", href: "/support" },
       { label: "Blog", href: "/resources" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms & Conditions", href: "/terms" },

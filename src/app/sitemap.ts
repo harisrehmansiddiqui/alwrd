@@ -8,6 +8,8 @@ const STATIC_ROUTES = [
   "/book-umrah",
   "/about",
   "/contact",
+  "/collaborations",
+  "/support",
   "/faq",
   "/gallery",
   "/how-it-works",
