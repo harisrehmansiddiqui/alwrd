@@ -18,6 +18,9 @@ const STATIC_ROUTES = [
   "/resources/checklist",
   "/resources/duas",
   "/terms",
+  "/umrah/family",
+  "/umrah/couple",
+  "/umrah/individual",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

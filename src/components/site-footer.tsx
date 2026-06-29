@@ -8,6 +8,9 @@ const columns = [
     title: "Product",
     links: [
       { label: "Umrah Packages", href: "/packages" },
+      { label: "Family Umrah", href: "/umrah/family" },
+      { label: "Couple Umrah", href: "/umrah/couple" },
+      { label: "Individual Umrah", href: "/umrah/individual" },
       { label: "Essential Du'as", href: "/resources/duas" },
       { label: "Umrah Checklist", href: "/resources/checklist" },
       { label: "eSIM Services", href: "/resources" },

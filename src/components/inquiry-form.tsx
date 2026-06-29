@@ -4,7 +4,13 @@ import { useState } from "react";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-export function InquiryForm({ packageSlug }: { packageSlug?: string }) {
+export function InquiryForm({
+  packageSlug,
+  defaultGroupSize = 1,
+}: {
+  packageSlug?: string;
+  defaultGroupSize?: number;
+}) {
   const [status, setStatus] = useState<Status>("idle");
   const [reference, setReference] = useState("");
   const [error, setError] = useState("");
@@ -72,7 +78,7 @@ export function InquiryForm({ packageSlug }: { packageSlug?: string }) {
           name="groupSize"
           label="Group size"
           type="number"
-          defaultValue="1"
+          defaultValue={String(defaultGroupSize)}
           min={1}
           required
         />

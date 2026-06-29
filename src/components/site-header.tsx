@@ -27,6 +27,7 @@ function matchesNavHref(
   }
 
   if (pathname === path) return true;
+  if (path === "/umrah" && pathname.startsWith("/umrah/")) return true;
   return pathname.startsWith(`${path}/`);
 }
 
