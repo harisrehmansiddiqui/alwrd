@@ -5,6 +5,7 @@ import { getAllPackages } from "@/lib/packages";
 const STATIC_ROUTES = [
   "",
   "/packages",
+  "/book-umrah",
   "/about",
   "/contact",
   "/faq",

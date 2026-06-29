@@ -1,10 +1,11 @@
 export const site = {
   name: "Al Wrd",
   tagline: "Hajj & Umrah",
-  whatsapp: "923001234567",
-  phone: "+92 300 1234567",
+  whatsapp: "923078953816",
+  phone: "+92 307 8953816",
   email: "info@alwrdgroup.com",
-  location: "Lahore, Pakistan",
+  supportEmail: "support@alwrdgroup.com",
+  location: "Islamabad, Pakistan",
   socials: {
     instagram: "https://www.instagram.com/alwrdhajjumrah/",
     facebook: "https://www.facebook.com/alwrdhajjumrah",
