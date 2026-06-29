@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PackageCard } from "@/components/package-card";
 import { PackageFilters } from "@/components/package-filters";
+import {
+  PACKAGES_PAGE_SIZE,
+  PackagePagination,
+} from "@/components/package-pagination";
 import {
   filterPackages,
   getCities,
@@ -15,27 +20,49 @@ export const metadata: Metadata = {
     "Browse Umrah packages from Pakistan by city, type, duration and price. Compare inclusions and book with Al Wrd Hajj & Umrah.",
 };
 
+function resolveFilters(
+  params: Record<string, string | undefined>,
+): Filters {
+  // Legacy nav links (?type=group) → featured group packages.
+  const featured =
+    params.featured ??
+    (params.type === "group" ? "group" : undefined);
+
+  return {
+    tier: params.tier,
+    audience: params.audience,
+    featured,
+    city: params.city,
+    duration: params.duration,
+    date: params.date,
+    month: params.month,
+    minPrice: params.minPrice,
+    maxPrice: params.maxPrice,
+    q: params.q,
+  };
+}
+
 export default async function PackagesPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const params = await searchParams;
-  const filters: Filters = {
-    tier: params.tier,
-    audience: params.audience,
-    city: params.city,
-    duration: params.duration,
-    date: params.date,
-    minPrice: params.minPrice,
-    maxPrice: params.maxPrice,
-    q: params.q,
-  };
+  const filters = resolveFilters(params);
+  const page = Math.max(1, Number(params.page ?? 1) || 1);
 
   const [results, cities] = await Promise.all([
     filterPackages(filters),
     getCities(),
   ]);
+
+  const total = results.length;
+  const totalPages = Math.max(1, Math.ceil(total / PACKAGES_PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const slice = results.slice(
+    (currentPage - 1) * PACKAGES_PAGE_SIZE,
+    currentPage * PACKAGES_PAGE_SIZE,
+  );
 
   return (
     <div className="bg-surface-tint">
@@ -52,18 +79,31 @@ export default async function PackagesPage({
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <PackageFilters cities={cities} />
+        <Suspense fallback={null}>
+          <PackageFilters cities={cities} />
+        </Suspense>
 
         <p className="mt-6 text-sm text-slate-muted">
-          {results.length} package{results.length === 1 ? "" : "s"} available
+          {total} package{total === 1 ? "" : "s"} available
+          {totalPages > 1 && (
+            <>
+              {" "}
+              · Page {currentPage} of {totalPages}
+            </>
+          )}
         </p>
 
-        {results.length > 0 ? (
-          <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {results.map((pkg) => (
-              <PackageCard key={pkg.departureId} pkg={pkg} />
-            ))}
-          </div>
+        {slice.length > 0 ? (
+          <>
+            <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {slice.map((pkg) => (
+                <PackageCard key={pkg.departureId} pkg={pkg} />
+              ))}
+            </div>
+            <Suspense fallback={null}>
+              <PackagePagination page={currentPage} total={total} />
+            </Suspense>
+          </>
         ) : (
           <div className="mt-10 rounded-2xl border border-dashed border-black/10 bg-white p-12 text-center">
             <p className="font-display text-lg font-semibold text-ink">

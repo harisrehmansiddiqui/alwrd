@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { CustomSelect } from "@/components/custom-select";
 import { MaterialIcon } from "@/components/material-icon";
-import { formatDate } from "@/lib/dates";
+import { BOOKING_LEAD_DAYS, formatDate } from "@/lib/dates";
 
 const CITIES = ["Lahore", "Karachi", "Islamabad", "Faisalabad", "Multan"];
 const DURATIONS = [
@@ -74,7 +74,7 @@ export function SearchWidget() {
       onSubmit={handleSubmit}
       className="flex flex-col gap-2 overflow-visible rounded-xl border border-outline-variant bg-surface-container-lowest p-2.5 shadow-md sm:gap-2.5 sm:p-3.5 xl:p-4"
     >
-      <div className="grid grid-cols-2 gap-2 sm:gap-2.5 xl:gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-2.5 lg:grid-cols-3 xl:gap-3">
         <Field label="Departure City" icon="location_on">
           <CustomSelect
             value={city}
@@ -112,31 +112,37 @@ export function SearchWidget() {
           />
         </Field>
 
-        <div className="col-span-2">
-          <Field label="Travel Date" icon="calendar_month">
-            <button
-              type="button"
-              aria-expanded={calendarOpen}
-              onClick={() => setCalendarOpen((v) => !v)}
-              className="flex w-full min-w-0 items-center justify-between gap-2 py-1.5 text-left text-sm outline-none sm:py-2"
-            >
-              <span className="truncate">
-                {date ? (
-                  formatDate(date)
-                ) : (
-                  <span className="text-on-surface-variant">Select date</span>
-                )}
-              </span>
-              <MaterialIcon
-                name="expand_more"
-                className={`shrink-0 text-lg text-neutral transition-transform ${calendarOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-          </Field>
+        <Field label="Travel Date" icon="calendar_month">
+          <button
+            type="button"
+            aria-expanded={calendarOpen}
+            onClick={() => setCalendarOpen((v) => !v)}
+            className="flex w-full min-w-0 items-center justify-between gap-2 py-1.5 text-left text-sm outline-none sm:py-2"
+          >
+            <span className="truncate">
+              {date ? (
+                formatDate(date)
+              ) : (
+                <span className="text-on-surface-variant">Select date</span>
+              )}
+            </span>
+            <MaterialIcon
+              name="expand_more"
+              className={`shrink-0 text-lg text-neutral transition-transform ${calendarOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+        </Field>
+
+        <div className="col-span-2 flex items-end lg:col-span-1">
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark sm:py-3"
+          >
+            Get Packages
+          </button>
         </div>
       </div>
 
-      {/* Inline calendar — expands form and pushes content below */}
       {calendarOpen && (
         <div className="w-full sm:max-w-[18rem]">
           <AvailabilityCalendar
@@ -147,12 +153,10 @@ export function SearchWidget() {
         </div>
       )}
 
-      <button
-        type="submit"
-        className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-on-primary shadow-md transition-all hover:bg-primary-dark sm:py-3"
-      >
-        Get Packages
-      </button>
+      <p className="text-[10px] leading-snug text-on-surface-variant sm:text-[11px]">
+        Green dates are bookable ({BOOKING_LEAD_DAYS}-day advance rule). Past
+        departures are not shown.
+      </p>
     </form>
   );
 }

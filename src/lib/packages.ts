@@ -1,6 +1,7 @@
 import type { Departure, Package as DbPackage, Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
+import { addDays, earliestBookableDate, startOfDay } from "@/lib/dates";
 import { prisma } from "@/lib/db";
 
 const PACKAGES_TAG = "packages";
@@ -73,20 +74,28 @@ function mapCard(dep: DepartureWithPackage): Package {
   };
 }
 
-function startOfToday(): Date {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
 
-// Live departures only: active package, active departure, not already departed.
+// Live departures: active package, active departure, bookable per 10-day lead rule.
 function liveWhere(extra?: Prisma.DepartureWhereInput): Prisma.DepartureWhereInput {
   return {
     active: true,
-    departureDate: { gte: startOfToday() },
+    departureDate: { gte: earliestBookableDate() },
     package: { active: true },
     ...extra,
   };
+}
+
+function departureOnDate(dateStr: string): Prisma.DateTimeFilter {
+  const day = startOfDay(new Date(dateStr));
+  return { gte: day, lt: addDays(day, 1) };
+}
+
+function departureInMonth(monthStr: string): Prisma.DateTimeFilter {
+  const [year, month] = monthStr.split("-").map(Number);
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 1);
+  const bookableFrom = earliestBookableDate();
+  return { gte: start > bookableFrom ? start : bookableFrom, lt: end };
 }
 
 async function queryCards(where: Prisma.DepartureWhereInput): Promise<Package[]> {
@@ -150,9 +159,11 @@ export async function getAllPackages(): Promise<Package[]> {
 export type PackageFilters = {
   tier?: string;
   audience?: string;
+  featured?: string;
   city?: string;
   duration?: string;
   date?: string;
+  month?: string;
   minPrice?: string;
   maxPrice?: string;
   q?: string;
@@ -168,6 +179,7 @@ export async function filterPackages(filters: PackageFilters): Promise<Package[]
       const pkgWhere: Prisma.PackageWhereInput = { active: true };
       if (filters.tier) pkgWhere.tier = filters.tier as Tier;
       if (filters.audience) pkgWhere.audience = filters.audience as AudienceType;
+      if (filters.featured) pkgWhere.featured = filters.featured;
       if (filters.q) {
         pkgWhere.OR = [
           { title: { contains: filters.q, mode: "insensitive" } },
@@ -179,7 +191,9 @@ export async function filterPackages(filters: PackageFilters): Promise<Package[]
       if (filters.city) where.city = filters.city;
       if (filters.duration) where.durationDays = Number(filters.duration);
       if (filters.date) {
-        where.departureDate = { gte: new Date(filters.date) };
+        where.departureDate = departureOnDate(filters.date);
+      } else if (filters.month) {
+        where.departureDate = departureInMonth(filters.month);
       }
       if (filters.minPrice || filters.maxPrice) {
         where.price = {
@@ -200,7 +214,7 @@ async function fetchPackageBySlug(slug: string): Promise<Package | undefined> {
     where: { slug, active: true },
     include: {
       departures: {
-        where: { active: true, departureDate: { gte: startOfToday() } },
+        where: { active: true, departureDate: { gte: earliestBookableDate() } },
         orderBy: { departureDate: "asc" },
         take: 1,
       },

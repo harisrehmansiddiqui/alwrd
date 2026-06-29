@@ -14,7 +14,7 @@ export const site = {
 
 export const mainNav = [
   { label: "Home", href: "/" },
-  { label: "Group Packages", href: "/packages?type=group" },
+  { label: "Group Packages", href: "/packages?featured=group" },
   { label: "Premium Packages", href: "/packages?tier=premium" },
   { label: "Contact Us", href: "/contact" },
 ];

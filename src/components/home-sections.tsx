@@ -34,7 +34,7 @@ export function GroupPackages({ packages }: { packages: Package[] }) {
         <SectionHeading
           title="Group Packages"
           subtitle="Pre-designed itineraries ideal for families and group travel."
-          action={{ label: "View All", href: "/packages?type=group" }}
+          action={{ label: "View All", href: "/packages?featured=group" }}
         />
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {featured.map((pkg) => (
