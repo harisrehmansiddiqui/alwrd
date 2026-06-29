@@ -34,7 +34,7 @@ export function HeroCarousel({
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-2xl shadow-2xl ${className}`}
+      className={`relative h-full min-h-[320px] w-full overflow-hidden rounded-2xl shadow-2xl ${className}`}
     >
       {slides.map((slide, i) => (
         <div
