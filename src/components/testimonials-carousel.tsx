@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import { testimonials } from "@/lib/content";
+import type { CmsTestimonial } from "@/lib/cms";
+import { testimonials as fallbackTestimonials } from "@/lib/content";
 
 const THUMBS = ["/gallery/4.jpg", "/gallery/5.jpg", "/gallery/6.jpg", "/gallery/7.jpg"];
 
-export function TestimonialsCarousel() {
+export function TestimonialsCarousel({ items }: { items?: CmsTestimonial[] }) {
+  const testimonials = items?.length ? items : fallbackTestimonials;
   const trackRef = useRef<HTMLDivElement>(null);
 
   function scroll(dir: number) {
@@ -103,7 +105,7 @@ export function TestimonialsCarousel() {
   );
 }
 
-export function TestimonialsSection() {
+export function TestimonialsSection({ items }: { items?: CmsTestimonial[] }) {
   return (
     <section className="bg-white py-20">
       <div className="mx-auto max-w-[1280px] min-w-0 px-4 sm:px-6">
@@ -114,7 +116,7 @@ export function TestimonialsSection() {
           Watch experiences from those who&apos;ve planned and performed Umrah with us.
         </p>
         <div className="mt-10">
-          <TestimonialsCarousel />
+          <TestimonialsCarousel items={items} />
         </div>
       </div>
     </section>

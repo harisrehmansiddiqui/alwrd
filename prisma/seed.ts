@@ -20,9 +20,18 @@ async function main() {
   const settings: Record<string, string> = {
     currency: "PKR",
     defaultLanguage: "en",
-    whatsapp: "923001234567",
-    phone: "+92 300 1234567",
+    whatsapp: "923078953816",
+    phone: "+92 307 8953816",
     email: "info@alwrdgroup.com",
+    supportEmail: "support@alwrdgroup.com",
+    location: "Islamabad, Pakistan",
+    instagram: "https://www.instagram.com/alwrdhajjumrah/",
+    facebook: "https://www.facebook.com/alwrdhajjumrah",
+    tiktok: "https://www.tiktok.com/@alwrdhajjumrah",
+    trustTitle: "Recognized and Certified Travel Operator",
+    trustDesc:
+      "Registered Hajj & Umrah service provider with verified airline and hotel partners — transparent pricing with no hidden charges.",
+    trustCertificate: "Licensed Operator — Pakistan",
   };
   for (const [key, value] of Object.entries(settings)) {
     await prisma.siteSetting.upsert({
@@ -163,6 +172,85 @@ async function main() {
       await prisma.departure.create({
         data: { ...departureData, packageId: pkg.id },
       });
+    }
+  }
+
+  // ── CMS content (homepage, FAQ, trust) ──
+  const heroSlides = [
+    { src: "/hero.jpg", alt: "Pilgrims at the Holy Mosque in Makkah" },
+    { src: "/gallery/1.jpg", alt: "Umrah journey at the Haram" },
+    { src: "/gallery/2.jpg", alt: "Madinah — the city of the Prophet" },
+    { src: "/gallery/3.jpg", alt: "Guided ziyarat and support team" },
+  ];
+  for (const [i, slide] of heroSlides.entries()) {
+    const existing = await prisma.banner.findFirst({ where: { imageDesktop: slide.src } });
+    if (!existing) {
+      await prisma.banner.create({
+        data: {
+          headline: slide.alt,
+          imageDesktop: slide.src,
+          sortOrder: i,
+          active: true,
+        },
+      });
+    }
+  }
+
+  const testimonialRows = [
+    { name: "Arman Khan", city: "Lahore", quote: "From visa to hotels near the Haram, everything was handled. The smoothest Umrah we could have asked for.", video: true },
+    { name: "Nafisa Siddiqui", city: "Karachi", quote: "Transparent pricing and dedicated support made my journey peaceful and focused on ibadah. Truly no hidden charges!", video: true },
+    { name: "Wasim Shaikh", city: "Islamabad", quote: "Transparent pricing, no hidden charges, and premium hotels exactly as promised. Highly recommended.", video: false },
+    { name: "Hira Malik", city: "Faisalabad", quote: "Authentic Pakistani meals and private transport made the whole trip comfortable for the family.", video: false },
+  ];
+  for (const [i, t] of testimonialRows.entries()) {
+    const existing = await prisma.testimonial.findFirst({ where: { name: t.name } });
+    if (!existing) {
+      await prisma.testimonial.create({
+        data: {
+          name: t.name,
+          city: t.city,
+          quote: t.quote,
+          rating: 5,
+          videoUrl: t.video ? "#video" : null,
+          sortOrder: i,
+          active: true,
+        },
+      });
+    }
+  }
+
+  const faqRows = [
+    { q: "How do I book an Umrah package?", a: "Browse our packages, open the one you like and submit an inquiry. Our team contacts you on WhatsApp or phone to confirm availability, pricing and the next steps." },
+    { q: "Is visa processing included?", a: "Yes. Every package includes Umrah visa processing. We handle the documentation so you can focus on your worship." },
+    { q: "How close are the hotels to the Haram?", a: "We partner with 3, 4 and 5-star hotels within walking distance of Masjid al-Haram in Makkah and Masjid an-Nabawi in Madinah, depending on your package tier." },
+    { q: "Can I customise dates or hotels?", a: "Absolutely. Share your preferences in the inquiry form and our team will tailor the package to your travel dates, airline choice and hotel preference." },
+    { q: "How early should I book?", a: "Bookings open from 10 days ahead of travel. For the best availability and pricing we recommend reaching out as early as possible." },
+    { q: "Do you provide support during the trip?", a: "Yes. Our on-ground team offers 24/7 support throughout your journey, from airport arrival to departure." },
+  ];
+  for (const [i, f] of faqRows.entries()) {
+    const existing = await prisma.faq.findFirst({ where: { question: f.q } });
+    if (!existing) {
+      await prisma.faq.create({ data: { question: f.q, answer: f.a, sortOrder: i } });
+    }
+  }
+
+  const statRows = [
+    { value: "1,100+", label: "Pilgrims Served" },
+    { value: "29+", label: "Years Experience" },
+    { value: "12,500+", label: "Visas Processed" },
+    { value: "55+", label: "Agencies" },
+  ];
+  for (const [i, s] of statRows.entries()) {
+    const existing = await prisma.trustStat.findFirst({ where: { label: s.label } });
+    if (!existing) {
+      await prisma.trustStat.create({ data: { ...s, sortOrder: i } });
+    }
+  }
+
+  for (const [i, name] of ["Saudia", "PIA", "Akasa Air", "flynas", "AirSial"].entries()) {
+    const existing = await prisma.partnerLogo.findFirst({ where: { name } });
+    if (!existing) {
+      await prisma.partnerLogo.create({ data: { name, sortOrder: i } });
     }
   }
 

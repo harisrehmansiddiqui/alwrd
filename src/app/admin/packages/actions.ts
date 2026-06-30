@@ -32,6 +32,7 @@ function parsePackage(formData: FormData) {
     image: String(formData.get("image") ?? "").trim() || "/packages/placeholder.jpg",
     amenities,
     featured: featured === "none" || !featured ? null : featured,
+    active: formData.has("active") ? formData.get("active") === "true" : true,
   };
 }
 

@@ -13,6 +13,14 @@ import {
   ResourcesSection,
   TrustBadges,
 } from "@/components/home-sections";
+import {
+  getHeroSlides,
+  getPartnerLogos,
+  getResourceCards,
+  getTestimonials,
+  getTrustBadges,
+  getTrustStats,
+} from "@/lib/cms";
 import { getHomepagePackages } from "@/lib/packages";
 import { absoluteUrl } from "@/lib/seo";
 
@@ -29,25 +37,40 @@ export const metadata: Metadata = {
   },
 };
 
-// Dynamic page, but package data is cached via unstable_cache in lib/packages.
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { group, premium } = await getHomepagePackages();
+  const [
+    { group, premium },
+    slides,
+    testimonials,
+    trustStats,
+    partners,
+    resources,
+    trustBadges,
+  ] = await Promise.all([
+    getHomepagePackages(),
+    getHeroSlides(),
+    getTestimonials(),
+    getTrustStats(),
+    getPartnerLogos(),
+    getResourceCards(),
+    getTrustBadges(),
+  ]);
 
   return (
     <>
-      <Hero />
+      <Hero slides={slides} />
       <GroupPackages packages={group} />
       <PremiumPackages packages={premium} />
-      <TestimonialsSection />
+      <TestimonialsSection items={testimonials} />
       <GalleryCollaborations />
       <UniqueHighlights />
-      <HaramainTrain />
-      <PartnerStrip />
+      <HaramainTrain trustStats={trustStats} />
+      <PartnerStrip logos={partners} />
       <EsimPromo />
-      <ResourcesSection />
-      <TrustBadges />
+      <ResourcesSection cards={resources} />
+      <TrustBadges badges={trustBadges} />
       <WhatsAppFloat />
     </>
   );

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/page-header";
 import { FaqAccordion } from "@/components/faq-accordion";
 import { JsonLd } from "@/components/json-ld";
-import { faqs } from "@/lib/content";
+import { getFaqs } from "@/lib/cms";
 import { faqPageSchema } from "@/lib/seo";
 import { whatsappLink, site } from "@/lib/site";
 
@@ -12,16 +12,21 @@ export const metadata: Metadata = {
     "Answers to common questions about Umrah packages, visa processing, hotels, booking and on-ground support with Al Wrd Hajj & Umrah.",
 };
 
-export default function FaqPage() {
+export const dynamic = "force-dynamic";
+
+export default async function FaqPage() {
+  const faqs = await getFaqs();
+  const items = faqs.map((f) => ({ q: f.q, a: f.a }));
+
   return (
     <div className="bg-surface-tint">
-      <JsonLd data={faqPageSchema(faqs)} />
+      <JsonLd data={faqPageSchema(items)} />
       <PageHeader
         title="Frequently Asked Questions"
         subtitle="Everything you need to know before you book your Umrah."
       />
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <FaqAccordion />
+        <FaqAccordion items={items} />
 
         <div className="mt-10 rounded-2xl bg-tertiary p-8 text-center text-on-tertiary">
           <h2 className="font-display text-xl font-bold">Still have questions?</h2>

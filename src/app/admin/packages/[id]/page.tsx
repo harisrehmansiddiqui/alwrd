@@ -42,6 +42,7 @@ export default async function EditPackagePage({
             image: pkg.image,
             amenities: (pkg.amenities as string[]) ?? [],
             featured: pkg.featured,
+            active: pkg.active,
           }}
           departure={departure}
           submitLabel="Save changes"

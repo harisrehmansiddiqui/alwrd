@@ -244,7 +244,12 @@ export function UniqueHighlights() {
   );
 }
 
-export function HaramainTrain() {
+export function HaramainTrain({
+  trustStats,
+}: {
+  trustStats?: { value: string; label: string; variant: string }[];
+}) {
+  const statItems = trustStats?.length ? trustStats : stats;
   return (
     <section className="bg-surface py-20">
       <Container>
@@ -283,7 +288,7 @@ export function HaramainTrain() {
           </div>
 
           <div className="grid grid-cols-2 gap-4 md:col-span-5">
-            {stats.map((s) => (
+            {statItems.map((s) => (
               <div
                 key={s.label}
                 className={`flex flex-col items-center justify-center rounded-2xl p-6 text-center shadow-sm ${
@@ -319,12 +324,13 @@ export function HaramainTrain() {
   );
 }
 
-export function PartnerStrip() {
+export function PartnerStrip({ logos }: { logos?: string[] }) {
+  const names = logos?.length ? logos : partnerLogos;
   return (
     <section className="overflow-hidden border-y border-outline-variant bg-surface-container-lowest py-12">
       <Container>
         <div className="flex flex-wrap items-center justify-center gap-12 opacity-60 grayscale transition-all hover:grayscale-0">
-          {partnerLogos.map((name) => (
+          {names.map((name) => (
             <span
               key={name}
               className="text-xl font-bold text-on-surface-variant"
@@ -385,7 +391,12 @@ export function EsimPromo() {
   );
 }
 
-export function ResourcesSection() {
+export function ResourcesSection({
+  cards,
+}: {
+  cards?: { title: string; desc: string; href: string; image: string }[];
+}) {
+  const items = cards?.length ? cards : resources;
   return (
     <section className="bg-background py-20">
       <Container>
@@ -395,7 +406,7 @@ export function ResourcesSection() {
           centered
         />
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {resources.map((r) => (
+          {items.map((r) => (
             <Link
               key={r.title}
               href={r.href}
@@ -452,7 +463,12 @@ export function ResourcesSection() {
   );
 }
 
-export function TrustBadges() {
+export function TrustBadges({
+  badges,
+}: {
+  badges?: { title: string; desc: string; certificate: string };
+}) {
+  const trust = badges ?? trustBadges;
   return (
     <section className="bg-surface py-20">
       <Container>
@@ -473,11 +489,11 @@ export function TrustBadges() {
               <span className="text-sm font-semibold">Government Verified</span>
             </div>
             <h2 className="text-2xl font-semibold text-on-background md:text-[32px]">
-              {trustBadges.title}
+              {trust.title}
             </h2>
-            <p className="text-lg text-on-surface-variant">{trustBadges.desc}</p>
+            <p className="text-lg text-on-surface-variant">{trust.desc}</p>
             <p className="text-base font-bold text-primary">
-              ({trustBadges.certificate})
+              ({trust.certificate})
             </p>
           </div>
         </div>

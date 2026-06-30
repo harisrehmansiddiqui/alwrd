@@ -20,6 +20,7 @@ type PackageDefaults = {
   image: string;
   amenities: string[];
   featured: string | null;
+  active: boolean;
 } | null;
 
 export function PackageForm({
@@ -66,6 +67,16 @@ export function PackageForm({
             placeholder="All-Inclusive, Ziyarat Included, 4 Star Hotel"
           />
         </div>
+        <label className="mt-4 flex items-center gap-2 text-sm text-ink">
+          <input
+            type="checkbox"
+            name="active"
+            value="true"
+            defaultChecked={pkg?.active ?? true}
+            className="rounded border-black/20 text-brand"
+          />
+          Package visible on website
+        </label>
       </section>
 
       <section className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">

@@ -10,10 +10,19 @@ import {
   CAMPAIGN_PLANNING_FEATURES,
   formatCampaignPrice,
 } from "@/lib/campaign-landing";
-import { partnerLogos, stats } from "@/lib/content";
+import { getPartnerLogos, getTrustStats } from "@/lib/cms";
+import { partnerLogos as fallbackPartners, stats as fallbackStats } from "@/lib/content";
 
-export function CampaignLandingView() {
-  const pilgrimsStat = stats.find((s) => s.label.includes("Pilgrim")) ?? stats[0];
+export async function CampaignLandingView() {
+  const [trustStats, partnerNames] = await Promise.all([
+    getTrustStats(),
+    getPartnerLogos(),
+  ]);
+  const pilgrimsStat =
+    trustStats.find((s) => s.label.includes("Pilgrim")) ??
+    fallbackStats.find((s) => s.label.includes("Pilgrim")) ??
+    fallbackStats[0];
+  const partners = partnerNames.length ? partnerNames : fallbackPartners;
 
   return (
     <div className="scroll-smooth bg-background">
@@ -253,7 +262,7 @@ export function CampaignLandingView() {
         <section className="border-b border-outline-variant bg-surface-container-low py-12">
           <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
             <div className="flex flex-wrap items-center justify-center gap-10 opacity-60 grayscale transition-all duration-500 hover:grayscale-0 sm:gap-12">
-              {partnerLogos.map((name) => (
+              {partners.map((name) => (
                 <span
                   key={name}
                   className="text-lg font-bold text-on-surface-variant sm:text-xl"
