@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { uploadAdminImage } from "@/lib/admin/client-upload";
 
 function isExternal(url: string) {
   return url.startsWith("http://") || url.startsWith("https://");
@@ -36,32 +37,11 @@ export function MediaUploadCard({
     setUploading(true);
     setError("");
     try {
-      const body = new FormData();
-      body.append("file", file);
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body,
-        credentials: "same-origin",
-      });
-      let data: { error?: string; url?: string } = {};
-      try {
-        data = await res.json();
-      } catch {
-        setError(`Upload failed (${res.status}). Try redeploying after connecting Blob storage.`);
-        return;
-      }
-      if (!res.ok) {
-        setError(data.error ?? `Upload failed (${res.status})`);
-        return;
-      }
-      if (!data.url) {
-        setError("Upload succeeded but no URL was returned.");
-        return;
-      }
-      setUrl(data.url);
+      const uploadedUrl = await uploadAdminImage(file);
+      setUrl(uploadedUrl);
       const saveFd = new FormData();
       saveFd.set("key", mediaKey);
-      saveFd.set("url", data.url);
+      saveFd.set("url", uploadedUrl);
       saveFd.set("label", label);
       saveFd.set("category", category);
       setSaving(true);
@@ -74,8 +54,8 @@ export function MediaUploadCard({
             : "Image uploaded but could not save to the database.",
         );
       }
-    } catch {
-      setError("Upload failed. Check your connection.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed. Check your connection.");
     } finally {
       setUploading(false);
       setSaving(false);

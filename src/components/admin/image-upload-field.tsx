@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { uploadAdminImage } from "@/lib/admin/client-upload";
 
 function isExternal(url: string) {
   return url.startsWith("http://") || url.startsWith("https://");
@@ -28,17 +29,10 @@ export function ImageUploadField({
     setUploading(true);
     setError("");
     try {
-      const body = new FormData();
-      body.append("file", file);
-      const res = await fetch("/api/admin/upload", { method: "POST", body });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Upload failed");
-        return;
-      }
-      setUrl(data.url);
-    } catch {
-      setError("Upload failed. Check your connection.");
+      const uploadedUrl = await uploadAdminImage(file);
+      setUrl(uploadedUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed. Check your connection.");
     } finally {
       setUploading(false);
     }
