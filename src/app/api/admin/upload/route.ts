@@ -6,6 +6,20 @@ import { getSession } from "@/lib/auth";
 
 const MAX_BYTES = 8 * 1024 * 1024;
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const EXT_TO_MIME: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  gif: "image/gif",
+};
+
+function resolveMimeType(file: File): string | null {
+  if (ALLOWED.has(file.type)) return file.type;
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+  const mime = EXT_TO_MIME[ext];
+  return mime && ALLOWED.has(mime) ? mime : null;
+}
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -20,7 +34,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 });
   }
 
-  if (!ALLOWED.has(file.type)) {
+  if (!resolveMimeType(file)) {
     return NextResponse.json(
       { error: "Only JPEG, PNG, WebP, and GIF images are allowed" },
       { status: 400 },
@@ -56,14 +70,13 @@ export async function POST(request: Request) {
     const blob = await put(`alwrd/${safeName}`, file, {
       access: "public",
       addRandomSuffix: false,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
     return NextResponse.json({ url: blob.url });
   } catch (err) {
     console.error("Upload failed:", err);
     const message =
-      err instanceof Error && err.message.includes("No token found")
-        ? "Invalid or missing BLOB_READ_WRITE_TOKEN. Reconnect Blob storage in Vercel and redeploy."
-        : "Upload failed";
+      err instanceof Error ? err.message : "Upload failed";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -38,10 +38,24 @@ export function MediaUploadCard({
     try {
       const body = new FormData();
       body.append("file", file);
-      const res = await fetch("/api/admin/upload", { method: "POST", body });
-      const data = await res.json();
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body,
+        credentials: "same-origin",
+      });
+      let data: { error?: string; url?: string } = {};
+      try {
+        data = await res.json();
+      } catch {
+        setError(`Upload failed (${res.status}). Try redeploying after connecting Blob storage.`);
+        return;
+      }
       if (!res.ok) {
-        setError(data.error ?? "Upload failed");
+        setError(data.error ?? `Upload failed (${res.status})`);
+        return;
+      }
+      if (!data.url) {
+        setError("Upload succeeded but no URL was returned.");
         return;
       }
       setUrl(data.url);
@@ -51,9 +65,17 @@ export function MediaUploadCard({
       saveFd.set("label", label);
       saveFd.set("category", category);
       setSaving(true);
-      await onSave(saveFd);
+      try {
+        await onSave(saveFd);
+      } catch (saveErr) {
+        setError(
+          saveErr instanceof Error
+            ? `Image uploaded but could not save: ${saveErr.message}`
+            : "Image uploaded but could not save to the database.",
+        );
+      }
     } catch {
-      setError("Upload failed");
+      setError("Upload failed. Check your connection.");
     } finally {
       setUploading(false);
       setSaving(false);
