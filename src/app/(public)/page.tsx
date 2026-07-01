@@ -14,6 +14,7 @@ import {
   TrustBadges,
 } from "@/components/home-sections";
 import {
+  getGalleryImages,
   getHeroSlides,
   getPartnerLogos,
   getResourceCards,
@@ -21,7 +22,10 @@ import {
   getTrustBadges,
   getTrustStats,
 } from "@/lib/cms";
+import { getMediaMap, resolveUrl } from "@/lib/media";
 import { getHomepagePackages } from "@/lib/packages";
+import { resolvePremiumCards } from "@/lib/premium-audience";
+import { resolveHighlightCards } from "@/lib/value-services";
 import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -42,31 +46,44 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const [
     { group, premium },
+    media,
     slides,
     testimonials,
     trustStats,
     partners,
     resources,
     trustBadges,
+    galleryImgs,
   ] = await Promise.all([
     getHomepagePackages(),
+    getMediaMap(),
     getHeroSlides(),
     getTestimonials(),
     getTrustStats(),
     getPartnerLogos(),
     getResourceCards(),
     getTrustBadges(),
+    getGalleryImages(),
   ]);
 
   return (
     <>
       <Hero slides={slides} />
       <GroupPackages packages={group} />
-      <PremiumPackages packages={premium} />
+      <PremiumPackages cards={resolvePremiumCards(media)} packages={premium} />
       <TestimonialsSection items={testimonials} />
-      <GalleryCollaborations />
-      <UniqueHighlights />
-      <HaramainTrain trustStats={trustStats} />
+      <GalleryCollaborations
+        galleryImages={galleryImgs}
+        collaborationImages={[
+          resolveUrl(media, "collaboration.1"),
+          resolveUrl(media, "collaboration.2"),
+        ]}
+      />
+      <UniqueHighlights cards={resolveHighlightCards(media)} />
+      <HaramainTrain
+        trustStats={trustStats}
+        promoImage={resolveUrl(media, "haramain.promo")}
+      />
       <PartnerStrip logos={partners} />
       <EsimPromo />
       <ResourcesSection cards={resources} />

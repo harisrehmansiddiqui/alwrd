@@ -18,16 +18,20 @@ const SIZE_CLASS: Record<LogoSize, string> = {
 export function Logo({
   variant = "green",
   size = "header",
+  src,
 }: {
   variant?: LogoVariant;
   size?: LogoSize;
+  /** Override logo URL from CMS media library */
+  src?: string;
 }) {
   const logo = LOGOS[variant];
+  const imageSrc = src ?? logo.src;
 
   return (
     <Link href="/" className="inline-flex shrink-0 items-center">
       <Image
-        src={logo.src}
+        src={imageSrc}
         alt="Al Wrd Hajj & Umrah"
         width={logo.width}
         height={logo.height}

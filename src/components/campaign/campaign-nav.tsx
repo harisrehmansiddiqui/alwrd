@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/logo";
 
-export function CampaignNav() {
+export function CampaignNav({ logoSrc }: { logoSrc?: string }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export function CampaignNav() {
       }`}
     >
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-4 sm:px-6">
-        <Logo variant="black" size="header" />
+        <Logo variant="black" size="header" src={logoSrc} />
         <span className="hidden font-semibold uppercase tracking-widest text-on-surface-variant md:block md:text-xs lg:text-sm">
           Smart Umrah System
         </span>

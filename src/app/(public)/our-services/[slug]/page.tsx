@@ -8,8 +8,10 @@ import {
   VALUE_SERVICE_SLUGS,
   getValueService,
   otherServices,
+  resolveValueService,
   type ValueServiceSlug,
 } from "@/lib/value-services";
+import { getMediaMap, resolveUrl } from "@/lib/media";
 import { absoluteUrl } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -44,10 +46,16 @@ export default async function ServiceDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const service = getValueService(slug);
-  if (!service) notFound();
-
-  const related = otherServices(service.slug as ValueServiceSlug).slice(0, 4);
+  const raw = getValueService(slug);
+  if (!raw) notFound();
+  const media = await getMediaMap();
+  const service = resolveValueService(raw.slug as ValueServiceSlug, media);
+  const related = otherServices(service.slug as ValueServiceSlug)
+    .slice(0, 4)
+    .map((s) => ({
+      ...s,
+      image: resolveUrl(media, `service.${s.slug}`, s.image),
+    }));
 
   return (
     <>

@@ -13,6 +13,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const QUICK_LINKS = [
+  { label: "Site images", href: "/admin/media" },
   { label: "Hero banners", href: "/admin/banners" },
   { label: "Testimonials", href: "/admin/testimonials" },
   { label: "FAQs", href: "/admin/faqs" },

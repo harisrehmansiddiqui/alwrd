@@ -6,32 +6,39 @@ import { SiteFooter } from "@/components/site-footer";
 import { MaterialIcon } from "@/components/material-icon";
 import {
   CAMPAIGN_ADVANTAGES,
-  CAMPAIGN_PACKAGES,
   CAMPAIGN_PLANNING_FEATURES,
   formatCampaignPrice,
+  resolveCampaignPackages,
 } from "@/lib/campaign-landing";
 import { getPartnerLogos, getTrustStats } from "@/lib/cms";
+import { getMediaMap, resolveUrl } from "@/lib/media";
 import { partnerLogos as fallbackPartners, stats as fallbackStats } from "@/lib/content";
 
 export async function CampaignLandingView() {
-  const [trustStats, partnerNames] = await Promise.all([
+  const [media, trustStats, partnerNames] = await Promise.all([
+    getMediaMap(),
     getTrustStats(),
     getPartnerLogos(),
   ]);
+  const campaignPackages = resolveCampaignPackages(media, resolveUrl);
+  const heroSrc = resolveUrl(media, "campaign.hero", "/campaign-hero.jpg");
+  const planningSrc = resolveUrl(media, "campaign.planning", "/gallery/4.jpg");
   const pilgrimsStat =
     trustStats.find((s) => s.label.includes("Pilgrim")) ??
     fallbackStats.find((s) => s.label.includes("Pilgrim")) ??
     fallbackStats[0];
   const partners = partnerNames.length ? partnerNames : fallbackPartners;
 
+  const logoSrc = resolveUrl(media, "brand.logo-black");
+
   return (
     <div className="scroll-smooth bg-background">
-      <CampaignNav />
+      <CampaignNav logoSrc={logoSrc} />
       <main className="pt-20">
         {/* Hero */}
         <section className="relative flex min-h-[600px] items-center overflow-hidden lg:min-h-[870px]">
           <Image
-            src="/campaign-hero.jpg"
+            src={heroSrc}
             alt="Pilgrims at the Holy Kaaba in Makkah"
             fill
             priority
@@ -98,7 +105,7 @@ export async function CampaignLandingView() {
             <div className="relative">
               <div className="relative aspect-square overflow-hidden rounded-xl border-4 border-white campaign-soft-float">
                 <Image
-                  src="/gallery/4.jpg"
+                  src={planningSrc}
                   alt="Al Wrd digital Umrah planning on mobile"
                   fill
                   className="object-cover"
@@ -130,7 +137,7 @@ export async function CampaignLandingView() {
             </p>
           </div>
           <div className="mx-auto mt-12 grid max-w-[1200px] gap-8 px-4 sm:px-6 md:grid-cols-3 md:items-end">
-            {CAMPAIGN_PACKAGES.map((pkg) => (
+            {campaignPackages.map((pkg) => (
               <article
                 key={pkg.id}
                 className={`group overflow-hidden rounded-xl border bg-surface-container-lowest transition-all hover:-translate-y-2 hover:shadow-xl ${
@@ -278,7 +285,7 @@ export async function CampaignLandingView() {
           </div>
         </section>
       </main>
-      <SiteFooter />
+      <SiteFooter logoSrc={logoSrc} />
     </div>
   );
 }

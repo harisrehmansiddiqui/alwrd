@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { AdminCheckbox, AdminField, AdminPageHeader } from "@/components/admin/admin-ui";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { saveBanner } from "@/app/admin/content/actions";
 
 export default async function AdminBannerEditPage({
@@ -20,8 +21,16 @@ export default async function AdminBannerEditPage({
       <form action={saveBanner} className="max-w-2xl space-y-4 rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
         {row && <input type="hidden" name="id" value={row.id} />}
         <AdminField label="Headline / alt text" name="headline" defaultValue={row?.headline ?? ""} />
-        <AdminField label="Desktop image path" name="imageDesktop" defaultValue={row?.imageDesktop ?? "/hero.jpg"} required />
-        <AdminField label="Mobile image path (optional)" name="imageMobile" defaultValue={row?.imageMobile ?? ""} />
+        <ImageUploadField
+          name="imageDesktop"
+          label="Desktop image"
+          defaultValue={row?.imageDesktop ?? "/hero.jpg"}
+        />
+        <ImageUploadField
+          name="imageMobile"
+          label="Mobile image (optional)"
+          defaultValue={row?.imageMobile ?? ""}
+        />
         <AdminField label="CTA label" name="ctaLabel" defaultValue={row?.ctaLabel ?? ""} />
         <AdminField label="CTA link" name="ctaHref" defaultValue={row?.ctaHref ?? ""} />
         <AdminField label="Sort order" name="sortOrder" type="number" defaultValue={row?.sortOrder ?? 0} />

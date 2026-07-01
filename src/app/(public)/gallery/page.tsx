@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/page-header";
-import { galleryImages } from "@/lib/content";
+import { getGalleryImages } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Gallery",
   description: "Moments from the journeys of pilgrims we have proudly served with Al Wrd Hajj & Umrah.",
 };
 
-export default function GalleryPage() {
+export const dynamic = "force-dynamic";
+
+export default async function GalleryPage() {
+  const galleryImages = await getGalleryImages();
+
   return (
     <div className="bg-surface-tint">
       <PageHeader

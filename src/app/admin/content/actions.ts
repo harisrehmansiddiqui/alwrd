@@ -61,6 +61,7 @@ export async function saveTestimonial(formData: FormData) {
     city: String(formData.get("city") ?? "").trim() || null,
     rating: num(formData, "rating", 5),
     quote: String(formData.get("quote") ?? "").trim(),
+    image: String(formData.get("image") ?? "").trim() || null,
     videoUrl: bool(formData, "hasVideo") ? "#video" : null,
     sortOrder: num(formData, "sortOrder"),
     active: bool(formData, "active"),

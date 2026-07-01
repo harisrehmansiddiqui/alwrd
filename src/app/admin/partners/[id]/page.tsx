@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { AdminField, AdminPageHeader } from "@/components/admin/admin-ui";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { savePartner } from "@/app/admin/content/actions";
 
 export default async function AdminPartnerEditPage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,7 +17,7 @@ export default async function AdminPartnerEditPage({ params }: { params: Promise
       <form action={savePartner} className="max-w-xl space-y-4 rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
         {row && <input type="hidden" name="id" value={row.id} />}
         <AdminField label="Name" name="name" defaultValue={row?.name} required />
-        <AdminField label="Logo image path" name="logo" defaultValue={row?.logo ?? ""} />
+        <ImageUploadField name="logo" label="Logo image" defaultValue={row?.logo ?? ""} />
         <AdminField label="Website URL" name="url" defaultValue={row?.url ?? ""} />
         <AdminField label="Sort order" name="sortOrder" type="number" defaultValue={row?.sortOrder ?? 0} />
         <div className="flex gap-3 pt-2">

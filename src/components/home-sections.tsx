@@ -6,7 +6,7 @@ import { SUPPORT_WHATSAPP_MESSAGE } from "@/lib/collaborations";
 import { PackageCard } from "@/components/package-card";
 import { MaterialIcon } from "@/components/material-icon";
 import { formatPKR, type Package } from "@/lib/packages";
-import { PREMIUM_AUDIENCE_CARDS } from "@/lib/premium-audience";
+import { PREMIUM_AUDIENCE_CARDS, type PremiumAudienceCard } from "@/lib/premium-audience";
 import {
   highlights,
   stats,
@@ -48,7 +48,13 @@ export function GroupPackages({ packages }: { packages: Package[] }) {
   );
 }
 
-export function PremiumPackages(_props: { packages?: Package[] }) {
+export function PremiumPackages({
+  cards,
+}: {
+  packages?: Package[];
+  cards?: PremiumAudienceCard[];
+}) {
+  const audienceCards = cards ?? PREMIUM_AUDIENCE_CARDS;
   return (
     <section className="bg-surface py-20">
       <Container>
@@ -58,7 +64,7 @@ export function PremiumPackages(_props: { packages?: Package[] }) {
           centered
         />
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-          {PREMIUM_AUDIENCE_CARDS.map((card) => (
+          {audienceCards.map((card) => (
             <article
               key={card.slug}
               className="group flex flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
@@ -116,13 +122,21 @@ export function PremiumPackages(_props: { packages?: Package[] }) {
   );
 }
 
-export function GalleryCollaborations() {
+export function GalleryCollaborations({
+  galleryImages: galleryProp,
+  collaborationImages,
+}: {
+  galleryImages?: string[];
+  collaborationImages?: string[];
+}) {
+  const images = galleryProp?.length ? galleryProp : galleryImages;
+  const collab = collaborationImages?.length ? collaborationImages : collaborations;
   const featured = testimonials[1];
   const masonryCols = [
-    [galleryImages[0], galleryImages[1]],
-    [galleryImages[2], galleryImages[3]],
-    [galleryImages[4], galleryImages[5]],
-    [galleryImages[6], galleryImages[7] ?? galleryImages[0]],
+    [images[0], images[1]],
+    [images[2], images[3]],
+    [images[4], images[5]],
+    [images[6], images[7] ?? images[0]],
   ];
 
   return (
@@ -146,7 +160,7 @@ export function GalleryCollaborations() {
               pilgrims.
             </p>
             <div className="grid grid-cols-2 gap-4 pt-4">
-              {collaborations.map((src, i) => (
+              {collab.map((src, i) => (
                 <div
                   key={i}
                   className="h-40 rounded-xl border border-outline-variant bg-cover bg-center shadow-sm"
@@ -198,7 +212,12 @@ export function GalleryCollaborations() {
   );
 }
 
-export function UniqueHighlights() {
+export function UniqueHighlights({
+  cards,
+}: {
+  cards?: typeof highlights;
+}) {
+  const items = cards?.length ? cards : highlights;
   return (
     <section className="bg-surface-container-lowest py-20">
       <Container>
@@ -209,7 +228,7 @@ export function UniqueHighlights() {
           action={{ label: "View Details", href: "/our-services" }}
         />
         <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4">
-          {highlights.map((h) => (
+          {items.map((h) => (
             <Link
               key={h.title}
               href={h.href}
@@ -246,10 +265,13 @@ export function UniqueHighlights() {
 
 export function HaramainTrain({
   trustStats,
+  promoImage,
 }: {
   trustStats?: { value: string; label: string; variant: string }[];
+  promoImage?: string;
 }) {
   const statItems = trustStats?.length ? trustStats : stats;
+  const trainBg = promoImage ?? "/gallery/3.jpg";
   return (
     <section className="bg-surface py-20">
       <Container>
@@ -283,7 +305,7 @@ export function HaramainTrain({
             </div>
             <div
               className="relative h-48 bg-cover bg-center md:h-auto md:w-1/2"
-              style={{ backgroundImage: "url('/gallery/3.jpg')" }}
+              style={{ backgroundImage: `url('${trainBg}')` }}
             />
           </div>
 

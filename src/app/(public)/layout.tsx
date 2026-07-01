@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { getMediaMap, resolveUrl } from "@/lib/media";
 
 function HeaderFallback() {
   return (
@@ -10,18 +11,21 @@ function HeaderFallback() {
   );
 }
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const media = await getMediaMap();
+  const logoSrc = resolveUrl(media, "brand.logo-black");
+
   return (
     <>
       <Suspense fallback={<HeaderFallback />}>
-        <SiteHeader />
+        <SiteHeader logoSrc={logoSrc} />
       </Suspense>
       <main className="min-w-0 flex-1 overflow-x-hidden">{children}</main>
-      <SiteFooter />
+      <SiteFooter logoSrc={logoSrc} />
     </>
   );
 }

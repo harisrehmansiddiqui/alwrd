@@ -8,7 +8,10 @@ import { testimonials as fallbackTestimonials } from "@/lib/content";
 const THUMBS = ["/gallery/4.jpg", "/gallery/5.jpg", "/gallery/6.jpg", "/gallery/7.jpg"];
 
 export function TestimonialsCarousel({ items }: { items?: CmsTestimonial[] }) {
-  const testimonials = items?.length ? items : fallbackTestimonials;
+  const testimonials = items?.length ? items : fallbackTestimonials.map((t) => ({
+    ...t,
+    image: null,
+  }));
   const trackRef = useRef<HTMLDivElement>(null);
 
   function scroll(dir: number) {
@@ -27,7 +30,7 @@ export function TestimonialsCarousel({ items }: { items?: CmsTestimonial[] }) {
             className="relative flex h-[420px] w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl sm:w-[300px]"
           >
             <Image
-              src={THUMBS[i] ?? "/gallery/4.jpg"}
+              src={(t.image || THUMBS[i]) ?? "/gallery/4.jpg"}
               alt=""
               fill
               className="object-cover"

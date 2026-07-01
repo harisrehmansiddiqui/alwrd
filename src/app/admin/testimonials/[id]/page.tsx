@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { AdminCheckbox, AdminField, AdminPageHeader } from "@/components/admin/admin-ui";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { saveTestimonial } from "@/app/admin/content/actions";
 
 export default async function AdminTestimonialEditPage({
@@ -23,10 +24,16 @@ export default async function AdminTestimonialEditPage({
         <AdminField label="City" name="city" defaultValue={row?.city ?? ""} />
         <AdminField label="Rating (1–5)" name="rating" type="number" min={1} defaultValue={row?.rating ?? 5} />
         <AdminField label="Quote" name="quote" rows={4} defaultValue={row?.quote} required />
-        <AdminField label="Sort order" name="sortOrder" type="number" defaultValue={row?.sortOrder ?? 0} />
+        <ImageUploadField
+          name="image"
+          label="Pilgrim photo"
+          defaultValue={row?.image ?? ""}
+          hint="Shown on the homepage testimonial card"
+        />
         <AdminCheckbox label="Show video badge" name="hasVideo" defaultChecked={Boolean(row?.videoUrl)} />
+        <AdminField label="Sort order" name="sortOrder" type="number" defaultValue={row?.sortOrder ?? 0} />
         <AdminCheckbox label="Active" name="active" defaultChecked={row?.active ?? true} />
-        <div className="flex gap-3 pt-2">
+        <div className="flex flex-wrap gap-3 pt-2">
           <button type="submit" className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white">Save</button>
           <Link href="/admin/testimonials" className="rounded-xl border border-black/10 px-5 py-2.5 text-sm">Cancel</Link>
         </div>

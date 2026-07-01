@@ -91,3 +91,13 @@ export const CAMPAIGN_PLANNING_FEATURES = [
 export function formatCampaignPrice(amount: number): string {
   return formatPKR(amount);
 }
+
+export function resolveCampaignPackages(
+  media: Record<string, string>,
+  resolve: (map: Record<string, string>, key: string, fallback?: string) => string,
+) {
+  return CAMPAIGN_PACKAGES.map((pkg) => ({
+    ...pkg,
+    image: resolve(media, `campaign.package.${pkg.id}`, pkg.image),
+  }));
+}

@@ -34,7 +34,7 @@ function matchesNavHref(
   return pathname.startsWith(`${path}/`);
 }
 
-export function SiteHeader() {
+export function SiteHeader({ logoSrc }: { logoSrc?: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
@@ -46,7 +46,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-outline-variant bg-surface/80 shadow-sm backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-[1280px] min-w-0 items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 lg:gap-3 lg:px-6 lg:py-3">
-        <Logo variant="black" size="header" />
+        <Logo variant="black" size="header" src={logoSrc} />
 
         <nav className="hidden min-w-0 items-center gap-2 lg:flex lg:gap-3 xl:gap-6">
           {mainNav.map((item) => {

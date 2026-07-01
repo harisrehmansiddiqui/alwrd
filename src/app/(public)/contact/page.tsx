@@ -11,6 +11,7 @@ import {
 } from "@/lib/company";
 import { absoluteUrl } from "@/lib/seo";
 import { site, whatsappLink } from "@/lib/site";
+import { getMediaMap, resolveUrl } from "@/lib/media";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -19,10 +20,13 @@ export const metadata: Metadata = {
   alternates: { canonical: absoluteUrl("/contact") },
 };
 
-const CONTACT_IMAGE =
+const DEFAULT_CONTACT_IMAGE =
   "https://images.unsplash.com/photo-1564769625905-50d102379625?auto=format&fit=crop&w=1312&q=80";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const media = await getMediaMap();
+  const contactImage = resolveUrl(media, "contact.hero", DEFAULT_CONTACT_IMAGE);
+
   return (
     <div className="overflow-x-hidden bg-white">
       <div className="mx-auto w-full max-w-[1600px] px-0 py-8 lg:py-24 lg:pb-14">
@@ -55,7 +59,7 @@ export default function ContactPage() {
 
             <div
               className="relative hidden h-[800px] w-full max-w-[656px] rounded-[20px] bg-cover bg-center lg:block"
-              style={{ backgroundImage: `url('${CONTACT_IMAGE}')` }}
+              style={{ backgroundImage: `url('${contactImage}')` }}
               role="img"
               aria-label="Contact us"
             />

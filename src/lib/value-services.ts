@@ -1,3 +1,5 @@
+import { resolveUrl } from "@/lib/media";
+
 export type ValueServiceSlug =
   | "triple-umrah"
   | "premium-umrah-kit"
@@ -500,6 +502,17 @@ export function getValueService(slug: string): ValueServiceConfig | undefined {
   return undefined;
 }
 
+export function resolveValueService(
+  slug: ValueServiceSlug,
+  media: Record<string, string>,
+): ValueServiceConfig {
+  const service = VALUE_SERVICES[slug];
+  return {
+    ...service,
+    image: resolveUrl(media, `service.${slug}`, service.image),
+  };
+}
+
 /** Homepage Unique Highlights cards — single source of truth for links and copy. */
 export const highlightCards = VALUE_SERVICE_SLUGS.map(
   (slug) => VALUE_SERVICES[slug],
@@ -510,6 +523,21 @@ export const highlightCards = VALUE_SERVICE_SLUGS.map(
   image: s.image,
   href: `/our-services/${s.slug}`,
 }));
+
+export function resolveHighlightCards(
+  media: Record<string, string>,
+): typeof highlightCards {
+  return VALUE_SERVICE_SLUGS.map((slug) => {
+    const s = VALUE_SERVICES[slug];
+    return {
+      title: s.title,
+      icon: s.icon,
+      desc: s.shortDesc,
+      image: resolveUrl(media, `service.${slug}`, s.image),
+      href: `/our-services/${s.slug}`,
+    };
+  });
+}
 
 export function otherServices(current: ValueServiceSlug): ValueServiceConfig[] {
   return VALUE_SERVICE_SLUGS.filter((s) => s !== current).map(

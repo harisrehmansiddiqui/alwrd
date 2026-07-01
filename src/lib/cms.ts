@@ -8,6 +8,7 @@ import {
   testimonials as staticTestimonials,
   trustBadges as staticTrustBadges,
 } from "@/lib/content";
+import { getMediaMap, resolveUrl } from "@/lib/media";
 import { site as defaultSite } from "@/lib/site";
 
 export type CmsTestimonial = {
@@ -16,6 +17,7 @@ export type CmsTestimonial = {
   rating: number;
   quote: string;
   video: boolean;
+  image?: string | null;
 };
 
 export type CmsFaq = { q: string; a: string; category?: string | null };
@@ -81,6 +83,7 @@ export async function getTestimonials(): Promise<CmsTestimonial[]> {
     rating: t.rating,
     quote: t.quote,
     video: Boolean(t.videoUrl),
+    image: t.image,
   }));
 }
 
@@ -116,17 +119,39 @@ export async function getTrustBadges() {
 }
 
 export async function getResourceCards(): Promise<CmsResourceCard[]> {
-  const rows = await prisma.resource.findMany({
-    where: { published: true, type: { in: ["checklist", "blog"] } },
-    orderBy: { createdAt: "asc" },
-  });
-  if (rows.length === 0) return staticResources;
+  const [rows, media] = await Promise.all([
+    prisma.resource.findMany({
+      where: { published: true, type: { in: ["checklist", "blog"] } },
+      orderBy: { createdAt: "asc" },
+    }),
+    getMediaMap(),
+  ]);
+  if (rows.length === 0) {
+    return staticResources.map((r) => ({
+      title: r.title,
+      desc: r.desc,
+      href: r.href,
+      image:
+        r.href.includes("duas")
+          ? resolveUrl(media, "resources.duas", r.image)
+          : r.href.includes("checklist")
+            ? resolveUrl(media, "resources.checklist", r.image)
+            : resolveUrl(media, "resources.support", r.image),
+    }));
+  }
   return rows.map((r) => ({
     title: r.title,
     desc: r.metaDesc ?? r.title,
     href: r.type === "checklist" ? "/resources/checklist" : `/resources/${r.slug}`,
-    image: "/resources/checklist.jpg",
+    image: resolveUrl(media, "resources.checklist", "/resources/checklist.jpg"),
   }));
+}
+
+export async function getGalleryImages(): Promise<string[]> {
+  const media = await getMediaMap();
+  return Array.from({ length: 8 }, (_, i) =>
+    resolveUrl(media, `gallery.${i + 1}`, `/gallery/${i + 1}.jpg`),
+  );
 }
 
 export async function getLegalPage(slug: string) {

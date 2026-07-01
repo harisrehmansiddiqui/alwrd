@@ -7,11 +7,9 @@ import {
   collaborationHighlights,
   collaborationPartners,
 } from "@/lib/collaborations";
-import {
-  collaborations,
-  galleryImages,
-  testimonials,
-} from "@/lib/content";
+import { testimonials } from "@/lib/content";
+import { getGalleryImages } from "@/lib/cms";
+import { getMediaMap, resolveUrl } from "@/lib/media";
 import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -21,7 +19,15 @@ export const metadata: Metadata = {
   alternates: { canonical: absoluteUrl("/collaborations") },
 };
 
-export default function CollaborationsPage() {
+export default async function CollaborationsPage() {
+  const [media, galleryImages] = await Promise.all([
+    getMediaMap(),
+    getGalleryImages(),
+  ]);
+  const collaborationImages = [
+    resolveUrl(media, "collaboration.1"),
+    resolveUrl(media, "collaboration.2"),
+  ];
   const featured = testimonials.slice(0, 2);
 
   return (
@@ -95,7 +101,7 @@ export default function CollaborationsPage() {
         </Link>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          {collaborations.map((src, i) => (
+          {collaborationImages.map((src, i) => (
             <div
               key={i}
               className="relative h-48 overflow-hidden rounded-2xl border border-outline-variant sm:h-56"
@@ -117,26 +123,12 @@ export default function CollaborationsPage() {
               <p className="italic text-on-surface-variant">
                 &ldquo;{t.quote}&rdquo;
               </p>
-              <footer className="mt-4 text-sm font-semibold text-ink">
-                {t.name} · {t.city}
+              <footer className="mt-4 text-sm font-semibold text-primary">
+                {t.name}
+                {t.city ? ` — ${t.city}` : ""}
               </footer>
             </blockquote>
           ))}
-        </div>
-
-        <div className="mt-12 flex flex-wrap gap-4">
-          <Link
-            href="/packages"
-            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-dark"
-          >
-            Browse packages
-          </Link>
-          <Link
-            href="/contact"
-            className="rounded-lg border border-outline-variant px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary/5"
-          >
-            Partner with us
-          </Link>
         </div>
       </div>
     </div>

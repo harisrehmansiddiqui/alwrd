@@ -1,3 +1,5 @@
+import { ImageUploadField } from "@/components/admin/image-upload-field";
+
 type Departure = {
   id: string;
   city: string;
@@ -51,7 +53,13 @@ export function PackageForm({
           <Select label="Audience" name="audience" defaultValue={pkg?.audience ?? "group"} options={[["group", "Group"], ["family", "Family"], ["couple", "Couple"]]} />
           <Select label="Tier" name="tier" defaultValue={pkg?.tier ?? "standard"} options={[["economy", "Economy (3-Star)"], ["standard", "Comfort (4-Star)"], ["premium", "Royale (5-Star)"]]} />
           <Select label="Featured section" name="featured" defaultValue={pkg?.featured ?? "none"} options={[["none", "Not featured"], ["group", "Group packages"], ["premium", "Premium packages"]]} />
-          <Field label="Image path" name="image" defaultValue={pkg?.image} placeholder="/packages/comfort-1.jpg" />
+        </div>
+        <div className="mt-4">
+          <ImageUploadField
+            name="image"
+            label="Package cover image"
+            defaultValue={pkg?.image ?? "/packages/comfort-1.jpg"}
+          />
         </div>
         <div className="mt-4">
           <Field label="Tagline" name="tagline" defaultValue={pkg?.tagline} required />

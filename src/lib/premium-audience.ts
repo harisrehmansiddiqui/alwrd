@@ -1,4 +1,5 @@
 import type { AudienceLandingSlug } from "@/lib/audience-landing";
+import { resolveUrl } from "@/lib/media";
 
 export type PremiumAudienceCard = {
   slug: AudienceLandingSlug;
@@ -60,3 +61,10 @@ export const PREMIUM_AUDIENCE_CARDS: PremiumAudienceCard[] = [
     cta: "Explore Family",
   },
 ];
+
+export function resolvePremiumCards(media: Record<string, string>): PremiumAudienceCard[] {
+  return PREMIUM_AUDIENCE_CARDS.map((card) => ({
+    ...card,
+    image: resolveUrl(media, `premium.${card.slug}`, card.image),
+  }));
+}
